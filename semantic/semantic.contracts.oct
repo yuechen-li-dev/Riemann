@@ -1,0 +1,7 @@
+package RiemannSemantic
+
+go fn StrictlyAbove(value: Int, threshold: Int) -> Bool
+
+fn StaticStrictThresholdContract() -> Void {
+    Require(1 - 1 == 0, "threshold equality belongs to the remainder")
+}

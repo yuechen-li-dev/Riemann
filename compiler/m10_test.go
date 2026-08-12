@@ -9,7 +9,7 @@ import (
 )
 
 func TestM10CompileUsesPaperWindowCompressionAndPreservesM7(t *testing.T) {
-	r, err := CompileM10()
+	r, err := testM10()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -55,7 +55,7 @@ func TestM10ExactWeylThresholdFixturesAndEqualityCounterexample(t *testing.T) {
 }
 
 func TestM10M9ReuseAndConservativeCountConversion(t *testing.T) {
-	r, err := CompileM10()
+	r, err := testM10()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -77,7 +77,7 @@ func TestM10M9ReuseAndConservativeCountConversion(t *testing.T) {
 }
 
 func TestM10FarBoundThresholdAndAsymptoticTrustRemainTyped(t *testing.T) {
-	r, err := CompileM10()
+	r, err := testM10()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -93,7 +93,7 @@ func TestM10FarBoundThresholdAndAsymptoticTrustRemainTyped(t *testing.T) {
 }
 
 func TestM10ReportsAreDeterministicAndExposeTheCompleteBridge(t *testing.T) {
-	r, err := CompileM10()
+	r, err := testM10()
 	if err != nil {
 		t.Fatal(err)
 	}

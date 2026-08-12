@@ -102,7 +102,7 @@ func TestM8SyntheticIndependentAndDependentDiagnostics(t *testing.T) {
 }
 
 func TestM8AggregateDualIdentityAndNoReverseInference(t *testing.T) {
-	r, err := CompileM8()
+	r, err := testM8()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -115,7 +115,7 @@ func TestM8AggregateDualIdentityAndNoReverseInference(t *testing.T) {
 }
 
 func TestM8ReportsDeterministicAndTyped(t *testing.T) {
-	r, err := CompileM8()
+	r, err := testM8()
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -8,7 +8,7 @@ import (
 )
 
 func TestM11CompileRepresentsDistinctMomentsAndPaperNormalization(t *testing.T) {
-	r, err := CompileM11()
+	r, err := testM11()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -24,7 +24,7 @@ func TestM11CompileRepresentsDistinctMomentsAndPaperNormalization(t *testing.T) 
 }
 
 func TestM11FiniteTheoremIsStrictDimensionCorrectedAndIntegerRounded(t *testing.T) {
-	r, err := CompileM11()
+	r, err := testM11()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -40,7 +40,7 @@ func TestM11FiniteTheoremIsStrictDimensionCorrectedAndIntegerRounded(t *testing.
 }
 
 func TestM11ThresholdDimensionScalingAndAsymptoticErrorsRemainVisible(t *testing.T) {
-	r, err := CompileM11()
+	r, err := testM11()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -61,7 +61,7 @@ func TestM11ThresholdDimensionScalingAndAsymptoticErrorsRemainVisible(t *testing
 }
 
 func TestM11ReusesM10AndKeepsFringeAndCountNotionsSeparate(t *testing.T) {
-	r, err := CompileM11()
+	r, err := testM11()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -74,7 +74,7 @@ func TestM11ReusesM10AndKeepsFringeAndCountNotionsSeparate(t *testing.T) {
 }
 
 func TestM11ReproducesOnlyHalfStage(t *testing.T) {
-	r, err := CompileM11()
+	r, err := testM11()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -88,7 +88,7 @@ func TestM11ReproducesOnlyHalfStage(t *testing.T) {
 }
 
 func TestM11CounterexamplesAndExperimentAreBounded(t *testing.T) {
-	r, err := CompileM11()
+	r, err := testM11()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -98,7 +98,7 @@ func TestM11CounterexamplesAndExperimentAreBounded(t *testing.T) {
 }
 
 func TestM11ReportsAreDeterministicAndStatusIsHonest(t *testing.T) {
-	r, err := CompileM11()
+	r, err := testM11()
 	if err != nil {
 		t.Fatal(err)
 	}

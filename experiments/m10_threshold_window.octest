@@ -1,36 +1,5 @@
 package M10ThresholdWindow
 
-// Bounded exact diagonal experiments for theorem filtering.  Every fixture is
-// integer arithmetic; no result is used as theorem evidence.
-concept StrictlyPositiveGap = Int {
-    Require(Self > 0, "a threshold gap must be strictly positive")
-}
-
-fn StrictlyAbove(value: Int, threshold: Int) -> Int {
-    // Concept construction is the checked semantic boundary: equality and
-    // negative gaps take the error arm, so no tolerance or >= convention can
-    // leak into the experimental count.
-    var result = 0
-    match StrictlyPositiveGap(value - threshold) {
-        ok(gap) -> {result = 1}
-        err(problem) -> {result = 0}
-    }
-    return result
-}
-
-[Fact]
-fn StrictThresholdExcludesEquality() -> Void {
-    Assert.Equal(0, StrictlyAbove(1, 1), "lambda equal to theta is excluded")
-}
-
-[Fact]
-fn WeylTransferSurvivesAtExactOperatorBound() -> Void {
-    // A=diag(2,0,-3), E=diag(-1,1,0), ||E||=theta=1.
-    let observed = StrictlyAbove(1, 1) + StrictlyAbove(1, 1) + StrictlyAbove(-3, 1)
-    let nearPositive = StrictlyAbove(2, 0) + StrictlyAbove(0, 0) + StrictlyAbove(-3, 0)
-    Assert.True(observed <= nearPositive, "n+^theta(A+E)<=n+(A)")
-}
-
 [Fact]
 fn NonStrictEqualityWouldFail() -> Void {
     // A=[0], E=[1], theta=||E||=1.  Counting G=1 at equality would give one,
@@ -38,14 +7,6 @@ fn NonStrictEqualityWouldFail() -> Void {
     let hypotheticalNonStrictCount = 1
     let nearPositive = 0
     Assert.True(hypotheticalNonStrictCount > nearPositive, "reject >= threshold semantics")
-}
-
-[Fact]
-fn ThresholdBelowOperatorBoundFails() -> Void {
-    // A=[0], E=[1], theta=0: G crosses while A has no positive direction.
-    let observed = StrictlyAbove(1, 0)
-    let nearPositive = StrictlyAbove(0, 0)
-    Assert.True(observed > nearPositive, "reject theta below ||E||")
 }
 
 [Fact]
@@ -70,12 +31,4 @@ fn RmsFrobeniusSizeDoesNotControlOneCrossing() -> Void {
     let rmsSize = 2
     let operatorNorm = 4
     Assert.True(rmsSize < operatorNorm, "dimension-averaged Frobenius size misses the top shift")
-}
-
-[Fact]
-fn NearFarCancellationDoesNotReverseWeylDirection() -> Void {
-    // A=diag(3,-1), E=diag(-2,1), theta=2: G=diag(1,0).
-    let observed = StrictlyAbove(1, 2) + StrictlyAbove(0, 2)
-    let nearPositive = StrictlyAbove(3, 0) + StrictlyAbove(-1, 0)
-    Assert.True(observed <= nearPositive, "cancellation only lowers the observed threshold count")
 }

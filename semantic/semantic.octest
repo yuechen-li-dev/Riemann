@@ -1,0 +1,47 @@
+package RiemannSemantic
+
+// These bounded fixtures are scientific regressions against production Go.
+// Passing them is not formal theorem evidence.
+concept StrictlyPositiveGap = Int {
+    Require(Self > 0, "an eigenvalue counted above threshold needs a strict positive gap")
+}
+
+[Fact]
+fn StrictThresholdExcludesEquality() -> Void {
+    Assert.False(StrictlyAbove(1, 1), "lambda equal to theta is excluded")
+}
+
+[Theory]
+[InlineData(2, 1, true)]
+[InlineData(1, 1, false)]
+[InlineData(0, 1, false)]
+fn StrictThresholdTable(value: Int, threshold: Int, expected: Bool) -> Void {
+    Assert.Equal(expected, StrictlyAbove(value, threshold), "strict threshold table")
+}
+
+[Fact]
+fn WeylTransferSurvivesAtExactOperatorBound() -> Void {
+    // A=diag(2,0,-3), E=diag(-1,1,0), ||E||=theta=1.
+    Assert.False(StrictlyAbove(1, 1), "first equality is in the remainder")
+    Assert.False(StrictlyAbove(1, 1), "second equality is in the remainder")
+    Assert.False(StrictlyAbove(-3, 1), "negative direction remains excluded")
+    Assert.True(StrictlyAbove(2, 0), "the near matrix retains one positive direction")
+}
+
+[Fact]
+fn ThresholdBelowOperatorBoundFails() -> Void {
+    // A=[0], E=[1], theta=0: G crosses while A has no positive direction.
+    let legalGap = StrictlyPositiveGap(1 - 0) !
+    Assert.True(legalGap > 0, "the Concept records the legal positive gap")
+    Assert.True(StrictlyAbove(1, 0), "the perturbed matrix crosses")
+    Assert.False(StrictlyAbove(0, 0), "the near matrix has no positive direction")
+}
+
+[Fact]
+fn NearFarCancellationDoesNotReverseWeylDirection() -> Void {
+    // A=diag(3,-1), E=diag(-2,1), theta=2: G=diag(1,0).
+    Assert.False(StrictlyAbove(1, 2), "cancellation leaves no observed crossing")
+    Assert.False(StrictlyAbove(0, 2), "zero remains below threshold")
+    Assert.True(StrictlyAbove(3, 0), "the near matrix has one positive direction")
+    Assert.False(StrictlyAbove(-1, 0), "the negative near direction is excluded")
+}

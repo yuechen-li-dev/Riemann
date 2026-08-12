@@ -178,7 +178,13 @@ func CompileM10() (M10Result, error) {
 	exactThreshold.Expression = "1"
 	exactThreshold.ExactValue = &semantic.ExactRational{Numerator: 1, Denominator: 1}
 	exactThreshold.Dependencies = map[string]string{"normalization": "exact diagonal sanity fixture"}
-	sanity := semantic.ThresholdedPositiveIndexClaim{MatrixID: "diag(2,1,0)", Dimension: 3, Threshold: exactThreshold, Relation: semantic.EqualBound, Bound: 1, Evidence: semantic.ExactTheoremEvidence, Theorems: []semantic.TheoremID{M10WeylThresholdTheoremID}, Provenance: m10DerivedReference}
+	sanityBound := 0
+	for _, eigenvalue := range []int{2, 1, 0} {
+		if semantic.StrictlyAbove(eigenvalue, 1) {
+			sanityBound++
+		}
+	}
+	sanity := semantic.ThresholdedPositiveIndexClaim{MatrixID: "diag(2,1,0)", Dimension: 3, Threshold: exactThreshold, Relation: semantic.EqualBound, Bound: sanityBound, Evidence: semantic.ExactTheoremEvidence, Theorems: []semantic.TheoremID{M10WeylThresholdTheoremID}, Provenance: m10DerivedReference}
 	if err := sanity.Validate(); err != nil {
 		return M10Result{}, err
 	}
@@ -200,7 +206,7 @@ func CompileM10() (M10Result, error) {
 			{RejectedCandidate: "a small Frobenius average per dimension controls every eigenvalue", ExactFixture: "E=diag(1,0,...,0) has ||E||_F/sqrt(d)->0 but ||E||_op=1", Reason: "one threshold crossing survives; Weyl requires an operator-norm bound (or a different theorem)"},
 			{RejectedCandidate: "far means off-critical", ExactFixture: "a critical-line zero with ordinate 3T is far; an off-critical reflection pair at ordinate 3T/2 is near", Reason: "height localization and critical-line classification are independent axes"},
 		},
-		Experiment:           M10Experiment{Path: "experiments/m10_threshold_window.octest", Command: "go run ./cmd/oct test C:/Users/yuech/source/repos/Riemann/experiments/m10_threshold_window.octest", Setup: "a refined StrictlyPositiveGap Concept checks value-threshold before deterministic diagonal near/far fixtures at, below, and above the threshold plus high-rank/low-rank norm fixtures", Threshold: "strict lambda>theta, represented by successful StrictlyPositiveGap(value-theta) Concept construction", PerturbationBound: "theta>=||E||_op", Candidates: []string{"n_plus^theta(A+E)<=n_plus(A)", "non-strict threshold variant", "theta below the operator bound", "dimension-averaged Frobenius substitute"}, Trials: 8, CounterexamplesFound: []string{"non-strict equality fails", "theta<||E|| fails", "small RMS Frobenius size does not prevent one crossing", "small operator norm may have high rank without violating Weyl"}, Execution: "8 passed, 0 failed, 0 skipped; compiled: 8, interpreted fallback: 0", EvidenceClassification: "bounded Oct counterexample filtering only; never theorem evidence"},
+		Experiment:           M10Experiment{Path: "semantic/semantic.octest", Command: "oct test ./semantic", Setup: "the StrictlyPositiveGap Concept records mathematical legality while compiled Facts/Theory call the production semantic.StrictlyAbove helper on deterministic diagonal near/far fixtures; independent rank/norm counterexamples remain in experiments/m10_threshold_window.octest", Threshold: "strict lambda>theta, implemented once by semantic.StrictlyAbove; equality belongs to the remainder", PerturbationBound: "theta>=||E||_op", Candidates: []string{"n_plus^theta(A+E)<=n_plus(A)", "non-strict threshold variant", "theta below the operator bound"}, Trials: 7, CounterexamplesFound: []string{"non-strict equality fails", "theta<||E|| fails"}, Execution: "7 passed, 0 failed, 0 skipped; compiled: 7, interpreted fallback: 0", EvidenceClassification: "bounded OctGo scientific regression only; never theorem evidence"},
 		UtilitySchedulerUsed: false,
 		M7RegressionRole:     "the certified (f2,f3) matrix remains unchanged and is compiled transitively through M9; it is not identified with G_tilde_T",
 		Sources:              []semantic.Reference{anthropicM10Reference, titchmarshZeroCountReference, hornJohnsonRankReference},

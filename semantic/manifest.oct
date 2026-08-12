@@ -1,0 +1,28 @@
+package Manifest
+
+record PackageManifest {
+    Name: String
+    Version: String
+    Description: String
+    Authors: String[]
+    Date: String
+    Kind: String
+    Dependencies: Dependency[]
+}
+
+record Dependency {
+    Name: String
+    VersionRequirement: String
+}
+
+fn Manifest() -> PackageManifest {
+    return PackageManifest {
+        Name: "RiemannSemantic"
+        Version: "0.1.0"
+        Description: "OCTGO-M2 strict-threshold scientific companion"
+        Authors: ["Yuechen Li"]
+        Date: "2026-08-12"
+        Kind: "experiment"
+        Dependencies: []
+    }
+}

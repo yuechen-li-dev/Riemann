@@ -176,6 +176,12 @@ type ThresholdComparison string
 
 const StrictlyAboveThreshold ThresholdComparison = "strictly_above"
 
+// StrictlyAbove implements the scalar strict-threshold convention shared by
+// M10's exact theorem fixtures. Equality belongs to the remainder.
+func StrictlyAbove(value, threshold int) bool {
+	return value > threshold
+}
+
 type ThresholdScaleKind string
 
 const (

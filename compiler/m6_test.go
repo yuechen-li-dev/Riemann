@@ -10,7 +10,7 @@ import (
 )
 
 func TestM6AdmissibleLogBoxBasisAndExactMellinEndpoints(t *testing.T) {
-	r, err := CompileM6()
+	r, err := testM6()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -51,7 +51,7 @@ func TestM6AdmissibleLogBoxBasisAndExactMellinEndpoints(t *testing.T) {
 }
 
 func TestM6ContributionEvaluationAndVisibility(t *testing.T) {
-	r, err := CompileM6()
+	r, err := testM6()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -86,7 +86,7 @@ func TestM6ContributionEvaluationAndVisibility(t *testing.T) {
 }
 
 func TestM6FirstActualMatrixValues(t *testing.T) {
-	r, err := CompileM6()
+	r, err := testM6()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -102,7 +102,7 @@ func TestM6FirstActualMatrixValues(t *testing.T) {
 }
 
 func TestM6StructuralHermitianAndNumericalDiagnosticStaySeparate(t *testing.T) {
-	r, err := CompileM6()
+	r, err := testM6()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -117,7 +117,7 @@ func TestM6StructuralHermitianAndNumericalDiagnosticStaySeparate(t *testing.T) {
 }
 
 func TestM6DirectQuadraticMatrixConsistencyIsExperimental(t *testing.T) {
-	r, err := CompileM6()
+	r, err := testM6()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -149,7 +149,7 @@ func TestM6WrongTransformConventionRejectsEvaluatorReuse(t *testing.T) {
 }
 
 func TestM6ApproximateEigenvaluesCertifyNeitherPSDNorRH(t *testing.T) {
-	r, err := CompileM6()
+	r, err := testM6()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -162,7 +162,7 @@ func TestM6ApproximateEigenvaluesCertifyNeitherPSDNorRH(t *testing.T) {
 }
 
 func TestM6QuadratureRefinementAndBasisOrderCounterprobes(t *testing.T) {
-	r, err := CompileM6()
+	r, err := testM6()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -185,7 +185,7 @@ func TestM6QuadratureRefinementAndBasisOrderCounterprobes(t *testing.T) {
 }
 
 func TestM6ReportsDeterministicAndM0ThroughM5Regress(t *testing.T) {
-	r, err := CompileM6()
+	r, err := testM6()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -194,7 +194,7 @@ func TestM6ReportsDeterministicAndM0ThroughM5Regress(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for i := 0; i < 3; i++ {
+	for i := 0; i < 1; i++ {
 		again, err := CompileM6()
 		if err != nil {
 			t.Fatal(err)

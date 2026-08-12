@@ -112,7 +112,7 @@ func TestM9FiniteCriticalRankTheoremOnExactAdversarialFixtures(t *testing.T) {
 }
 
 func TestM9CompileFusionContractsAndM7ReverseRejection(t *testing.T) {
-	r, err := CompileM9()
+	r, err := testM9()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -132,7 +132,7 @@ func TestM9CompileFusionContractsAndM7ReverseRejection(t *testing.T) {
 }
 
 func TestM9ReportsDeterministicTypedAndExplicitAboutObstruction(t *testing.T) {
-	r, err := CompileM9()
+	r, err := testM9()
 	if err != nil {
 		t.Fatal(err)
 	}
