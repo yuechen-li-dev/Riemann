@@ -957,3 +957,61 @@ func M12JSONReport(result M12Result) ([]byte, error) {
 	}{"riemann.semantic-graph.m12", json.RawMessage(m11), result}
 	return json.MarshalIndent(report, "", "  ")
 }
+
+func M13HumanReport(result M13Result) string {
+	var b strings.Builder
+	b.WriteString("RIEMANN-M13 — TYPED TEST-WINDOW OPTIMIZATION\n\n")
+	b.WriteString("TEST WINDOW\n")
+	fmt.Fprintf(&b, "  family: %s\n  parameter: %s\n  domain: 0 < lambda <= 1\n  support: L=lambda*log(T/2pi)\n  squared profile: v_lambda(s)=cos(sqrt(2)*lambda*s), |s|<=1/2\n  finite-T window: phi(u)=sqrt(cos(sqrt(2)*u/ell)) with the fixed-width C3 endpoint ramp\n  transform: %s\n  normalization: %s\n  admissibility: even, nonnegative, compactly supported, monotone in |u|, C2 after mollification, support <=1\n\n", result.Family.ID, result.Family.Parameter.Symbol, result.Family.TransformConvention, result.Family.Normalization)
+	b.WriteString("TYPED SCALE CHANGE\n")
+	fmt.Fprintf(&b, "  %s -> %s by factor %s\n  trace exponent: 1\n  Frobenius-square exponent: 2\n  dependencies: %v\n\n", result.ScaleChange.SourceObject, result.ScaleChange.TargetObject, result.ScaleChange.Factor.String(), result.ScaleChange.ParameterDependencies)
+	b.WriteString("M12 COEFFICIENTS\n")
+	fmt.Fprintf(&b, "  a(lambda): %s\n  b(lambda): %s\n  J_distance(lambda): %s\n  normalized Frobenius: (b+lambda^2*J)/(lambda*a^2)\n  rank-trace objective (compiler-derived): %s\n  flat-window regression: J_flat(1)=2/3\n\n", result.OptimizedCoefficients.MassA.Expression.String(), result.OptimizedCoefficients.SquareMassB.Expression.String(), result.OptimizedCoefficients.DistanceJ.Expression.String(), result.Objective.ExactExpression.String())
+	b.WriteString("OPTIMIZATION\n")
+	fmt.Fprintf(&b, "  closed objective: %s\n  derivative: %s\n  candidate/global optimizer: lambda=1 (%s)\n  boundary behavior: %s\n  proof: %s; %s\n  exact objective: %s\n  certified rational lower bound: >269/400\n  safe simple display: %s\n  safe distinct display: %s\n\n", result.Optimization.ClosedObjective.String(), result.Optimization.Derivative.String(), result.Optimization.OptimizerLocation, result.Optimization.BoundaryBehavior, result.Optimization.DerivativeSignProof, result.Optimization.GlobalProof, result.Optimization.ExactSimpleValue, result.Optimization.DisplaySimplePercent, result.Optimization.DisplayDistinctPercent)
+	b.WriteString("ASYMPTOTIC CONSEQUENCE\n")
+	fmt.Fprintf(&b, "  M12: %s\n  trace: %s\n  Frobenius: %s\n  Eventually/o/O composition: %s\n  simple critical zeros: %s\n  distinct critical zeros: %s\n  all distinct zeros: %s\n\n", result.AsymptoticCount.M12Instantiation, result.AsymptoticCount.TraceAsymptotic, result.AsymptoticCount.FrobeniusAsymptotic, result.AsymptoticCount.EventuallyComposition, result.AsymptoticCount.SimpleCriticalLiminf, result.AsymptoticCount.CriticalDistinctLiminf, result.AsymptoticCount.AllDistinctLiminf)
+	b.WriteString("COMPARISON\n  M11: total first/second moments only -> 1/2.\n  M12: preserve G=P+Q structure -> 2/3.\n  M13: optimize the legal window representation -> exact Montgomery-Taylor constant, safely displayed as 67.25%.\n  Paper: exact match with Section 7.1 and Theorem D; this is a reconstruction, not novel mathematics.\n\n")
+	b.WriteString("COUNTEREXAMPLES / NORMALIZATION RISKS\n")
+	for _, c := range result.Counterexamples {
+		fmt.Fprintf(&b, "  rejected: %s\n    reason: %s\n", c.RejectedCandidate, c.Failure)
+	}
+	b.WriteString("\nOCT RESEARCH EVIDENCE\n")
+	fmt.Fprintf(&b, "  path: %s\n  command: %s\n  range/samples: %s; %d\n  candidate: %s, %s\n  nearby: %v\n  precision: %s\n  plot: %s\n  execution: %s\n  classification: %s\n  OctGo used: %t\n  when utility used: %t\n\n", result.Experiment.Path, result.Experiment.RunCommand, result.Experiment.ParameterRange, result.Experiment.SampleCount, result.Experiment.CandidateOptimizer, result.Experiment.CandidateObjective, result.Experiment.NearbyValues, result.Experiment.Precision, result.Experiment.PlotPath, result.Experiment.Execution, result.Experiment.EvidenceClassification, result.OctGoUsed, result.UtilitySchedulerUsed)
+	b.WriteString("IMPORTED MATHEMATICS\n")
+	for _, x := range result.ImportedMathematics {
+		fmt.Fprintf(&b, "  %s\n", x)
+	}
+	b.WriteString("\nCOMPILER-DERIVED MATHEMATICS\n")
+	for _, x := range result.DerivedMathematics {
+		fmt.Fprintf(&b, "  %s\n", x)
+	}
+	b.WriteString("\nREPRESENTATION FUSION PROVENANCE\n")
+	for _, x := range result.Fusion {
+		fmt.Fprintf(&b, "  %s\n", x)
+	}
+	b.WriteString("\nNEWLY RECONSTRUCTED MATHEMATICAL RESULT\n\n")
+	b.WriteString("Optimized objective\n  J(lambda)=2-lambda/2-(1/sqrt(2))*cot(lambda/sqrt(2)), 0<lambda<=1. Its derivative is cot(lambda/sqrt(2))^2/2>0, so the included endpoint lambda=1 is the unique global maximum.\n\n")
+	b.WriteString("Zeta consequence\n  The exact simple-critical and critical-distinct constant is 3/2-(1/sqrt(2))*cot(1/sqrt(2))>269/400. The all-distinct constant is its average with 1, namely 5/4-(1/(2*sqrt(2)))*cot(1/sqrt(2))>669/800. These match Theorem D and are not claimed novel.\n")
+	b.WriteString("\nARCHITECTURAL AWKWARDNESS\n  M11's moment statements still carry their asymptotic main terms as prose around a typed core. M13 types exactly the normalization-sensitive arithmetic and window coefficients needed here; a broader symbolic/asymptotic CAS remains deliberately out of scope.\n")
+	b.WriteString("\nCOMPILER THEORY\n  Once decomposition-aware finite semantics exist, optimizing an analytic representation is safe only when support legality, the squared-window convention, scale exponents, exact objective construction, and display rounding remain separate typed obligations. The gain is representation selection, not a stronger finite theorem.\n")
+	b.WriteString("\nONE NEXT MILESTONE\n  M14: certify the bandwidth-one configuration ceiling near 0.68185 as a typed impossibility theorem for this certificate class, without searching for new kernels.\n")
+	b.WriteString("\nSTATUS\n  67.25% result reproduced: yes\n  M12 finite theorem changed: no\n  RH\n  unresolved\n")
+	return b.String()
+}
+
+func M13JSONReport(result M13Result) ([]byte, error) {
+	if err := validateM13Result(result); err != nil {
+		return nil, err
+	}
+	m12, err := M12JSONReport(result.M12)
+	if err != nil {
+		return nil, err
+	}
+	report := struct {
+		Schema string          `json:"schema"`
+		M12    json.RawMessage `json:"m12"`
+		Result M13Result       `json:"m13"`
+	}{"riemann.semantic-graph.m13", json.RawMessage(m12), result}
+	return json.MarshalIndent(report, "", "  ")
+}

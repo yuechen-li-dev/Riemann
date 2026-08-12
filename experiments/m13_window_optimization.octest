@@ -1,0 +1,108 @@
+package M13WindowOptimization
+
+// Research-memory only. Float scans and the generated plot locate and stress
+// the candidate; Go's exact derivative proof and rational Taylor enclosure are
+// the certification boundary.
+concept AdmissibleLambda = Float {
+    Require(Self > 0.0 and Self <= 1.0, "paper support theorem requires 0<lambda<=1")
+}
+
+fn RuntimeFloat(value: Float) -> Float { return value }
+
+fn MTObjective(lambda: Float) -> Float {
+    let rootTwo = Sqrt(2.0)
+    let theta = lambda / rootTwo
+    return 2.0 - lambda / 2.0 - Cos(theta) / (rootTwo * Sin(theta))
+}
+
+fn MTDerivative(lambda: Float) -> Float {
+    let theta = lambda / Sqrt(2.0)
+    let cotangent = Cos(theta) / Sin(theta)
+    return cotangent * cotangent / 2.0
+}
+
+fn FlatObjective(lambda: Float) -> Float {
+    return 2.0 - 1.0 / lambda - lambda / 3.0
+}
+
+[Fact]
+fn FlatBasePointIsTwoThirds() -> Void {
+    Assert.Near(2.0 / 3.0, FlatObjective(1.0), 0.000000000001, "M12 flat window regression")
+}
+
+[Fact]
+fn IllegalSupportParametersAreRejected() -> Void {
+    Assert.Error(AdmissibleLambda(RuntimeFloat(0.0)), "zero support is excluded")
+    Assert.Error(AdmissibleLambda(RuntimeFloat(-0.1)), "negative support is excluded")
+    Assert.Error(AdmissibleLambda(RuntimeFloat(1.0001)), "support beyond one lacks the imported moment theorem")
+    let legal = AdmissibleLambda(RuntimeFloat(1.0))!
+    Assert.True(legal > 0.0 and legal <= 1.0, "the upper endpoint is included")
+}
+
+[Fact]
+fn DenseScanFindsIncludedEndpointAndPlotsObjective() -> Void {
+    var xs: Float[] = []
+    var ys: Float[] = []
+    var bestLambda = 0.0001
+    var bestObjective = MTObjective(bestLambda)
+    var samples = 0
+    for i in 1..10001 {
+        let lambda = Float(i) / 10000.0
+        let objective = MTObjective(lambda)
+        samples = samples + 1
+        if lambda >= 0.5 {
+            xs = Append(xs, lambda)
+            ys = Append(ys, objective)
+        }
+        if objective > bestObjective {
+            bestLambda = lambda
+            bestObjective = objective
+        }
+    }
+    Assert.Equal(10000, samples, "dense legal-domain scan sample count")
+    Assert.Equal(5001, Len(xs), "plot zoom includes lambda in [0.5,1]")
+    Assert.Near(1.0, bestLambda, 0.000000000001, "scan candidate is included endpoint")
+    Assert.Near(0.6725007037, bestObjective, 0.0000000001, "candidate objective")
+    let _plot = PlotLine(xs, ys, "C:/Users/yuech/source/repos/Riemann/experiments/m13_window_objective.png")
+    Assert.True(FileExists("C:/Users/yuech/source/repos/Riemann/experiments/m13_window_objective.png"), "objective plot emitted")
+}
+
+[Fact]
+fn NearbyValuesAndDerivativeHaveExpectedOrder() -> Void {
+    Assert.True(MTObjective(0.9998) < MTObjective(0.9999), "increasing near endpoint")
+    Assert.True(MTObjective(0.9999) < MTObjective(1.0), "endpoint beats nearby candidate")
+    Assert.True(MTDerivative(0.1) > 0.0, "positive derivative near lower boundary")
+    Assert.True(MTDerivative(0.5) > 0.0, "positive derivative in interior")
+    Assert.True(MTDerivative(1.0) > 0.0, "positive left derivative at upper endpoint")
+}
+
+[Fact]
+fn ScaleSquaredRuleRejectsLinearFrobeniusNormalization() -> Void {
+    let sourceTrace = 9.0
+    let sourceFrobeniusSquare = 9.0
+    let factor = 1.0 / 3.0
+    let targetTrace = factor * sourceTrace
+    let targetFrobeniusSquare = factor * factor * sourceFrobeniusSquare
+    let wrongLinearFrobenius = factor * sourceFrobeniusSquare
+    Assert.Near(3.0, targetTrace, 0.000000000001, "trace is linear")
+    Assert.Near(1.0, targetFrobeniusSquare, 0.000000000001, "Frobenius square is quadratic")
+    Assert.True(wrongLinearFrobenius > targetFrobeniusSquare, "missing factor square changes objective")
+}
+
+[Fact]
+fn CandidateObjectiveCounterexamplesFail() -> Void {
+    let correct = MTObjective(1.0)
+    let wrongSign = 2.0 - 0.5 + Cos(1.0 / Sqrt(2.0)) / (Sqrt(2.0) * Sin(1.0 / Sqrt(2.0)))
+    let droppedDenominator = 2.0 - 0.5 - Cos(1.0 / Sqrt(2.0)) / Sqrt(2.0)
+    Assert.True(wrongSign > 2.0, "wrong cotangent sign is visibly impossible")
+    Assert.True(Abs(droppedDenominator - correct) > 0.1, "dropped sine denominator is detected")
+    Assert.True(correct > 0.6725, "binary64 candidate clears display threshold; not theorem evidence")
+}
+
+[Fact]
+fn DisplayRoundingDoesNotBecomeTheoremInput() -> Void {
+    let exactCandidate = MTObjective(1.0)
+    let displayLower = 0.6725
+    Assert.True(exactCandidate > displayLower, "display decimal is below numerical candidate")
+    Assert.True(displayLower > 2.0 / 3.0, "optimized display beats flat base")
+}
