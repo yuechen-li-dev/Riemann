@@ -1015,3 +1015,69 @@ func M13JSONReport(result M13Result) ([]byte, error) {
 	}{"riemann.semantic-graph.m13", json.RawMessage(m12), result}
 	return json.MarshalIndent(report, "", "  ")
 }
+
+func M14AHumanReport(result M14AResult) string {
+	var b strings.Builder
+	b.WriteString("RIEMANN-M14A — SUPPORT-ONE DUAL-WITNESS RECOVERY\n\n")
+	b.WriteString("SUPPORT-ONE EXTREMAL CLASS\n")
+	fmt.Fprintf(&b, "  id: %s\n  function: even, continuous, L1, nonnegative g; hat(g) in L1\n  data radius: %d/%d\n  tail: hat(g)(alpha)<=0 for |alpha|>=1\n  transform: %s\n  normalization: %s\n", result.Class.ID, result.Class.DataRadius.Numerator, result.Class.DataRadius.Denominator, result.Class.TransformConvention, result.Class.Normalization)
+	b.WriteString("  important: this is a sign cutoff, not compact Fourier support; M13 is the exact-support subclass.\n\n")
+	b.WriteString("ANTHROPIC AMBIGUITY\n")
+	b.WriteString("  Remark 1.1 says only 'bandwidth-one data' and 'configuration by configuration'. It gives no class, objective, law, or dual witness. EP3.1 is the broad authoritative class naturally induced by the same known pair-correlation data, but identity with Anthropic's unnamed class is not a sourced theorem.\n\n")
+	b.WriteString("PRIMAL FORMULATION\n")
+	fmt.Fprintf(&b, "  multiplicity objective: %s\n  simple objective: %s\n  optimization: c_*=inf c(g), J_*=sup J(g)=2-c_*\n  zeta contract: %s\n\n", result.Objective.MultiplicityRatio, result.Objective.SimpleProportion, result.Objective.PipelineContract)
+	b.WriteString("KNOWN FEASIBLE PRIMAL CERTIFICATES\n")
+	for _, p := range result.KnownPrimals {
+		fmt.Fprintf(&b, "  %s\n    membership: %s\n    certified/imported simple lower: %d/%d%s\n    evidence: %s\n", p.ID, p.ClassMembership, p.SimpleLower.Numerator, p.SimpleLower.Denominator, map[bool]string{true: " (strict)"}[p.Strict], p.Evidence)
+	}
+	b.WriteString("  normalization equivalence: for an ALP function f with last sign r, g(x)=hat(f)(x/r) lies in EP3.1; conversely homogeneous dilation fixes g(0)=1. The objective becomes Z(f)=Phi_nu(g)/g(0).\n\n")
+	b.WriteString("M13 MEMBERSHIP\n")
+	fmt.Fprintf(&b, "  candidate: %s\n  Fourier behavior: exact support in [-1,1], hence legal nonpositive tail\n  proof: %s\n\n", result.M13Membership.CandidateID, result.M13Membership.Proof)
+	b.WriteString("DUAL FORMULATION\n")
+	fmt.Fprintf(&b, "  %s\n  weak duality: %s\n  strong duality: not assumed or needed for an upper ceiling\n\n", result.DualFormulation, result.WeakDuality)
+	b.WriteString("CERTIFIED DUAL WITNESS\n")
+	fmt.Fprintf(&b, "  witness: %s\n  outside measure: %s\n  completion: %s\n  Fourier image: %s\n  certified multiplicity lower: %d/%d\n  resulting simple upper: %d/%d\n", result.BaselineWitness.ID, result.BaselineWitness.OutsideMeasure, result.BaselineWitness.CompletionDistribution, result.BaselineWitness.FourierImage, result.BaselineBound.MultiplicityLower.Numerator, result.BaselineBound.MultiplicityLower.Denominator, result.BaselineBound.SimpleUpper.Numerator, result.BaselineBound.SimpleUpper.Denominator)
+	b.WriteString("  status: globally certified but too weak to establish the claimed representation ceiling.\n\n")
+	b.WriteString("NUMERICAL DUAL SEARCH\n")
+	fmt.Fprintf(&b, "  family: %s\n  local necessary condition: %s\n  best restricted candidate: %s\n  whole-line certified: %t\n  infinite-class certified: %t\n  failure: %s\n\n", result.NumericalDual.Family, result.NumericalDual.DerivedLocalLimit, result.NumericalDual.BestGridCandidate, result.NumericalDual.WholeLineCertified, result.NumericalDual.InfiniteClassCertified, result.NumericalDual.Failure)
+	b.WriteString("CERTIFIED BRACKET\n")
+	fmt.Fprintf(&b, "  %s\n  no narrow upper ceiling is certified.\n\n", result.CertifiedBracket)
+	b.WriteString("ANTHROPIC REMARK\n")
+	fmt.Fprintf(&b, "  %s\n  ceiling certified: no\n  discrepancy: unresolved because the released paper omits both the extremal law and its proof.\n\n", result.AnthropicComparison)
+	b.WriteString("PRECISE OBSTRUCTION\n")
+	for _, x := range result.PreciseObstruction {
+		fmt.Fprintf(&b, "  %s\n", x)
+	}
+	b.WriteString("\nFAILED WITNESSES / COUNTEREXAMPLES\n")
+	for _, x := range result.FailedWitnesses {
+		fmt.Fprintf(&b, "  %s\n", x)
+	}
+	b.WriteString("\nOCT EXPERIMENT\n")
+	fmt.Fprintf(&b, "  path: %s\n  command: %s\n  parameterization: %s\n  candidates: %v\n  convergence: %s\n  counterexamples: %v\n  execution: %s\n  evidence: %s\n  Python: independent implementation oracle only\n\n", result.Experiment.Path, result.Experiment.RunCommand, result.Experiment.Parameterization, result.Experiment.CandidateValues, result.Experiment.Convergence, result.Experiment.Counterexamples, result.Experiment.Execution, result.Experiment.EvidenceClassification)
+	b.WriteString("IMPORTED MATHEMATICS\n")
+	for _, x := range result.ImportedMathematics {
+		fmt.Fprintf(&b, "  %s\n", x)
+	}
+	b.WriteString("\nCOMPILER-DERIVED MATHEMATICS\n")
+	for _, x := range result.DerivedMathematics {
+		fmt.Fprintf(&b, "  %s\n", x)
+	}
+	b.WriteString("\nNOVELTY STATUS\n  The dual completion formulation is an independently reconstructed standard weak-duality consequence. The c=1 witness is classical. No new ceiling or record feasible certificate is claimed.\n")
+	b.WriteString("\nWHEN UTILITY\n  not used: once the primal direction was audited, weak duality via a positive-definite completion was the only route that covered the full class without assuming strong duality.\n")
+	b.WriteString("\nARCHITECTURAL AWKWARDNESS\n  'Bandwidth one' names two different semantics: M13 compact Fourier support and EP3.1's nonpositive tail outside the known-data interval. M14A makes that distinction first-class. A generic SDP IR is not justified; the missing object is one narrow tempered-measure certificate.\n")
+	b.WriteString("\nCOMPILER THEORY\n  The compiler can now reject numerical optimizers, finite truncations, and grid-positive candidates as representation ceilings. It cannot yet prune the full search space: negative knowledge requires a checkable whole-class dual object, not a plausible optimum. The durable result is the exact proof obligation that such an object must discharge.\n")
+	b.WriteString("\nONE NEXT MILESTONE\n  M15: build a purpose-specific verifier for periodic/tempered positive-definite completions of EP3.1, including exact whole-line and tail control, and use it to search for the first nontrivial dual witness beyond the analytic c=1 baseline.\n")
+	b.WriteString("\nSTATUS\n  M14A outcome: Success C — exact primal/dual reconstruction and precise obstruction\n  reported 0.68185 ceiling supported: no\n  better feasible lower result found: no\n  M12/M13 theorem machinery changed: no\n  RH\n  unresolved\n")
+	return b.String()
+}
+
+func M14AJSONReport(result M14AResult) ([]byte, error) {
+	if err := validateM14AResult(result); err != nil {
+		return nil, err
+	}
+	report := struct {
+		Schema string     `json:"schema"`
+		Result M14AResult `json:"m14a"`
+	}{"riemann.semantic-graph.m14a", result}
+	return json.MarshalIndent(report, "", "  ")
+}

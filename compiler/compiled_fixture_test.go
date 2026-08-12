@@ -3,27 +3,30 @@ package compiler
 import "sync"
 
 var (
-	m6Once       sync.Once
-	m6Cached     M6Result
-	m6CachedErr  error
-	m8Once       sync.Once
-	m8Cached     M8Result
-	m8CachedErr  error
-	m9Once       sync.Once
-	m9Cached     M9Result
-	m9CachedErr  error
-	m10Once      sync.Once
-	m10Cached    M10Result
-	m10CachedErr error
-	m11Once      sync.Once
-	m11Cached    M11Result
-	m11CachedErr error
-	m12Once      sync.Once
-	m12Cached    M12Result
-	m12CachedErr error
-	m13Once      sync.Once
-	m13Cached    M13Result
-	m13CachedErr error
+	m6Once        sync.Once
+	m6Cached      M6Result
+	m6CachedErr   error
+	m8Once        sync.Once
+	m8Cached      M8Result
+	m8CachedErr   error
+	m9Once        sync.Once
+	m9Cached      M9Result
+	m9CachedErr   error
+	m10Once       sync.Once
+	m10Cached     M10Result
+	m10CachedErr  error
+	m11Once       sync.Once
+	m11Cached     M11Result
+	m11CachedErr  error
+	m12Once       sync.Once
+	m12Cached     M12Result
+	m12CachedErr  error
+	m13Once       sync.Once
+	m13Cached     M13Result
+	m13CachedErr  error
+	m14aOnce      sync.Once
+	m14aCached    M14AResult
+	m14aCachedErr error
 )
 
 func testM6() (M6Result, error) {
@@ -59,4 +62,9 @@ func testM12() (M12Result, error) {
 func testM13() (M13Result, error) {
 	m13Once.Do(func() { m13Cached, m13CachedErr = CompileM13() })
 	return m13Cached, m13CachedErr
+}
+
+func testM14A() (M14AResult, error) {
+	m14aOnce.Do(func() { m14aCached, m14aCachedErr = CompileM14A() })
+	return m14aCached, m14aCachedErr
 }

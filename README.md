@@ -1,11 +1,13 @@
 # Riemann
 
 Riemann is an experimental compiler for making transformations of mathematical
-claims mechanically inspectable. M13 leaves M12's finite rank-trace theorem
-unchanged and types the remaining analytic representation choice: the legal
-Montgomery-Taylor window, its `0 < lambda <= 1` support domain, the
-`G_tilde -> G_hat` normalization, and the general-window moment coefficients.
-The compiler derives
+claims mechanically inspectable. M14A reconstructs the broader support-one
+Fourier extremal class and a weak-dual positive-definite completion contract.
+It certifies the exact baseline upper bound `J<=1`, imports the rigorous CGdL
+feasible bound `J>0.6792`, and isolates the missing whole-line/tail certificate
+needed for a useful global ceiling. Anthropic's remark-level `0.68185` is not
+promoted to theorem evidence. The compiler still retains M13's exact
+Montgomery–Taylor derivation
 
 ```text
 J(lambda) = 2 - lambda/2 - (1/sqrt(2))*cot(lambda/sqrt(2))
@@ -30,7 +32,8 @@ matrix, decomposes its zero-side meaning into symmetry-orbit contributions,
 accounts for aggregate rank/inertia budgets, and localizes a separate
 height-dependent compression. It rejects approximate, non-strict-threshold,
 wrong-norm, multiplicity-as-rank, and finite-PSD reverse shortcuts. See
-[docs/m13-architecture.md](docs/m13-architecture.md) for the exact window
-functional, typed normalization, Oct scan/plot, global optimization proof,
-rational certification, and M8-M13 provenance. Earlier milestone documents
-remain available.
+[docs/m14a-architecture.md](docs/m14a-architecture.md) for the exact primal and
+dual problems, source map, Oct-first experiments, certified bracket, and
+precise obstruction. [docs/m13-architecture.md](docs/m13-architecture.md)
+retains the exact window functional and M8-M13 provenance. Earlier milestone
+documents remain available.

@@ -1,0 +1,48 @@
+package M14ADualCompletionCompiled
+
+// Plot-free independent Oct checker.  The companion experiment retains the
+// landscape plot and runs interpreted because PlotLine is not compiled yet.
+
+fn CompiledSincPi(x: Float) -> Float {
+    if Abs(x) < 0.000000000001 { return 1.0 }
+    return Sin(3.141592653589793 * x) / (3.141592653589793 * x)
+}
+
+fn CompiledBaselineSpectrum(xi: Float) -> Float {
+    let s = CompiledSincPi(xi)
+    return 1.0 - s * s
+}
+
+fn CompiledOneAtomSpectrum(c: Float, xi: Float) -> Float {
+    if Abs(xi) < 0.000000000001 { return 0.0 }
+    let a = 2.0 * 3.141592653589793 * xi
+    let i0 = Sin(a) / a
+    let i1 = Sin(a) / a + (Cos(a) - 1.0) / (a * a)
+    return 1.0 + 2.0 * i1 - 2.0 * c * i0 + 2.0 * (c - 1.0) * Cos(a)
+}
+
+[Fact]
+fn CompiledBaselineFrequencyScan() -> Void {
+    var minimum = 1.0
+    for i in 0..100001 {
+        let value = CompiledBaselineSpectrum(Float(i) / 1000.0)
+        if value < minimum { minimum = value }
+    }
+    Assert.True(minimum >= -0.000000000001, "compiled baseline scan")
+}
+
+[Fact]
+fn CompiledRestrictedCandidateScan() -> Void {
+    var minimum = CompiledOneAtomSpectrum(9.0 / 8.0, 0.01)
+    for i in 1..100001 {
+        let value = CompiledOneAtomSpectrum(9.0 / 8.0, Float(i) / 1000.0)
+        if value < minimum { minimum = value }
+    }
+    Assert.True(minimum >= -0.000000001, "compiled one-atom scan")
+}
+
+[Fact]
+fn CompiledLocalCounterexampleAboveBoundary() -> Void {
+    let coefficient = (9.0 - 8.0 * 1.126) / 12.0
+    Assert.True(coefficient < 0.0, "compiled local obstruction")
+}

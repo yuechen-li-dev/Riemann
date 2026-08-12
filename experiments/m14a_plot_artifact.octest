@@ -1,0 +1,17 @@
+package M14APlotArtifact
+
+// Targeted Oct DX probe: can the build-time artifact lane carry the plot that
+// the compiled Fact lane cannot lower?  This is tooling evidence, not theorem
+// evidence for the M14A ceiling.
+[Artifact]
+fn EmitOneAtomLocalObstructionPlot() -> Void {
+    var xs: Float[] = []
+    var ys: Float[] = []
+    for i in 0..1501 {
+        let c = 1.0 + Float(i) / 10000.0
+        xs = Append(xs, c)
+        ys = Append(ys, (9.0 - 8.0 * c) / 12.0)
+    }
+
+    let _plot = PlotLine(xs, ys, "C:/Users/yuech/source/repos/Riemann/experiments/m14a_artifact_one_atom_local_obstruction.png")
+}

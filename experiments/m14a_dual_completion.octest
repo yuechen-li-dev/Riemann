@@ -1,0 +1,108 @@
+package M14ADualCompletion
+
+// Research evidence for M14A.  This experiment explores one deliberately
+// small dual-completion family.  It does not certify whole-line positivity or
+// the infinite EP3.1 class; the Go verifier keeps those proof levels distinct.
+
+concept SupportOneRadius = Float {
+    Require(Self == 1.0, "M14A imports pair-correlation data only on [-1,1]")
+}
+
+fn RuntimeFloat(value: Float) -> Float { return value }
+
+fn SincPi(x: Float) -> Float {
+    if Abs(x) < 0.000000000001 { return 1.0 }
+    return Sin(3.141592653589793 * x) / (3.141592653589793 * x)
+}
+
+fn BaselineSpectrum(xi: Float) -> Float {
+    let s = SincPi(xi)
+    return 1.0 - s * s
+}
+
+// sigma_c = c 1_{|x|>1} dx + (c-1)(delta_-1+delta_1).
+// The Fourier image of nu-c dx+sigma_c away from the atom at frequency zero.
+fn OneAtomSpectrum(c: Float, xi: Float) -> Float {
+    if Abs(xi) < 0.000000000001 { return 0.0 }
+    let a = 2.0 * 3.141592653589793 * xi
+    let i0 = Sin(a) / a
+    let i1 = Sin(a) / a + (Cos(a) - 1.0) / (a * a)
+    return 1.0 + 2.0 * i1 - 2.0 * c * i0 + 2.0 * (c - 1.0) * Cos(a)
+}
+
+// S_c(a) = ((9-8c)/12)a^2 + O(a^4).  Hence c<=9/8 is necessary
+// inside this one-atom family, independently of any frequency grid.
+fn LocalQuadraticCoefficient(c: Float) -> Float {
+    return (9.0 - 8.0 * c) / 12.0
+}
+
+fn MinimumOneAtomSpectrum(c: Float, maxXi: Float, samples: Int) -> Float {
+    var best = OneAtomSpectrum(c, 0.01)
+    for i in 1..samples {
+        let xi = maxXi * Float(i) / Float(samples)
+        let value = OneAtomSpectrum(c, xi)
+        if value < best { best = value }
+    }
+    return best
+}
+
+[Fact]
+fn ExactSupportBoundaryIsNotSilentlyWidened() -> Void {
+    let legal = SupportOneRadius(1.0)!
+    Assert.True(legal == 1.0, "radius one is exact")
+    Assert.Error(SupportOneRadius(RuntimeFloat(1.0001)), "support beyond one is not M14A data")
+}
+
+[Fact]
+fn AnalyticBaselineSurvivesAdversarialFrequencyScan() -> Void {
+    var minimum = 1.0
+    for i in 0..100001 {
+        let xi = Float(i) / 1000.0
+        let value = BaselineSpectrum(xi)
+        if value < minimum { minimum = value }
+    }
+    Assert.True(minimum >= -0.000000000001, "1-sinc^2 is nonnegative on the scan")
+    Assert.Near(0.0, BaselineSpectrum(0.0), 0.000000000001, "baseline touches zero at frequency zero")
+}
+
+[Fact]
+fn OneAtomFamilyDerivesNineEighthsBoundary() -> Void {
+    Assert.Near(0.0, LocalQuadraticCoefficient(9.0 / 8.0), 0.000000000001, "c=9/8 cancels the quadratic term")
+    Assert.True(LocalQuadraticCoefficient(1.126) < 0.0, "c above 9/8 fails locally")
+    Assert.True(LocalQuadraticCoefficient(1.124) > 0.0, "c below 9/8 passes the local necessary test")
+}
+
+[Fact]
+fn RestrictedCandidateGetsFrequencyStressTestButNoTheoremStatus() -> Void {
+    let candidateMin = MinimumOneAtomSpectrum(9.0 / 8.0, 100.0, 100000)
+    let illegalMin = MinimumOneAtomSpectrum(1.126, 2.0, 200000)
+    Assert.True(candidateMin >= -0.000000001, "c=9/8 survives this finite grid")
+    Assert.True(illegalMin < 0.0, "c=1.126 has a sampled counterexample near zero")
+}
+
+[Fact]
+fn BoundedScanLocatesRestrictedBoundaryAndEmitsLandscape() -> Void {
+    var xs: Float[] = []
+    var ys: Float[] = []
+    var best = 1.0
+    for i in 0..1501 {
+        let c = 1.0 + Float(i) / 10000.0
+        let local = LocalQuadraticCoefficient(c)
+        xs = Append(xs, c)
+        ys = Append(ys, local)
+        if local >= 0.0 { best = c }
+    }
+    Assert.Near(1.125, best, 0.000000000001, "bounded scan derives, rather than targets, 9/8")
+    let _plot = PlotLine(xs, ys, "C:/Users/yuech/source/repos/Riemann/experiments/m14a_one_atom_local_obstruction.png")
+    Assert.True(FileExists("C:/Users/yuech/source/repos/Riemann/experiments/m14a_one_atom_local_obstruction.png"), "dual-family landscape emitted")
+}
+
+[Fact]
+fn GridEvidenceCannotSupplyTailOrWholeLineProof() -> Void {
+    let gridSamples = 100000
+    let hasWholeLineProof = false
+    let hasTailProof = false
+    Assert.True(gridSamples > 0, "research scan ran")
+    Assert.False(hasWholeLineProof, "finite grid is not whole-line positivity")
+    Assert.False(hasTailProof, "finite grid is not omitted-direction control")
+}
