@@ -636,3 +636,67 @@ func M7JSONReport(result M7Result) ([]byte, error) {
 	}
 	return b.Bytes(), nil
 }
+
+func M8HumanReport(result M8Result) string {
+	var b strings.Builder
+	b.WriteString("RIEMANN-M8 — ZERO-SIDE ORBIT DECOMPOSITION\n\n")
+	b.WriteString("ZERO-SIDE LOWERING\n")
+	b.WriteString("  exact M4 summand: M[f](rho) * conjugate(M[f](1-conjugate(rho)))\n")
+	b.WriteString("  convention: conjugate-linear first, linear second\n")
+	b.WriteString("  v(p)_i = M[f_i](p)\n")
+	b.WriteString("  K(p)_ij = conjugate(v(1-conjugate(p))_i) * v(p)_j\n")
+	b.WriteString("  identity: c* K(p) c = (c^T v(p))*conjugate(c^T v(1-conjugate(p)))\n\n")
+	writeOrbit := func(title string, contribution semantic.OrbitMatrixContribution) {
+		fmt.Fprintf(&b, "%s\n  representative: %s\n  class: %s\n  distinct geometric locations: %d\n  zero multiplicity: %d (separate from location count)\n", title, contribution.Orbit.Representative.Describe(), contribution.Orbit.Classification, contribution.Orbit.DistinctLocationCount, contribution.Orbit.ZeroMultiplicity)
+		for _, point := range contribution.Orbit.TransformedPoints {
+			fmt.Fprintf(&b, "    %s\n", point.Point.Describe())
+		}
+		fmt.Fprintf(&b, "  grouping: %d critical-reflection pair(s)\n", len(contribution.ReflectionPairs))
+		for _, pair := range contribution.ReflectionPairs {
+			fmt.Fprintf(&b, "    %s\n      form: %s\n      Hermitian certified: %t\n      PSD certified: %t\n      rank <= %d\n", pair.ID, pair.Formula, pair.Classification.Hermitian, pair.Classification.PositiveSemidefinite, pair.Classification.RankUpperBound)
+			if pair.Classification.RankOneIfNonzero {
+				b.WriteString("      rank 1 only if the evaluation vector is nonzero\n")
+			}
+			if pair.Classification.IndefiniteCondition != "" {
+				fmt.Fprintf(&b, "      indefinite: conditional — %s\n      degenerate: %s\n", pair.Classification.IndefiniteCondition, pair.Classification.DegenerateCondition)
+			}
+		}
+		fmt.Fprintf(&b, "  full orbit: Hermitian certified=%t, PSD certified=%t, rank<=%d\n\n", contribution.Classification.Hermitian, contribution.Classification.PositiveSemidefinite, contribution.Classification.RankUpperBound)
+	}
+	writeOrbit("CRITICAL-LINE ORBIT TEMPLATE", result.CriticalTemplate)
+	writeOrbit("OFF-CRITICAL ORBIT TEMPLATE", result.OffCriticalTemplate)
+	b.WriteString("ZERO-SIDE MATRIX\n")
+	fmt.Fprintf(&b, "  %s\n  %s\n  %s\n  %s\n  symmetric limiting convention: %v\n\n", result.ZeroSide.Formula, result.ZeroSide.CriticalAggregate, result.ZeroSide.OffCriticalAggregate, result.ZeroSide.SplitIdentity, result.ZeroSide.SummationConvention)
+	b.WriteString("DUAL REPRESENTATION\n")
+	fmt.Fprintf(&b, "  same semantic matrix: %s\n  zero side: %s (symbolic orbit aggregate)\n  explicit-formula side: %s (%s)\n  identity theorem: %s\n  numerical identification used: %t\n\n", result.Dual.SemanticMatrixID, result.Dual.ZeroSideAggregateID, result.Dual.ExplicitFormulaMatrixID, result.Dual.ExplicitValueEvidence, result.Dual.IdentityTheorem, result.Dual.NumericalIdentification)
+	b.WriteString("SYNTHETIC DIAGNOSTICS\n")
+	for _, d := range result.ToyDiagnostics {
+		fmt.Fprintf(&b, "  %s\n    inputs: %s\n    determinant: %.12g\n    eigenvalues: %v\n    evidence: %s\n", d.Name, d.Inputs, d.Determinant, d.Eigenvalues, d.Classification)
+	}
+	b.WriteString("\nSOUNDNESS\n")
+	fmt.Fprintf(&b, "  finite M7 PSD => absence of off-critical zeros: accepted=%t\n", result.FinitePSDReverseProof.Accepted)
+	for _, d := range result.FinitePSDReverseProof.Diagnostics {
+		fmt.Fprintf(&b, "  diagnostic: %s — %s\n", d.Code, d.Message)
+	}
+	b.WriteString("  A PSD sum does not force every orbit summand to be PSD; compensation remains possible.\n\n")
+	b.WriteString("STATUS\n  RH unresolved. M8 derives local zero-orbit matrix structure without adding aggregate inertia/rank machinery.\n")
+	return b.String()
+}
+
+func M8JSONReport(result M8Result) ([]byte, error) {
+	m7, err := M7JSONReport(result.M7)
+	if err != nil {
+		return nil, err
+	}
+	report := struct {
+		Schema                string                            `json:"schema"`
+		M7                    json.RawMessage                   `json:"m7"`
+		CriticalOrbitTemplate semantic.OrbitMatrixContribution  `json:"critical_orbit_template"`
+		OffCriticalTemplate   semantic.OrbitMatrixContribution  `json:"off_critical_orbit_template"`
+		ZeroSideMatrix        semantic.ZeroSideMatrixAggregate  `json:"zero_side_matrix"`
+		DualRepresentation    semantic.DualMatrixRepresentation `json:"dual_representation"`
+		ToyDiagnostics        []ToyOrbitDiagnostic              `json:"toy_diagnostics"`
+		ReverseInference      ProofAttempt                      `json:"finite_psd_reverse_inference"`
+	}{"riemann.semantic-graph.m8", json.RawMessage(m7), result.CriticalTemplate, result.OffCriticalTemplate, result.ZeroSide, result.Dual, result.ToyDiagnostics, result.FinitePSDReverseProof}
+	return json.MarshalIndent(report, "", "  ")
+}

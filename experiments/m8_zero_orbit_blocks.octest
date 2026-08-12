@@ -1,0 +1,46 @@
+package M8ZeroOrbitBlocks
+
+// Real/imaginary helpers for H=conjugate(w)v^T+conjugate(v)w^T.
+fn HReal(vr: Float, vi: Float, wr: Float, wi: Float, xr: Float, xi: Float, yr: Float, yi: Float) -> Float {
+    return wr * xr + wi * xi + vr * yr + vi * yi
+}
+
+fn HImag(vr: Float, vi: Float, wr: Float, wi: Float, xr: Float, xi: Float, yr: Float, yi: Float) -> Float {
+    return wr * xi - wi * xr + vr * yi - vi * yr
+}
+
+[Fact]
+fn CriticalFixedPointIsPositiveOuterProduct() -> Void {
+    // K=conjugate(v)v^T for v=(1+2i,-1+0.5i): diagonal (5,1.25), det 0.
+    let k00 = 5.0
+    let k11 = 1.25
+    let k01r = 0.0
+    let k01i = 2.5
+    let determinant = k00 * k11 - (k01r * k01r + k01i * k01i)
+    Assert.Equal(0.0, determinant, "outer product has rank at most one")
+    Assert.Equal(6.25, k00 + k11 + 2.0 * k01r, "quadratic value at c=(1,1) is nonnegative")
+}
+
+[Fact]
+fn IndependentReflectionPairIsIndefinite() -> Void {
+    // v=(1,i), w=(1,1) gives H=[[2,1+i],[1-i,0]].
+    let h00 = HReal(1.0,0.0,1.0,0.0,1.0,0.0,1.0,0.0)
+    let h11 = HReal(0.0,1.0,1.0,0.0,0.0,1.0,1.0,0.0)
+    let h01r = HReal(1.0,0.0,1.0,0.0,0.0,1.0,1.0,0.0)
+    let h01i = HImag(1.0,0.0,1.0,0.0,0.0,1.0,1.0,0.0)
+    let determinant = h00 * h11 - (h01r * h01r + h01i * h01i)
+    Assert.Equal(2.0, h00, "H00")
+    Assert.Equal(0.0, h11, "H11")
+    Assert.Equal(0.0 - 2.0, determinant, "negative determinant gives one positive and one negative eigenvalue")
+}
+
+[Fact]
+fn DependentReflectionPairDegenerates() -> Void {
+    // w=2v for v=(1,i) gives H=4*conjugate(v)v^T, determinant zero.
+    let h00 = 4.0
+    let h11 = 4.0
+    let h01r = 0.0
+    let h01i = 4.0
+    let determinant = h00 * h11 - (h01r * h01r + h01i * h01i)
+    Assert.Equal(0.0, determinant, "dependent vectors weaken signature to a rank-one PSD block")
+}
