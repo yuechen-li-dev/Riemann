@@ -759,3 +759,71 @@ func M9JSONReport(result M9Result) ([]byte, error) {
 	}{"riemann.semantic-graph.m9", json.RawMessage(m8), result.Compression, result.Invariants, result.Contracts, result.CriticalBudget, result.OffCriticalBudget, result.Fusion, result.DerivedTheorem, result.Counterexamples, result.Experiment, result.ClaudeComparison, result.FinitePSDReverse}
 	return json.MarshalIndent(report, "", "  ")
 }
+
+func M10HumanReport(result M10Result) string {
+	var b strings.Builder
+	b.WriteString("RIEMANN-M10 — HEIGHT-WINDOW COMPRESSION + THRESHOLDED INERTIA COUNTING\n\n")
+	b.WriteString("HEIGHT WINDOW\n")
+	fmt.Fprintf(&b, "  target: %s = (%s,%s]\n  center: %s\n  half-width: %s\n  convention: %s; %s\n", result.Compression.Window.ID, result.Compression.Window.Lower.Expression, result.Compression.Window.Upper.Expression, result.Compression.Window.Center.Expression, result.Compression.Window.HalfWidth.Expression, result.Compression.Window.Boundary, result.Compression.Window.OrdinateConvention)
+	fmt.Fprintf(&b, "  localization: %s = (%s,%s]\n  boundary ownership is deterministic; conjugate negative ordinates are not counted in this positive window\n\n", result.Compression.LocalizationWindow.ID, result.Compression.LocalizationWindow.Lower.Expression, result.Compression.LocalizationWindow.Upper.Expression)
+	b.WriteString("ZERO COUNTS\n")
+	for _, item := range result.CountVocabulary {
+		fmt.Fprintf(&b, "  %s\n", item)
+	}
+	b.WriteString("  reflection partners share an ordinate and one unordered pair ID; they remain two geometric locations\n\n")
+	b.WriteString("COMPRESSION\n")
+	fmt.Fprintf(&b, "  object: %s\n  basis: %s\n  height dependency: %s\n  dimension: %s\n  matrix: %s\n  normalization: %s\n  explicit-formula side: %s\n  M7 role: %s\n\n", result.Compression.ID, result.Compression.BasisFamily, result.Compression.BasisHeightDependency, result.Compression.DimensionExpression, result.Compression.MatrixID, result.Compression.Normalization, result.Compression.ExplicitFormula, result.M7RegressionRole)
+	b.WriteString("ZERO-SIDE SPLIT\n")
+	fmt.Fprintf(&b, "  %s\n  near membership: %s\n  far and off-critical are distinct classifications\n\n", result.Decomposition.Identity, result.Decomposition.MembershipRule)
+	b.WriteString("FAR-ZERO CONTROL\n")
+	fmt.Fprintf(&b, "  theorem: %s\n  norm: %s\n  bound: ||%s|| <= %s = %s\n  asymptotic: %s\n  uniformity: %s\n  evidence: trusted theorem contract, not a numerical estimate\n\n", result.FarBound.Theorems[0], result.FarBound.Norm, result.FarBound.MatrixID, result.FarBound.BoundSymbol, result.FarBound.BoundExpression, result.FarBound.AsymptoticStatement, result.FarBound.Uniformity)
+	b.WriteString("THRESHOLDED SPECTRAL OBSERVATION\n")
+	fmt.Fprintf(&b, "  definition: n_plus^theta(G)=#{lambda_i(G)>theta}\n  threshold: %s\n  scaling dependencies: %v\n  ordinary n_plus and thresholded n_plus^theta are distinct\n  exact sanity: n_plus^1(diag(2,1,0))=%d (equality at 1 is excluded)\n  approximate eigenvalues can certify this premise: false\n\n", result.Compression.Threshold.Expression, result.Compression.Threshold.Dependencies, result.ExactSanityObservation.Bound)
+	b.WriteString("PERTURBATION / THRESHOLD THEOREM\n")
+	fmt.Fprintf(&b, "  %s\n  premise: %s; comparison: %s\n  conclusion: n_plus^theta(G_tilde)<=n_plus(A_tilde)\n\n", result.Perturbation.Statement, result.Perturbation.ThresholdRule, result.Perturbation.Comparison)
+	b.WriteString("M9 ACCOUNTING\n")
+	fmt.Fprintf(&b, "  %s\n  reused theorem: %s\n\n", result.CountingTheorem.M9Accounting, M9CriticalRankBoundTheoremID)
+	b.WriteString("NEWLY DERIVED MATHEMATICAL RESULT\n")
+	fmt.Fprintf(&b, "  finite theorem: %s\n  assumptions: %v\n  enlarged window: %s\n  target simple-critical count: %s\n  target distinct-zero count: %s\n  count conversion: %s\n  literature status: Proposition 4.5 structurally reconstructed; not claimed novel\n  compiler contribution: representation-fused factorization and exact input boundaries\n\n", result.CountingTheorem.Name, result.CountingTheorem.Assumptions, result.CountingTheorem.EnlargedWindowBound, result.CountingTheorem.TargetWindowBound, result.CountingTheorem.DistinctZeroBound, result.CountingTheorem.CountConversion)
+	b.WriteString("COMPLETE PROOF ROUTE\n")
+	b.WriteString("  exact/certified n_plus^theta(G_tilde)>=L_theta\n  -> Proposition 4.2 gives ||E_tilde||_op<=theta0<=theta\n  -> Weyl gives n_plus^theta(G_tilde)<=n_plus(A_tilde)\n  -> M8/M9 pull-back accounting gives n_plus(A_tilde)<=s1+s2+p\n  -> N(I')>=s1+2s2+2p gives s1>=2L_theta-N(I')\n  -> remove the fringe I'\\I to obtain the target-window inequalities\n\n")
+	b.WriteString("SOURCE PROOF ARCHITECTURE / COMPILER IR\n")
+	fmt.Fprintf(&b, "  window localization: %s\n  far-zero control: %s\n  thresholded count: %s\n  orbit accounting: %s\n  asymptotic normalization: %s\n  fit: %s\n\n", result.Architecture.WindowLocalization, result.Architecture.FarZeroControl, result.Architecture.ThresholdedSpectralCount, result.Architecture.OrbitAccounting, result.Architecture.AsymptoticNormalization, result.Architecture.CompilerFit)
+	b.WriteString("COUNTEREXAMPLE-FIRST FILTERING\n")
+	for _, c := range result.Counterexamples {
+		fmt.Fprintf(&b, "  rejected: %s\n    fixture: %s\n    reason: %s\n", c.RejectedCandidate, c.ExactFixture, c.Reason)
+	}
+	b.WriteString("\nOCT EXPERIMENT\n")
+	fmt.Fprintf(&b, "  path: %s\n  command: %s\n  setup: %s\n  threshold: %s\n  perturbation bound: %s\n  trials: %d\n  execution: %s\n  counterexamples: %v\n  evidence: %s\n  when utility used: %t (operator-norm Weyl is dictated by Proposition 4.5)\n\n", result.Experiment.Path, result.Experiment.Command, result.Experiment.Setup, result.Experiment.Threshold, result.Experiment.PerturbationBound, result.Experiment.Trials, result.Experiment.Execution, result.Experiment.CounterexamplesFound, result.Experiment.EvidenceClassification, result.UtilitySchedulerUsed)
+	b.WriteString("ASYMPTOTIC CONSEQUENCE\n")
+	b.WriteString("  half-type proportion reached: false\n  no 2/3 or 67.25% result attempted\n\n")
+	b.WriteString("REMAINING INPUT\n")
+	fmt.Fprintf(&b, "  %s\n\n", result.CountingTheorem.RemainingInput)
+	b.WriteString("RH\n  unresolved\n")
+	return b.String()
+}
+
+func M10JSONReport(result M10Result) ([]byte, error) {
+	m9, err := M9JSONReport(result.M9)
+	if err != nil {
+		return nil, err
+	}
+	report := struct {
+		Schema                 string                                 `json:"schema"`
+		M9                     json.RawMessage                        `json:"m9"`
+		Compression            semantic.WindowCompression             `json:"window_compression"`
+		CountVocabulary        []string                               `json:"zero_count_vocabulary"`
+		Decomposition          semantic.NearFarZeroDecomposition      `json:"near_far_decomposition"`
+		FarBound               semantic.FarZeroContributionBound      `json:"far_zero_bound"`
+		Perturbation           semantic.ThresholdPerturbationContract `json:"threshold_perturbation_theorem"`
+		CountingTheorem        semantic.FiniteWindowCountingTheorem   `json:"newly_derived_mathematical_result"`
+		ExactSanityObservation semantic.ThresholdedPositiveIndexClaim `json:"exact_threshold_sanity_observation"`
+		Architecture           ProofArchitectureMap                   `json:"proof_architecture"`
+		Counterexamples        []M10Counterexample                    `json:"counterexamples"`
+		Experiment             M10Experiment                          `json:"oct_experiment"`
+		UtilitySchedulerUsed   bool                                   `json:"when_utility_used"`
+		M7RegressionRole       string                                 `json:"m7_regression_role"`
+		Sources                []semantic.Reference                   `json:"sources"`
+	}{"riemann.semantic-graph.m10", json.RawMessage(m9), result.Compression, result.CountVocabulary, result.Decomposition, result.FarBound, result.Perturbation, result.CountingTheorem, result.ExactSanityObservation, result.Architecture, result.Counterexamples, result.Experiment, result.UtilitySchedulerUsed, result.M7RegressionRole, result.Sources}
+	return json.MarshalIndent(report, "", "  ")
+}
