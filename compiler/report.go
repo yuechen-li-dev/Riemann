@@ -194,6 +194,58 @@ func M4HumanReport(result M4Result) string {
 	return b.String()
 }
 
+func M5HumanReport(result M5Result) string {
+	var b strings.Builder
+	b.WriteString("RIEMANN-M5 — FINITE HERMITIAN LOWERING\n\n")
+	b.WriteString("SOURCE\n  Weil quadratic functional Q_W\n  domain: Weil-nice test functions\n\n")
+	b.WriteString("RESTRICT\n")
+	fmt.Fprintf(&b, "  admissible function space\n  →\n  finite span V = span{%s, %s} over Complex\n", result.Span.Basis.Members[0].Function.Symbol, result.Span.Basis.Members[1].Function.Symbol)
+	b.WriteString("  each ordered basis member carries an exact admissibility claim\n")
+	b.WriteString("  information loss: function_space_restriction — finite-dimensional coverage cannot recover universal Weil coverage\n\n")
+	b.WriteString("QUADRATIC PREREQUISITES\n  Q(lambda f)=|lambda|^2 Q(f)\n  parallelogram identity\n  real-valued diagonal\n  missing prerequisites would remain obligations\n\n")
+	b.WriteString("POLARIZE\n")
+	fmt.Fprintf(&b, "  Q_W → Hermitian form %s\n", result.Form.ID)
+	b.WriteString("  convention: conjugate-linear in argument 1; linear in argument 2\n")
+	fmt.Fprintf(&b, "  normalization: %s\n  formula: %s\n", result.Form.Convention.Normalization, result.Form.Convention.Formula)
+	b.WriteString("  identities: B(f,g)=conjugate(B(g,f)); Q(f)=B(f,f)\n\n")
+	b.WriteString("BASIS LOWERING\n")
+	fmt.Fprintf(&b, "  ordered basis: %s\n  G_ij = %s(f_i,f_j)\n  matrix identity: Q_W(%s) = c* G c\n", result.Matrix.Basis.ID, result.Form.ID, result.Combination.Describe())
+	fmt.Fprintf(&b, "  matrix value semantics: %s\n  Hermitian: certified from construction\n  positive semidefinite: separate open finite claim\n", result.Matrix.ValueSemantics)
+	b.WriteString("  entry contributions retained:\n")
+	for _, contribution := range result.Matrix.Entries[0].Contributions {
+		fmt.Fprintf(&b, "    %s [%s] sign %+d\n", contribution.SourceKind, contribution.RepresentationSide, contribution.Sign)
+	}
+	b.WriteString("\nFINITE CLAIM\n  positivity of Q_W on V\n\nEQUIVALENT\n  for every c in Complex^2: c* G c >= 0\n  ⇔\n  G is positive semidefinite\n  theorem: finite-hermitian-psd-equivalence\n\n")
+	b.WriteString("SOUNDNESS REJECTIONS\n  basis-point positivity → span positivity: REJECTED\n")
+	for _, diagnostic := range result.FamilyToSpan.Diagnostics {
+		fmt.Fprintf(&b, "    [%s] %s\n", diagnostic.Code, diagnostic.Message)
+	}
+	b.WriteString("  nonnegative diagonal → PSD: REJECTED\n")
+	for _, diagnostic := range result.DiagonalToPSD.Diagnostics {
+		fmt.Fprintf(&b, "    [%s] %s\n", diagnostic.Code, diagnostic.Message)
+	}
+	b.WriteString("  approximate numerical PSD → exact PSD: REJECTED\n")
+	for _, diagnostic := range result.ApproximateToExactPSD.Diagnostics {
+		fmt.Fprintf(&b, "    [%s] %s\n", diagnostic.Code, diagnostic.Message)
+	}
+	b.WriteString("\nRH CERTIFICATION\n  unavailable: finite function-space coverage only\n")
+	for _, diagnostic := range result.MatrixPSDToRH.Diagnostics {
+		fmt.Fprintf(&b, "  [%s] %s\n", diagnostic.Code, diagnostic.Message)
+	}
+	b.WriteString("\nEXPERIMENT\n")
+	b.WriteString("  backend: Oct dev, local compiled test runner\n")
+	b.WriteString("  path: experiments/m5_polarization_matrix.octest\n")
+	b.WriteString("  command: oct test <path> --execution compiled\n")
+	b.WriteString("  inputs: exact decimal toy coordinates for G=[[1,1+i],[1-i,3]] and G=[[0,1],[1,0]]\n")
+	b.WriteString("  outputs: 6 passed; compiled 6; interpreted fallback 0; adversarial toy coefficient (1,-1) gives -2\n")
+	b.WriteString("  numerical precision: Float backend; exact representable inputs here, but no interval/error certification\n")
+	b.WriteString("  evidence: numerical only; convention and counterexample probe, not Weil-entry evaluation or proof\n")
+	b.WriteString("  Octxiliary: not used; direct local Oct was sufficient and no transport payload entered theorem state\n")
+	b.WriteString("  when utility: not used; the polarization sign probe was the obvious highest-information experiment\n\n")
+	b.WriteString("STATUS\n  Finite Weil-functional reasoning now has a faithful structural Hermitian matrix lowering.\n  Universal Weil positivity and RH remain uncertified.\n")
+	return b.String()
+}
+
 func describeBinding(v BindingValue) string {
 	switch v.Type {
 	case ObjectParam:
@@ -273,23 +325,31 @@ type claimJSON struct {
 	Provenance  semantic.Provenance   `json:"provenance"`
 }
 type propositionJSON struct {
-	Kind                         semantic.PropositionKind               `json:"kind"`
-	Description                  string                                 `json:"description"`
-	Quantifier                   semantic.QuantifierKind                `json:"quantifier,omitempty"`
-	Domain                       *semantic.Domain                       `json:"domain,omitempty"`
-	Predicate                    *semantic.Predicate                    `json:"predicate,omitempty"`
-	Representation               *semantic.Representation               `json:"representation,omitempty"`
-	RepresentationIdentity       *semantic.RepresentationIdentity       `json:"representation_identity,omitempty"`
-	AnalyticFact                 *semantic.AnalyticFact                 `json:"analytic_fact,omitempty"`
-	ZeroAtPoint                  *semantic.ZeroAtPoint                  `json:"zero_at_point,omitempty"`
-	SideCondition                *semantic.SideCondition                `json:"side_condition,omitempty"`
-	FunctionalIdentity           *semantic.FunctionalIdentity           `json:"functional_identity,omitempty"`
-	ZeroSetProperty              *semantic.ZeroSetProperty              `json:"zero_set_property,omitempty"`
-	ZeroClassification           *semantic.ZeroClassification           `json:"zero_classification,omitempty"`
-	FunctionalDefinition         *semantic.FunctionalDefinition         `json:"functional_definition,omitempty"`
-	UniversalFunctionalStatement *semantic.UniversalFunctionalStatement `json:"universal_functional_statement,omitempty"`
-	TestFunctionAdmissibility    *semantic.TestFunctionAdmissibility    `json:"test_function_admissibility,omitempty"`
-	ExplicitFormulaIdentity      *semantic.ExplicitFormulaIdentity      `json:"explicit_formula_identity,omitempty"`
+	Kind                          semantic.PropositionKind                `json:"kind"`
+	Description                   string                                  `json:"description"`
+	Quantifier                    semantic.QuantifierKind                 `json:"quantifier,omitempty"`
+	Domain                        *semantic.Domain                        `json:"domain,omitempty"`
+	Predicate                     *semantic.Predicate                     `json:"predicate,omitempty"`
+	Representation                *semantic.Representation                `json:"representation,omitempty"`
+	RepresentationIdentity        *semantic.RepresentationIdentity        `json:"representation_identity,omitempty"`
+	AnalyticFact                  *semantic.AnalyticFact                  `json:"analytic_fact,omitempty"`
+	ZeroAtPoint                   *semantic.ZeroAtPoint                   `json:"zero_at_point,omitempty"`
+	SideCondition                 *semantic.SideCondition                 `json:"side_condition,omitempty"`
+	FunctionalIdentity            *semantic.FunctionalIdentity            `json:"functional_identity,omitempty"`
+	ZeroSetProperty               *semantic.ZeroSetProperty               `json:"zero_set_property,omitempty"`
+	ZeroClassification            *semantic.ZeroClassification            `json:"zero_classification,omitempty"`
+	FunctionalDefinition          *semantic.FunctionalDefinition          `json:"functional_definition,omitempty"`
+	UniversalFunctionalStatement  *semantic.UniversalFunctionalStatement  `json:"universal_functional_statement,omitempty"`
+	TestFunctionAdmissibility     *semantic.TestFunctionAdmissibility     `json:"test_function_admissibility,omitempty"`
+	ExplicitFormulaIdentity       *semantic.ExplicitFormulaIdentity       `json:"explicit_formula_identity,omitempty"`
+	FiniteSpanDefinition          *semantic.FiniteSpanDefinition          `json:"finite_span_definition,omitempty"`
+	QuadraticFormStructure        *semantic.QuadraticFormStructure        `json:"quadratic_form_structure,omitempty"`
+	HermitianFormDefinition       *semantic.HermitianFormDefinition       `json:"hermitian_form_definition,omitempty"`
+	HermitianMatrixDefinition     *semantic.HermitianMatrixDefinition     `json:"hermitian_matrix_definition,omitempty"`
+	FiniteSpanFunctionalStatement *semantic.FiniteSpanFunctionalStatement `json:"finite_span_functional_statement,omitempty"`
+	CoordinateQuadraticPositivity *semantic.CoordinateQuadraticPositivity `json:"coordinate_quadratic_positivity,omitempty"`
+	QuadraticMatrixIdentity       *semantic.QuadraticMatrixIdentity       `json:"quadratic_matrix_identity,omitempty"`
+	MatrixProperty                *semantic.MatrixProperty                `json:"matrix_property,omitempty"`
 }
 type transformationJSON struct {
 	ID          semantic.TransformationID `json:"id"`
@@ -338,6 +398,23 @@ func M4JSONReport(result M4Result) ([]byte, error) {
 	return marshalGraphWithContracts("riemann.semantic-graph.m4", result.Graph, contracts, applications, certifications, []ProofAttempt{result.FullToFinite, result.FiniteToRH, result.NumericalToUniversal})
 }
 
+func M5JSONReport(result M5Result) ([]byte, error) {
+	contracts := append(result.M4.M3.M1.Registry.Contracts(), result.M4.M3.Registry.Contracts()...)
+	contracts = append(contracts, result.M4.Registry.Contracts()...)
+	contracts = append(contracts, result.Registry.Contracts()...)
+	sort.Slice(contracts, func(i, j int) bool { return contracts[i].ID < contracts[j].ID })
+	applications := append(append([]TheoremApplication(nil), result.M4.M3.M1.Applications...), result.M4.M3.Applications...)
+	spanCertified, spanDiagnostics := result.Graph.Certify(M5SpanPositivityID)
+	psdCertified, psdDiagnostics := result.Graph.Certify(M5MatrixPSDID)
+	certifications := []certificationJSON{
+		{Claim: M5HermitianPropertyID, Certified: result.HermitianCertified, Diagnostics: nonNil(result.HermitianDiagnostics)},
+		{Claim: M5SpanPositivityID, Certified: spanCertified, Diagnostics: nonNil(spanDiagnostics)},
+		{Claim: M5MatrixPSDID, Certified: psdCertified, Diagnostics: nonNil(psdDiagnostics)},
+	}
+	attempts := []ProofAttempt{result.FullToSpan, result.FamilyToSpan, result.DiagonalToPSD, result.ApproximateToExactPSD, result.MatrixPSDToRH}
+	return marshalGraphWithContracts("riemann.semantic-graph.m5", result.Graph, contracts, applications, certifications, attempts)
+}
+
 func marshalGraph(schema string, g *Graph, certifications []certificationJSON, attempts []ProofAttempt) ([]byte, error) {
 	return marshalGraphWithContracts(schema, g, nil, nil, certifications, attempts)
 }
@@ -376,6 +453,22 @@ func marshalGraphWithContracts(schema string, g *Graph, contracts []TheoremContr
 			item.TestFunctionAdmissibility = &p
 		case semantic.ExplicitFormulaIdentity:
 			item.ExplicitFormulaIdentity = &p
+		case semantic.FiniteSpanDefinition:
+			item.FiniteSpanDefinition = &p
+		case semantic.QuadraticFormStructure:
+			item.QuadraticFormStructure = &p
+		case semantic.HermitianFormDefinition:
+			item.HermitianFormDefinition = &p
+		case semantic.HermitianMatrixDefinition:
+			item.HermitianMatrixDefinition = &p
+		case semantic.FiniteSpanFunctionalStatement:
+			item.FiniteSpanFunctionalStatement = &p
+		case semantic.CoordinateQuadraticPositivity:
+			item.CoordinateQuadraticPositivity = &p
+		case semantic.QuadraticMatrixIdentity:
+			item.QuadraticMatrixIdentity = &p
+		case semantic.MatrixProperty:
+			item.MatrixProperty = &p
 		}
 		report.Claims = append(report.Claims, claimJSON{ID: claim.ID, Proposition: item, Assumptions: nonNil(claim.Assumptions), Evidence: nonNil(claim.Evidence), Exactness: claim.Exactness, Provenance: claim.Provenance})
 	}

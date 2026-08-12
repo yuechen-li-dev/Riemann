@@ -197,20 +197,28 @@ type Proposition interface {
 type PropositionKind string
 
 const (
-	QuantifiedStatementKind          PropositionKind = "quantified_statement"
-	RepresentationKind               PropositionKind = "representation"
-	RepresentationIdentityKind       PropositionKind = "representation_identity"
-	AnalyticFactKind                 PropositionKind = "analytic_fact"
-	NamedObligationKind              PropositionKind = "named_obligation"
-	ZeroAtPointKind                  PropositionKind = "zero_at_point"
-	SideConditionKind                PropositionKind = "side_condition"
-	FunctionalIdentityKind           PropositionKind = "functional_identity"
-	ZeroSetPropertyKind              PropositionKind = "zero_set_property"
-	ZeroClassificationKind           PropositionKind = "zero_classification"
-	FunctionalDefinitionKind         PropositionKind = "functional_definition"
-	UniversalFunctionalStatementKind PropositionKind = "universal_functional_statement"
-	TestFunctionAdmissibilityKind    PropositionKind = "test_function_admissibility"
-	ExplicitFormulaIdentityKind      PropositionKind = "explicit_formula_identity"
+	QuantifiedStatementKind           PropositionKind = "quantified_statement"
+	RepresentationKind                PropositionKind = "representation"
+	RepresentationIdentityKind        PropositionKind = "representation_identity"
+	AnalyticFactKind                  PropositionKind = "analytic_fact"
+	NamedObligationKind               PropositionKind = "named_obligation"
+	ZeroAtPointKind                   PropositionKind = "zero_at_point"
+	SideConditionKind                 PropositionKind = "side_condition"
+	FunctionalIdentityKind            PropositionKind = "functional_identity"
+	ZeroSetPropertyKind               PropositionKind = "zero_set_property"
+	ZeroClassificationKind            PropositionKind = "zero_classification"
+	FunctionalDefinitionKind          PropositionKind = "functional_definition"
+	UniversalFunctionalStatementKind  PropositionKind = "universal_functional_statement"
+	TestFunctionAdmissibilityKind     PropositionKind = "test_function_admissibility"
+	ExplicitFormulaIdentityKind       PropositionKind = "explicit_formula_identity"
+	FiniteSpanDefinitionKind          PropositionKind = "finite_span_definition"
+	QuadraticFormStructureKind        PropositionKind = "quadratic_form_structure"
+	HermitianFormDefinitionKind       PropositionKind = "hermitian_form_definition"
+	HermitianMatrixDefinitionKind     PropositionKind = "hermitian_matrix_definition"
+	FiniteSpanFunctionalStatementKind PropositionKind = "finite_span_functional_statement"
+	CoordinatePositivityKind          PropositionKind = "coordinate_quadratic_positivity"
+	QuadraticMatrixIdentityKind       PropositionKind = "quadratic_matrix_identity"
+	MatrixPropertyStatementKind       PropositionKind = "matrix_property"
 )
 
 type QuantifiedStatement struct {
@@ -486,6 +494,38 @@ func (c Claim) Validate() error {
 		if err := p.Validate(); err != nil {
 			return fmt.Errorf("claim %q: %w", c.ID, err)
 		}
+	case FiniteSpanDefinition:
+		if err := p.Span.Validate(); err != nil {
+			return fmt.Errorf("claim %q: %w", c.ID, err)
+		}
+	case QuadraticFormStructure:
+		if err := p.Validate(); err != nil {
+			return fmt.Errorf("claim %q: %w", c.ID, err)
+		}
+	case HermitianFormDefinition:
+		if err := p.Form.Validate(); err != nil {
+			return fmt.Errorf("claim %q: %w", c.ID, err)
+		}
+	case HermitianMatrixDefinition:
+		if err := p.Matrix.Validate(); err != nil {
+			return fmt.Errorf("claim %q: %w", c.ID, err)
+		}
+	case FiniteSpanFunctionalStatement:
+		if err := p.Validate(); err != nil {
+			return fmt.Errorf("claim %q: %w", c.ID, err)
+		}
+	case CoordinateQuadraticPositivity:
+		if err := p.Validate(); err != nil {
+			return fmt.Errorf("claim %q: %w", c.ID, err)
+		}
+	case QuadraticMatrixIdentity:
+		if err := p.Validate(); err != nil {
+			return fmt.Errorf("claim %q: %w", c.ID, err)
+		}
+	case MatrixProperty:
+		if err := p.Validate(); err != nil {
+			return fmt.Errorf("claim %q: %w", c.ID, err)
+		}
 	}
 	seen := make(map[AssumptionID]bool, len(c.Assumptions))
 	for _, assumption := range c.Assumptions {
@@ -538,6 +578,22 @@ func SemanticKey(p Proposition) string {
 		return "fd|" + string(v.Functional.ID) + "|" + string(v.Functional.TransformConvention)
 	case UniversalFunctionalStatement:
 		return fmt.Sprintf("uf|%s|%s|%s|%s|%s", v.Quantifier, v.FunctionClass.Key(), v.Functional, v.Predicate, v.TransformConvention)
+	case FiniteSpanDefinition:
+		return "span-definition|" + v.Span.Key()
+	case QuadraticFormStructure:
+		return v.Key()
+	case HermitianFormDefinition:
+		return "hermitian-form|" + v.Form.Key()
+	case HermitianMatrixDefinition:
+		return "hermitian-matrix|" + v.Matrix.Key()
+	case FiniteSpanFunctionalStatement:
+		return v.Key()
+	case CoordinateQuadraticPositivity:
+		return v.Key()
+	case QuadraticMatrixIdentity:
+		return v.Key()
+	case MatrixProperty:
+		return v.Key()
 	case TestFunctionAdmissibility:
 		return "ta|" + v.Function.Key() + "|" + v.Class.Key()
 	case ExplicitFormulaIdentity:

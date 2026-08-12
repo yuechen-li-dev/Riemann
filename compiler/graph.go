@@ -152,13 +152,28 @@ func (g *Graph) AddTransformation(t Transformation) error {
 
 func (g *Graph) validateFunctionRestrictionPremises(from, to semantic.Claim, premises []semantic.ClaimID) error {
 	source := from.Proposition.(semantic.UniversalFunctionalStatement)
-	target := to.Proposition.(semantic.UniversalFunctionalStatement)
-	for _, member := range target.FunctionClass.Members {
+	var members []semantic.BasisMember
+	switch target := to.Proposition.(type) {
+	case semantic.UniversalFunctionalStatement:
+		for _, member := range target.FunctionClass.Members {
+			members = append(members, semantic.BasisMember{Function: member})
+		}
+	case semantic.FiniteSpanFunctionalStatement:
+		members = append(members, target.Span.Basis.Members...)
+	case semantic.MatrixProperty:
+		if target.DomainSpan == nil {
+			return fmt.Errorf("finite matrix property has no domain span")
+		}
+		members = append(members, target.DomainSpan.Basis.Members...)
+	default:
+		return fmt.Errorf("function-space restriction target is not a supported function domain")
+	}
+	for _, member := range members {
 		covered := false
 		for _, id := range premises {
 			claim := g.claims[id]
 			admissible, ok := claim.Proposition.(semantic.TestFunctionAdmissibility)
-			if ok && admissible.Function.Key() == member.Key() && admissible.Class.Key() == source.FunctionClass.Key() {
+			if ok && admissible.Function.Key() == member.Function.Key() && admissible.Class.Key() == source.FunctionClass.Key() {
 				if certified, _ := g.Certify(id); certified {
 					covered = true
 					break
@@ -166,7 +181,7 @@ func (g *Graph) validateFunctionRestrictionPremises(from, to semantic.Claim, pre
 			}
 		}
 		if !covered {
-			return fmt.Errorf("function-space restriction lacks a certified admissibility premise for %s", member.Symbol)
+			return fmt.Errorf("function-space restriction lacks a certified admissibility premise for %s", member.Function.Symbol)
 		}
 	}
 	return nil
@@ -175,6 +190,12 @@ func (g *Graph) validateFunctionRestrictionPremises(from, to semantic.Claim, pre
 func structuralLosses(from, to semantic.Proposition) []LossKind {
 	if a, aok := from.(semantic.UniversalFunctionalStatement); aok {
 		if b, bok := to.(semantic.UniversalFunctionalStatement); bok && sameFunctionalPredicate(a, b) && a.FunctionClass.Key() != b.FunctionClass.Key() && functionClassShapeSubset(b.FunctionClass, a.FunctionClass) {
+			return []LossKind{FunctionSpaceRestriction}
+		}
+		if b, bok := to.(semantic.FiniteSpanFunctionalStatement); bok && a.Quantifier == semantic.ForAll && a.Functional == b.Functional && a.Predicate == b.Predicate && a.TransformConvention == b.TransformConvention && b.Span.ParentClass.Key() == a.FunctionClass.Key() {
+			return []LossKind{FunctionSpaceRestriction}
+		}
+		if b, bok := to.(semantic.MatrixProperty); bok && b.DomainSpan != nil && a.Quantifier == semantic.ForAll && a.Functional == b.SourceFunctional && b.DomainSpan.ParentClass.Key() == a.FunctionClass.Key() {
 			return []LossKind{FunctionSpaceRestriction}
 		}
 	}
@@ -295,6 +316,35 @@ func cloneClaim(claim semantic.Claim) semantic.Claim {
 		p.FunctionClass = semantic.CloneFunctionClass(p.FunctionClass)
 		p.ZeroSide = semantic.CloneAggregate(p.ZeroSide)
 		p.ArithmeticSide = append([]semantic.FunctionalContribution(nil), p.ArithmeticSide...)
+		claim.Proposition = p
+	case semantic.FiniteSpanDefinition:
+		p.Span = semantic.CloneFiniteSpan(p.Span)
+		claim.Proposition = p
+	case semantic.QuadraticFormStructure:
+		p.DomainSpan = semantic.CloneFiniteSpan(p.DomainSpan)
+		p.Laws = append([]semantic.QuadraticLaw(nil), p.Laws...)
+		claim.Proposition = p
+	case semantic.HermitianFormDefinition:
+		p.Form = semantic.CloneHermitianForm(p.Form)
+		claim.Proposition = p
+	case semantic.HermitianMatrixDefinition:
+		p.Matrix = semantic.CloneHermitianMatrix(p.Matrix)
+		claim.Proposition = p
+	case semantic.FiniteSpanFunctionalStatement:
+		p.Span = semantic.CloneFiniteSpan(p.Span)
+		claim.Proposition = p
+	case semantic.CoordinateQuadraticPositivity:
+		p.Span = semantic.CloneFiniteSpan(p.Span)
+		claim.Proposition = p
+	case semantic.QuadraticMatrixIdentity:
+		p.Combination.Span = semantic.CloneFiniteSpan(p.Combination.Span)
+		p.Combination.Coefficients.Entries = append([]semantic.Coefficient(nil), p.Combination.Coefficients.Entries...)
+		claim.Proposition = p
+	case semantic.MatrixProperty:
+		if p.DomainSpan != nil {
+			s := semantic.CloneFiniteSpan(*p.DomainSpan)
+			p.DomainSpan = &s
+		}
 		claim.Proposition = p
 	}
 	return claim

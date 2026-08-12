@@ -425,6 +425,19 @@ func validatePattern(p Pattern, declared map[ParamID]ParamType) error {
 		if p.FunctionClass.TransformConvention != p.TransformConvention {
 			return fmt.Errorf("functional pattern transform mismatch")
 		}
+	case semantic.FunctionalDefinitionKind,
+		semantic.FiniteSpanDefinitionKind,
+		semantic.QuadraticFormStructureKind,
+		semantic.HermitianFormDefinitionKind,
+		semantic.HermitianMatrixDefinitionKind,
+		semantic.FiniteSpanFunctionalStatementKind,
+		semantic.CoordinatePositivityKind,
+		semantic.QuadraticMatrixIdentityKind,
+		semantic.MatrixPropertyStatementKind:
+		// M5 contracts are ground theorem schemas whose full typed payload lives
+		// in the graph propositions. They are validated by those proposition
+		// types and applied by the dedicated lowering passes, not instantiated
+		// through the older M1-M4 parameter matcher.
 	default:
 		return fmt.Errorf("unsupported proposition pattern kind %q", p.Kind)
 	}

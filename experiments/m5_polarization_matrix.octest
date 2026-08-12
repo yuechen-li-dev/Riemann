@@ -1,0 +1,83 @@
+package M5PolarizationMatrix
+
+// Hermitian form with conjugate-linear first argument and matrix
+// [[1, 1+i], [1-i, 3]]. Q(z)=B(z,z) is real-valued.
+fn QHermitian(z1r: Float, z1i: Float, z2r: Float, z2i: Float) -> Float {
+    let norm = z1r * z1r + z1i * z1i + 3.0 * (z2r * z2r + z2i * z2i)
+    let productReal = z1r * z2r + z1i * z2i
+    let productImag = z1r * z2i - z1i * z2r
+    return norm + 2.0 * (productReal - productImag)
+}
+
+fn PolarizedReal(
+    x1r: Float, x1i: Float, x2r: Float, x2i: Float,
+    y1r: Float, y1i: Float, y2r: Float, y2i: Float
+) -> Float {
+    let plus = QHermitian(x1r + y1r, x1i + y1i, x2r + y2r, x2i + y2i)
+    let minus = QHermitian(x1r - y1r, x1i - y1i, x2r - y2r, x2i - y2i)
+    return 0.25 * (plus - minus)
+}
+
+fn PolarizedImag(
+    x1r: Float, x1i: Float, x2r: Float, x2i: Float,
+    y1r: Float, y1i: Float, y2r: Float, y2i: Float
+) -> Float {
+    // i*y has coordinates (-Im(y), Re(y)). For the conjugate-linear-first
+    // convention the polarization formula uses -i*(Q(x+i*y)-Q(x-i*y))/4.
+    let plusI = QHermitian(x1r - y1i, x1i + y1r, x2r - y2i, x2i + y2r)
+    let minusI = QHermitian(x1r + y1i, x1i - y1r, x2r + y2i, x2i - y2r)
+    return -0.25 * (plusI - minusI)
+}
+
+fn OffDiagonalToy(z1: Float, z2: Float) -> Float {
+    return 2.0 * z1 * z2
+}
+
+// Same Hermitian form in the permuted basis (e2,e1):
+// [[3, 1-i], [1+i, 1]].
+fn QHermitianPermuted(w1r: Float, w1i: Float, w2r: Float, w2i: Float) -> Float {
+    let norm = 3.0 * (w1r * w1r + w1i * w1i) + w2r * w2r + w2i * w2i
+    let productReal = w1r * w2r + w1i * w2i
+    let productImag = w1r * w2i - w1i * w2r
+    return norm + 2.0 * (productReal + productImag)
+}
+
+[Fact]
+fn ConjugateFirstPolarizationRecoversComplexEntry() -> Void {
+    Assert.Equal(1.0, PolarizedReal(1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0), "real part of B(e1,e2)")
+    Assert.Equal(1.0, PolarizedImag(1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0), "imaginary part of B(e1,e2)")
+}
+
+[Fact]
+fn HermitianSymmetryIsVisibleAfterPolarization() -> Void {
+    Assert.Equal(1.0, PolarizedReal(0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0), "real parts agree")
+    Assert.Equal(-1.0, PolarizedImag(0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0), "B(e2,e1)=conjugate(B(e1,e2))")
+}
+
+[Fact]
+fn PolarizationRecoversQuadraticDiagonal() -> Void {
+    let q = QHermitian(1.0, -2.0, 0.5, 1.0)
+    Assert.Equal(q, PolarizedReal(1.0, -2.0, 0.5, 1.0, 1.0, -2.0, 0.5, 1.0), "Q(x)=B(x,x)")
+    Assert.Equal(0.0, PolarizedImag(1.0, -2.0, 0.5, 1.0, 1.0, -2.0, 0.5, 1.0), "Hermitian diagonal is real")
+}
+
+[Fact]
+fn PositiveToyHasNonnegativeBoundedProbes() -> Void {
+    Assert.Equal(6.0, QHermitian(1.0, 0.0, 1.0, 0.0), "aligned real coefficients")
+    Assert.Equal(2.0, QHermitian(1.0, 0.0, -1.0, 0.0), "adversarial real sign")
+    Assert.Equal(2.0, QHermitian(1.0, 0.0, 0.0, 1.0), "adversarial phase")
+}
+
+[Fact]
+fn NonnegativeDiagonalDoesNotImplyPsd() -> Void {
+    Assert.Equal(0.0, OffDiagonalToy(1.0, 0.0), "first basis value")
+    Assert.Equal(0.0, OffDiagonalToy(0.0, 1.0), "second basis value")
+    Assert.Equal(-2.0, OffDiagonalToy(1.0, -1.0), "adversarial combination exposes negative direction")
+}
+
+[Fact]
+fn BasisPermutationPreservesUnderlyingQuadraticValue() -> Void {
+    let original = QHermitian(2.0, -1.0, -0.5, 3.0)
+    let permutedCoordinates = QHermitianPermuted(-0.5, 3.0, 2.0, -1.0)
+    Assert.Equal(original, permutedCoordinates, "coordinate permutation must not change the underlying form")
+}
