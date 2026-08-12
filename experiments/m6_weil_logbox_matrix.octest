@@ -1,0 +1,109 @@
+package M6WeilLogboxMatrix
+
+fn Minimum(a: Float, b: Float) -> Float {
+    if a < b {return a}
+    return b
+}
+
+fn Overlap(u: Float, q: Float, r: Float) -> Float {
+    let a = 4.0 * Ln(q)
+    let b = 4.0 * Ln(r)
+    let halfDifference = Abs(a - b) / 2.0
+    let halfSum =(a + b) / 2.0
+    let t = Abs(u)
+    if t <= halfDifference {return Minimum(a, b)}
+    if t < halfSum {return halfSum - t}
+    return 0.0
+}
+
+fn Endpoint(q: Float, r: Float) -> Float {
+    return 8.0 *(q * q - 1.0) *(r * r - 1.0) /(q * r)
+}
+
+fn PrimePower(q: Float, r: Float) -> Float {
+    let powers =[2.0, 4.0, 8.0, 16.0, 32.0, 64.0, 3.0, 9.0, 27.0, 81.0, 5.0, 25.0, 7.0, 49.0, 11.0, 13.0, 17.0, 19.0, 23.0, 29.0, 31.0, 37.0, 41.0, 43.0, 47.0, 53.0, 59.0, 61.0, 67.0, 71.0, 73.0, 79.0]
+    let bases =[2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0, 3.0, 5.0, 5.0, 7.0, 7.0, 11.0, 13.0, 17.0, 19.0, 23.0, 29.0, 31.0, 37.0, 41.0, 43.0, 47.0, 53.0, 59.0, 61.0, 67.0, 71.0, 73.0, 79.0]
+    let limit = q * q * r * r
+    var sum = 0.0
+    for i in 0 .. Len(powers) {
+        if powers[i] <= limit {
+            let u = Ln(powers[i])
+            let h = Exp((0.0 - u) / 2.0) * Overlap(u, q, r)
+            sum = sum + 2.0 * Ln(bases[i]) * h
+        }
+    }
+    return sum
+}
+
+fn ArchIntegrand(u: Float, q: Float, r: Float) -> Float {
+    let a = 4.0 * Ln(q)
+    let b = 4.0 * Ln(r)
+    let h0 = Minimum(a, b)
+    if Abs(u) < 0.0000000001 {
+        var derivative = 0.0
+        if Abs(a - b) < 0.00000000000001 {derivative = 0.0 - 1.0}
+        return derivative + 1.5 * h0
+    }
+    let e2 = Exp((0.0 - 2.0) * u)
+    return(2.0 * Exp((0.0 - u) / 2.0) * Overlap(u, q, r) - 2.0 * e2 * h0) /(1.0 - e2)
+}
+
+fn Archimedean(q: Float, r: Float, steps: Int) -> Float {
+    let a = 4.0 * Ln(q)
+    let b = 4.0 * Ln(r)
+    let h0 = Minimum(a, b)
+    let end =(a + b) / 2.0
+    let width = end / Float(steps)
+    var integral = ArchIntegrand(0.0, q, r) + ArchIntegrand(end, q, r)
+    for i in 1 .. steps {
+        var weight = 2.0
+        if i % 2 == 1 {weight = 4.0}
+        integral = integral + weight * ArchIntegrand(Float(i) * width, q, r)
+    }
+    integral = integral * width / 3.0
+    let tail = h0 * Ln(1.0 - Exp((0.0 - 2.0) * end))
+    let eulerGamma = 0.5772156649015329
+    return(eulerGamma + Ln(Pi())) * h0 + integral + tail
+}
+
+fn Entry(q: Float, r: Float, steps: Int) -> Float {
+    return Endpoint(q, r) - PrimePower(q, r) - Archimedean(q, r, steps)
+}
+
+[Fact]
+fn ExactEndpointNormalizationsMatch() -> Void {
+    Assert.Equal(18.0, Endpoint(2.0, 2.0), "G11 endpoint")
+    Assert.Equal(32.0, Endpoint(2.0, 3.0), "G12 endpoint")
+    Assert.Near(512.0 / 9.0, Endpoint(3.0, 3.0), 0.000000000001, "G22 endpoint")
+}
+
+[Fact]
+fn FinitePrimePowerSumsMatchGoEvaluator() -> Void {
+    Assert.Near(9.61161163658, PrimePower(2.0, 2.0), 0.00000000001, "G11 prime")
+    Assert.Near(21.1614039045, PrimePower(2.0, 3.0), 0.0000000001, "G12 prime")
+    Assert.Near(40.9031451576, PrimePower(3.0, 3.0), 0.0000000001, "G22 prime")
+}
+
+[Fact]
+fn IndependentCompositeSimpsonMatchesAdaptiveEvaluator() -> Void {
+    let steps = 200000
+    Assert.Near(8.29650346216, Archimedean(2.0, 2.0, steps), 0.00000001, "G11 arch")
+    Assert.Near(10.8499117334, Archimedean(2.0, 3.0, steps), 0.00000001, "G12 arch")
+    Assert.Near(15.8980166165, Archimedean(3.0, 3.0, steps), 0.00000001, "G22 arch")
+}
+
+[Fact]
+fn MatrixEntriesAndHermitianOrderMatch() -> Void {
+    let steps = 200000
+    Assert.Near(0.0918849012616, Entry(2.0, 2.0, steps), 0.00000001, "G11")
+    Assert.Near(0.0 - 0.0113156378917, Entry(2.0, 3.0, steps), 0.00000001, "G12")
+    Assert.Near(Entry(2.0, 3.0, steps), Entry(3.0, 2.0, steps), 0.000000000001, "G12=G21")
+    Assert.Near(0.0877271147825, Entry(3.0, 3.0, steps), 0.00000001, "G22")
+}
+
+[Fact]
+fn QuadratureRefinementIsStableButNotCertified() -> Void {
+    let coarse = Entry(2.0, 3.0, 20000)
+    let fine = Entry(2.0, 3.0, 200000)
+    Assert.Near(coarse, fine, 0.000001, "refinement stability is experimental only")
+}

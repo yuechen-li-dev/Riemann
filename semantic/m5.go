@@ -294,19 +294,22 @@ type EntryContribution struct {
 	RepresentationSide  string                     `json:"representation_side"`
 	Sign                int                        `json:"sign"`
 	PolarizedDefinition string                     `json:"polarized_definition"`
+	Value               EntryValue                 `json:"value"`
 }
 
 type MatrixEntry struct {
-	Row                 int                   `json:"row"`
-	Column              int                   `json:"column"`
-	RowFunction         TestFunction          `json:"row_function"`
-	ColumnFunction      TestFunction          `json:"column_function"`
-	SourceForm          string                `json:"source_form"`
-	SourceFunctional    FunctionalID          `json:"source_functional"`
-	Definition          string                `json:"definition"`
-	Contributions       []EntryContribution   `json:"contributions"`
-	TransformConvention TransformConventionID `json:"transform_convention"`
-	TheoremProvenance   []TheoremID           `json:"theorem_provenance"`
+	Row                  int                   `json:"row"`
+	Column               int                   `json:"column"`
+	RowFunction          TestFunction          `json:"row_function"`
+	ColumnFunction       TestFunction          `json:"column_function"`
+	SourceForm           string                `json:"source_form"`
+	SourceFunctional     FunctionalID          `json:"source_functional"`
+	Definition           string                `json:"definition"`
+	Contributions        []EntryContribution   `json:"contributions"`
+	TransformConvention  TransformConventionID `json:"transform_convention"`
+	TheoremProvenance    []TheoremID           `json:"theorem_provenance"`
+	Value                EntryValue            `json:"value"`
+	TransformEvaluations []TransformEvaluation `json:"transform_evaluations"`
 }
 
 type HermitianMatrix struct {
@@ -338,6 +341,22 @@ func (m HermitianMatrix) Validate() error {
 		i, j := k/m.Columns, k%m.Columns
 		if entry.Row != i || entry.Column != j || entry.RowFunction.Key() != m.Basis.Members[i].Function.Key() || entry.ColumnFunction.Key() != m.Basis.Members[j].Function.Key() || entry.SourceForm != m.SourceForm.ID || entry.SourceFunctional != m.SourceForm.SourceFunctional || entry.Definition == "" || len(entry.TheoremProvenance) == 0 {
 			return fmt.Errorf("matrix entry %d has lost coordinate or provenance identity", k)
+		}
+		if err := entry.Value.Validate(); err != nil {
+			return fmt.Errorf("matrix entry %d value: %w", k, err)
+		}
+		for j, contribution := range entry.Contributions {
+			if err := contribution.Value.Validate(); err != nil {
+				return fmt.Errorf("matrix entry %d contribution %d value: %w", k, j, err)
+			}
+		}
+		for j, evaluation := range entry.TransformEvaluations {
+			if evaluation.Convention != entry.TransformConvention || (evaluation.InputFunction.Key() != entry.RowFunction.Key() && evaluation.InputFunction.Key() != entry.ColumnFunction.Key()) || evaluation.Point == "" || evaluation.Definition == "" {
+				return fmt.Errorf("matrix entry %d transform evaluation %d lost convention or input identity", k, j)
+			}
+			if err := evaluation.Value.Validate(); err != nil {
+				return fmt.Errorf("matrix entry %d transform evaluation %d value: %w", k, j, err)
+			}
 		}
 	}
 	return nil
@@ -507,6 +526,14 @@ func CloneHermitianMatrix(m HermitianMatrix) HermitianMatrix {
 		m.Entries[i].RowFunction = CloneTestFunction(m.Entries[i].RowFunction)
 		m.Entries[i].ColumnFunction = CloneTestFunction(m.Entries[i].ColumnFunction)
 		m.Entries[i].Contributions = append([]EntryContribution(nil), m.Entries[i].Contributions...)
+		for j := range m.Entries[i].Contributions {
+			m.Entries[i].Contributions[j].Value = CloneEntryValue(m.Entries[i].Contributions[j].Value)
+		}
+		m.Entries[i].Value = CloneEntryValue(m.Entries[i].Value)
+		m.Entries[i].TransformEvaluations = append([]TransformEvaluation(nil), m.Entries[i].TransformEvaluations...)
+		for j := range m.Entries[i].TransformEvaluations {
+			m.Entries[i].TransformEvaluations[j].Value = CloneEntryValue(m.Entries[i].TransformEvaluations[j].Value)
+		}
 		m.Entries[i].TheoremProvenance = append([]TheoremID(nil), m.Entries[i].TheoremProvenance...)
 	}
 	return m

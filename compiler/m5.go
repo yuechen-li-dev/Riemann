@@ -222,9 +222,9 @@ func LowerHermitianFormToMatrix(form semantic.HermitianForm, basis semantic.Orde
 		for j, column := range basis.Members {
 			parts := make([]semantic.EntryContribution, len(form.Contributions))
 			for k, contribution := range form.Contributions {
-				parts[k] = semantic.EntryContribution{SourceKind: contribution.SourceKind, RepresentationSide: contribution.RepresentationSide, Sign: contribution.Sign, PolarizedDefinition: contribution.EntryDefinition + "(" + row.Function.Symbol + "," + column.Function.Symbol + ")"}
+				parts[k] = semantic.EntryContribution{SourceKind: contribution.SourceKind, RepresentationSide: contribution.RepresentationSide, Sign: contribution.Sign, PolarizedDefinition: contribution.EntryDefinition + "(" + row.Function.Symbol + "," + column.Function.Symbol + ")", Value: semantic.NewUnevaluatedEntryValue()}
 			}
-			entries = append(entries, semantic.MatrixEntry{Row: i, Column: j, RowFunction: semantic.CloneTestFunction(row.Function), ColumnFunction: semantic.CloneTestFunction(column.Function), SourceForm: form.ID, SourceFunctional: form.SourceFunctional, Definition: fmt.Sprintf("%s(%s,%s)", form.ID, row.Function.Symbol, column.Function.Symbol), Contributions: parts, TransformConvention: row.Function.TransformConvention, TheoremProvenance: append(append([]semantic.TheoremID(nil), form.TheoremProvenance...), theorem)})
+			entries = append(entries, semantic.MatrixEntry{Row: i, Column: j, RowFunction: semantic.CloneTestFunction(row.Function), ColumnFunction: semantic.CloneTestFunction(column.Function), SourceForm: form.ID, SourceFunctional: form.SourceFunctional, Definition: fmt.Sprintf("%s(%s,%s)", form.ID, row.Function.Symbol, column.Function.Symbol), Contributions: parts, TransformConvention: row.Function.TransformConvention, TheoremProvenance: append(append([]semantic.TheoremID(nil), form.TheoremProvenance...), theorem), Value: semantic.NewUnevaluatedEntryValue()})
 		}
 	}
 	matrix := semantic.HermitianMatrix{ID: "G[" + basis.ID + "]", SourceForm: semantic.CloneHermitianForm(form), Basis: semantic.CloneOrderedBasis(basis), Rows: n, Columns: n, Entries: entries, ValueSemantics: semantic.StructuralExactMatrix, HermitianByConstruction: true, LoweringTheorem: theorem}

@@ -426,6 +426,7 @@ func validatePattern(p Pattern, declared map[ParamID]ParamType) error {
 			return fmt.Errorf("functional pattern transform mismatch")
 		}
 	case semantic.FunctionalDefinitionKind,
+		semantic.ExplicitFormulaIdentityKind,
 		semantic.FiniteSpanDefinitionKind,
 		semantic.QuadraticFormStructureKind,
 		semantic.HermitianFormDefinitionKind,

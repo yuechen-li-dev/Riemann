@@ -1,12 +1,12 @@
 # Riemann
 
 Riemann is an experimental compiler for making transformations of mathematical
-claims mechanically inspectable. M5 lowers a certified finite-dimensional
-restriction of the Weil quadratic functional through complex polarization to
-a typed Hermitian form and ordered-basis matrix. It records the distinction
-between finite families and finite spans, the identity `Q(sum c_i f_i)=c*Gc`,
-entrywise explicit-formula provenance, exact versus numerical matrix evidence,
-and the inherited finite function-space coverage loss.
+claims mechanically inspectable. M6 evaluates a certified two-function Weil
+basis through Lagarias's Mellin explicit formula. Exact definitions, exact
+rational endpoint terms, support-exhaustive but floating-point prime sums,
+heuristically quadrature-bounded archimedean terms, and approximate totals have
+separate typed evidence states. The inherited finite function-space coverage
+loss remains explicit.
 
 ```powershell
 go run ./cmd/riemann
@@ -16,8 +16,8 @@ go test ./...
 ```
 
 The demonstration lowers RH to universal Weil positivity, restricts that claim
-to a certified finite span, constructs its structural Hermitian matrix, and
-rejects basis-point, diagonal, approximate, and finite-coverage shortcuts.
-See [docs/m5-architecture.md](docs/m5-architecture.md) for the convention,
-theorem contracts, trust boundary, Oct experiment, and findings. Earlier
+to a certified finite span, constructs and evaluates its structural Hermitian
+matrix, and rejects approximate PSD and finite-coverage shortcuts. See
+[docs/m6-architecture.md](docs/m6-architecture.md) for the basis, formulas,
+evidence lattice, evaluator metadata, Oct experiment, and findings. Earlier
 milestone documents remain available.

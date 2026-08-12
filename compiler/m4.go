@@ -24,7 +24,7 @@ const (
 var lagariasWeilReference = semantic.Reference{
 	Kind:     semantic.StandardReference,
 	Citation: "J. C. Lagarias, The Riemann Hypothesis: Arithmetic and Geometry, §3, Theorems 3.1 and 3.2 (Mellin form of Weil's criterion)",
-	URI:      "https://dept.math.lsa.umich.edu/~lagarias/doc/mt-holyoke-rev.pdf",
+	URI:      "https://websites.umich.edu/~lagarias/doc/mt-holyoke-rev.pdf",
 }
 
 type M4Result struct {
@@ -63,13 +63,13 @@ func CompileM4() (M4Result, error) {
 		return M4Result{}, err
 	}
 
-	f1 := abstractWeilFunction("f1", 1, full)
-	f2 := abstractWeilFunction("f2", 2, full)
+	f1 := logBoxWeilFunction("f2", 2, full)
+	f2 := logBoxWeilFunction("f3", 3, full)
 	for _, item := range []struct {
 		id semantic.ClaimID
 		f  semantic.TestFunction
 	}{{WeilF1AdmissibleID, f1}, {WeilF2AdmissibleID, f2}} {
-		ref := semantic.Reference{Kind: semantic.CompilerRecord, Citation: "M4 abstract basis member defined with a Weil-nice admissibility certificate"}
+		ref := semantic.Reference{Kind: semantic.StandardReference, Citation: "Lagarias §3 nice-test-function class; direct check: x^-1/2 on [q^-2,q^2], zero outside, and midpoint endpoint values is compactly supported, piecewise C2, and has the averaging property", URI: lagariasWeilReference.URI}
 		if err := g.AddClaim(authoredMathClaim(item.id, semantic.TestFunctionAdmissibility{Function: item.f, Class: full}, semantic.DefinitionEvidence, ref)); err != nil {
 			return M4Result{}, err
 		}
@@ -176,6 +176,12 @@ func (pass FunctionClassRestriction) Apply(g *Graph, fromID semantic.ClaimID) (s
 	return target.ID, g.AddTransformation(Transformation{ID: pass.TransformationID, Pass: "restrict-function-class", From: fromID, Premises: certificates, To: target.ID, Relation: Implies, Losses: []InformationLoss{{Kind: FunctionSpaceRestriction, Reason: "source covers every admissible test function; conclusion covers only a strict finite family"}}, Provenance: ref})
 }
 
+func logBoxWeilFunction(symbol string, q int, class semantic.FunctionClass) semantic.TestFunction {
+	return semantic.TestFunction{Symbol: symbol, Kind: semantic.BasisTestFunction, DeclaredClass: class.ID, RequiredAttributes: append([]semantic.FunctionConstraint(nil), class.Constraints...), TransformConvention: class.TransformConvention, Parameters: []semantic.FunctionParameter{{Name: "constructor", Value: "centered_multiplicative_log_box"}, {Name: "formula", Value: "x^-1/2 on [q^-2,q^2], zero outside, midpoint values at endpoints"}, {Name: "q", Value: fmt.Sprint(q)}}}
+}
+
+// abstractWeilFunction remains as an M4 test fixture for generic restriction
+// soundness tests. The production M6 path uses logBoxWeilFunction.
 func abstractWeilFunction(symbol string, index int, class semantic.FunctionClass) semantic.TestFunction {
 	return semantic.TestFunction{Symbol: symbol, Kind: semantic.BasisTestFunction, DeclaredClass: class.ID, RequiredAttributes: append([]semantic.FunctionConstraint(nil), class.Constraints...), TransformConvention: class.TransformConvention, Parameters: []semantic.FunctionParameter{{Name: "index", Value: fmt.Sprint(index)}, {Name: "family", Value: "m4-abstract-weil-basis"}}}
 }
@@ -186,7 +192,7 @@ func weilFunctional() semantic.QuadraticFunctional {
 		{Kind: semantic.ZeroContribution, RepresentationSide: "zero_side", Sign: 1, Formula: "W^(1)(h)=sum_rho M[h](rho)", Aggregate: &aggregate},
 		{Kind: semantic.EndpointContribution, RepresentationSide: "explicit_formula_side", Sign: 1, Formula: "M[h](1)+M[h](0)"},
 		{Kind: semantic.PrimePowerContribution, RepresentationSide: "explicit_formula_side", Sign: -1, Formula: "sum_p log(p) sum_{n>=1} (h(p^n)+tilde(h)(p^n))", Index: "p prime and p^n prime power", Weight: "log(p), equivalently von Mangoldt Lambda(p^n)"},
-		{Kind: semantic.ArchimedeanContribution, RepresentationSide: "explicit_formula_side", Sign: -1, Formula: "W_infinity(h) from the Gamma factor at the real place", Index: "infinite prime / real place"},
+		{Kind: semantic.ArchimedeanContribution, RepresentationSide: "explicit_formula_side", Sign: -1, Formula: "W_infinity(h)=(EulerGamma+log(pi))*h(1)+integral_1^infinity [h(x)+tilde(h)(x)-2*x^-2*h(1)]*x*dx/(x^2-1)", Index: "infinite prime / real place"},
 	}}
 }
 

@@ -491,3 +491,83 @@ func nonNil[T any](values []T) []T {
 	}
 	return values
 }
+
+func M6HumanReport(result M6Result) string {
+	var b strings.Builder
+	b.WriteString("RIEMANN-M6 — TYPED WEIL MATRIX ENTRY EVALUATION\n\nBASIS\n")
+	b.WriteString("  V = span{f2, f3} over Complex\n")
+	b.WriteString("  f_q(x) = x^-1/2 on [q^-2,q^2], zero outside; midpoint values at endpoints\n")
+	b.WriteString("  admissibility: certified from Lagarias §3 nice-function definition by direct constraint check\n")
+	b.WriteString("  transform: M[f](s)=integral_0^infinity f(x)x^s dx/x\n")
+	b.WriteString("  backend: deterministic Go float64 evaluator (53-bit precision); Oct is an independent experimental probe\n")
+	for _, entry := range result.Evaluation.Matrix.Entries {
+		fmt.Fprintf(&b, "\nENTRY G[%d,%d]\n  definition: %s (exact, independently of value evaluation)\n", entry.Row+1, entry.Column+1, entry.Definition)
+		for _, contribution := range entry.Contributions {
+			fmt.Fprintf(&b, "  %s (sign %+d): %s", contribution.SourceKind, contribution.Sign, contribution.Value.Kind)
+			switch contribution.Value.Kind {
+			case semantic.ExactValue:
+				fmt.Fprintf(&b, " value=%s", contribution.Value.Exact.Real.Expression)
+			case semantic.ApproximateValue:
+				fmt.Fprintf(&b, " value=%.12g", contribution.Value.Approximate.Real)
+				if contribution.Value.Metadata.Truncation != nil {
+					fmt.Fprintf(&b, " truncation={%s; remainder=%s}", contribution.Value.Metadata.Truncation.Bound, contribution.Value.Metadata.Truncation.RemainderStatus)
+				}
+				if contribution.Value.Metadata.Quadrature != nil {
+					fmt.Fprintf(&b, " quadrature={%s; tolerance=%g; rigorous=%t}", contribution.Value.Metadata.Quadrature.Method, contribution.Value.Metadata.Quadrature.Tolerance, contribution.Value.Metadata.Quadrature.ErrorRigorous)
+				}
+			}
+			b.WriteByte('\n')
+		}
+		fmt.Fprintf(&b, "  total: %s value=%.12g\n", entry.Value.Kind, entry.Value.Approximate.Real)
+		b.WriteString("  zero-side: retained as unevaluated theorem-linked alternate representation\n")
+	}
+	b.WriteString("\nMATRIX\n  semantic structure: exact Hermitian form (certified)\n  numerical realization: approximate\n  values:\n")
+	m := result.Evaluation.Matrix
+	for i := 0; i < m.Rows; i++ {
+		b.WriteString("    [")
+		for j := 0; j < m.Columns; j++ {
+			if j > 0 {
+				b.WriteString(", ")
+			}
+			fmt.Fprintf(&b, "%.12g", m.Entries[i*m.Columns+j].Value.Approximate.Real)
+		}
+		b.WriteString("]\n")
+	}
+	maxSymmetry := 0.0
+	for _, d := range result.Evaluation.HermitianDiagnostics {
+		if d.Discrepancy > maxSymmetry {
+			maxSymmetry = d.Discrepancy
+		}
+	}
+	fmt.Fprintf(&b, "  Hermitian consistency max |G_ij-conj(G_ji)|: %.3g (diagnostic only)\n", maxSymmetry)
+	for i, check := range result.Evaluation.DirectMatrixChecks {
+		fmt.Fprintf(&b, "  direct-vs-matrix probe %d discrepancy: %.3g (tolerance %.3g; numerical only)\n", i+1, check.Discrepancy, check.Tolerance)
+	}
+	fmt.Fprintf(&b, "  approximate eigenvalues: [%.12g, %.12g]; condition number: %.12g\n", result.Evaluation.EigenDiagnostic.Eigenvalues[0], result.Evaluation.EigenDiagnostic.Eigenvalues[1], result.Evaluation.EigenDiagnostic.Condition)
+	b.WriteString("  PSD: exact claim remains open; approximate eigenvalues do not certify it\n")
+	b.WriteString("\nRH CERTIFICATION\n  unchanged: unavailable\n  finite function_space_restriction remains on the proof path\n")
+	b.WriteString("\nRESEARCH BOUNDARIES\n  Octxiliary: not used; direct local Oct invocation was smaller\n  when utility: not used; the centered log-box route was clearly preferable after source inspection\n  zero-side numerical cross-check: not performed\n")
+	return b.String()
+}
+
+func M6JSONReport(result M6Result) ([]byte, error) {
+	proof, err := M5JSONReport(result.M5)
+	if err != nil {
+		return nil, err
+	}
+	report := struct {
+		Schema              string                `json:"schema"`
+		ProofGraph          json.RawMessage       `json:"proof_graph"`
+		EvaluationContracts []TheoremContract     `json:"evaluation_theorem_contracts"`
+		Basis               semantic.OrderedBasis `json:"basis"`
+		Evaluation          MatrixEvaluation      `json:"evaluation"`
+	}{Schema: "riemann.semantic-graph.m6", ProofGraph: json.RawMessage(proof), EvaluationContracts: result.Registry.Contracts(), Basis: result.Evaluation.Matrix.Basis, Evaluation: result.Evaluation}
+	var b bytes.Buffer
+	encoder := json.NewEncoder(&b)
+	encoder.SetIndent("", "  ")
+	encoder.SetEscapeHTML(false)
+	if err := encoder.Encode(report); err != nil {
+		return nil, err
+	}
+	return b.Bytes(), nil
+}
