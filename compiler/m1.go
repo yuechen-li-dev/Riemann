@@ -10,22 +10,24 @@ const (
 	BoundedZerosID            semantic.ClaimID = "zeta.zeros-below-height.on-critical-line"
 	RHBoundedConsequenceID    semantic.ClaimID = "rh.consequence.zeros-below-height.on-critical-line"
 	DirichletRepresentationID semantic.ClaimID = "zeta.representation.dirichlet-series"
-	EulerIdentityID           semantic.ClaimID = "zeta.identity.dirichlet-to-euler"
 	EulerRepresentationID     semantic.ClaimID = "zeta.representation.euler-product"
 	EulerConvergenceID        semantic.ClaimID = "zeta.euler-product.absolute-convergence"
 	EulerFactorsNonzeroID     semantic.ClaimID = "zeta.euler-product.nonzero-factors"
-	InfiniteProductTheoremID  semantic.ClaimID = "analysis.infinite-product.nonzero-limit"
 	ZeroFreeHalfPlaneID       semantic.ClaimID = "zeta.zero-free.re-gt-1"
 
 	RestrictRHToBoundedID semantic.TransformationID = "restrict-domain:rh-to-bounded-height"
-	ChangeToEulerID       semantic.TransformationID = "change-representation:dirichlet-to-euler"
-	DeriveZeroFreeID      semantic.TransformationID = "derive:euler-product-zero-free-half-plane"
+
+	DirichletTheoremID        semantic.TheoremID = "zeta.dirichlet-representation"
+	EulerProductTheoremID     semantic.TheoremID = "zeta.euler-product"
+	EulerConvergenceTheoremID semantic.TheoremID = "zeta.euler-product-absolute-convergence"
+	EulerFactorsTheoremID     semantic.TheoremID = "zeta.euler-factors-nonzero"
+	InfiniteProductTheoremID  semantic.TheoremID = "analysis.infinite-product-nonvanishing"
 )
 
 var dlmfDefinitionReference = semantic.Reference{Kind: semantic.StandardReference, Citation: "NIST DLMF §25.2(i), equation 25.2.1 (Dirichlet series for Re(s)>1)", URI: "https://dlmf.nist.gov/25.2.E1"}
 var dlmfEulerReference = semantic.Reference{Kind: semantic.StandardReference, Citation: "NIST DLMF §25.2(iv), equation 25.2.11 (Euler product for Re(s)>1)", URI: "https://dlmf.nist.gov/25.2.E11"}
-var dlmfZeroReference = semantic.Reference{Kind: semantic.StandardReference, Citation: "NIST DLMF §25.10(i) (the product representation implies ζ(s)≠0 for Re(s)>1)", URI: "https://dlmf.nist.gov/25.10.i"}
-var apostolProductReference = semantic.Reference{Kind: semantic.StandardReference, Citation: "Tom M. Apostol, Introduction to Analytic Number Theory (1976), §11.5; cited by NIST DLMF §25.2(iv)", URI: "https://dlmf.nist.gov/25.2.iv"}
+var dlmfZeroReference = semantic.Reference{Kind: semantic.StandardReference, Citation: "NIST DLMF §1.10(ix) (infinite products) and §25.10(i) (Euler product implies ζ(s)≠0 for Re(s)>1)", URI: "https://dlmf.nist.gov/25.10.i"}
+var apostolProductReference = semantic.Reference{Kind: semantic.StandardReference, Citation: "NIST DLMF §25.2(iv), equation 25.2.11; source Apostol (1976), Theorem 11.7", URI: "https://dlmf.nist.gov/25.2.E11"}
 
 // DomainRestriction is the generic universal restriction rule. It knows
 // nothing about RH; only typed quantifier, predicate, and subset semantics.
@@ -67,9 +69,14 @@ func (pass DomainRestriction) Apply(g *Graph, fromID semantic.ClaimID) (semantic
 	return target.ID, nil
 }
 
-type M1Options struct{ TrustInfiniteProductTheorem bool }
+type M1Options struct {
+	TrustInfiniteProductTheorem bool
+	OmitEulerFactorsTheorem     bool // focused partial-application fixture
+}
 type M1Result struct {
 	Graph               *Graph
+	Registry            *ContractRegistry
+	Applications        []TheoremApplication
 	ZeroFreeCertified   bool
 	ZeroFreeDiagnostics []Diagnostic
 	BoundedToRH         ProofAttempt
@@ -97,56 +104,48 @@ func CompileM1WithOptions(options M1Options) (M1Result, error) {
 		return M1Result{}, err
 	}
 
-	halfPlane := semantic.HalfPlaneReGreaterThanOne()
-	dirichlet := semantic.Representation{Object: semantic.RiemannZeta, Name: semantic.DirichletSeriesRepresentation, ValidOn: halfPlane, Formula: "ζ(s) = Σ_{n≥1} n^-s", Affordances: []string{"additive summation structure"}}
-	euler := semantic.Representation{Object: semantic.RiemannZeta, Name: semantic.EulerProductRepresentation, ValidOn: halfPlane, Formula: "ζ(s) = ∏_p (1 - p^-s)^-1", Affordances: []string{"prime factorization / multiplicative structure", "factor-wise nonvanishing argument"}}
-	dirichletClaim := authoredMathClaim(DirichletRepresentationID, semantic.RepresentationProposition{Representation: dirichlet}, semantic.DefinitionEvidence, dlmfDefinitionReference)
-	identityClaim := authoredMathClaim(EulerIdentityID, semantic.RepresentationIdentity{Object: semantic.RiemannZeta, Left: semantic.DirichletSeriesRepresentation, Right: semantic.EulerProductRepresentation, Domain: halfPlane}, semantic.KnownTheoremEvidence, dlmfEulerReference)
-	for _, claim := range []semantic.Claim{dirichletClaim, identityClaim} {
-		if err := g.AddClaim(claim); err != nil {
-			return M1Result{}, err
-		}
-	}
-	eulerClaim := semantic.Claim{
-		ID: EulerRepresentationID, Proposition: semantic.RepresentationProposition{Representation: euler},
-		Evidence:   []semantic.Evidence{{Kind: semantic.DerivedEvidence, Source: semantic.Reference{Kind: semantic.CompilerRecord, Citation: string(ChangeToEulerID)}, Note: "representation change is valid only on the stated domain and depends on the imported Euler identity"}},
-		Exactness:  semantic.Exact,
-		Provenance: semantic.Provenance{Kind: semantic.DerivedProvenance, Parents: []semantic.ClaimID{DirichletRepresentationID, EulerIdentityID}, Transformation: ChangeToEulerID, Source: dlmfEulerReference},
-	}
-	if err := g.AddClaim(eulerClaim); err != nil {
+	registry, err := m2TheoremRegistry(options)
+	if err != nil {
 		return M1Result{}, err
 	}
-	if err := g.AddTransformation(Transformation{ID: ChangeToEulerID, Pass: "change-representation", From: DirichletRepresentationID, To: EulerRepresentationID, Relation: Equivalent, Obligations: []semantic.ClaimID{EulerIdentityID}, Provenance: dlmfEulerReference}); err != nil {
-		return M1Result{}, err
-	}
-
-	convergence := authoredMathClaim(EulerConvergenceID, semantic.AnalyticFact{Fact: semantic.EulerProductConvergesAbsolutely, Object: semantic.RiemannZeta, Domain: halfPlane}, semantic.KnownTheoremEvidence, apostolProductReference)
-	factors := authoredMathClaim(EulerFactorsNonzeroID, semantic.AnalyticFact{Fact: semantic.EulerProductFactorsNonzero, Object: semantic.RiemannZeta, Domain: halfPlane}, semantic.KnownTheoremEvidence, apostolProductReference)
-	theoremEvidence := semantic.UnverifiedConjectureEvidence
-	if options.TrustInfiniteProductTheorem {
-		theoremEvidence = semantic.KnownTheoremEvidence
-	}
-	productTheorem := authoredMathClaim(InfiniteProductTheoremID, semantic.AnalyticFact{Fact: semantic.ConvergentProductNonzeroLimit, Object: semantic.RiemannZeta, Domain: halfPlane}, theoremEvidence, apostolProductReference)
-	for _, claim := range []semantic.Claim{convergence, factors, productTheorem} {
-		if err := g.AddClaim(claim); err != nil {
-			return M1Result{}, err
-		}
-	}
-	zeroFree := semantic.Claim{
-		ID:          ZeroFreeHalfPlaneID,
-		Proposition: semantic.QuantifiedStatement{Quantifier: semantic.ForAll, Domain: halfPlane, Predicate: semantic.Predicate{Kind: semantic.FunctionNonzeroPredicate, Function: semantic.RiemannZeta}},
-		Evidence:    []semantic.Evidence{{Kind: semantic.DerivedEvidence, Source: semantic.Reference{Kind: semantic.CompilerRecord, Citation: string(DeriveZeroFreeID)}, Note: "derived from the Euler representation and all explicit analytic premises"}},
-		Exactness:   semantic.Exact,
-		Provenance:  semantic.Provenance{Kind: semantic.DerivedProvenance, Parents: []semantic.ClaimID{EulerRepresentationID, EulerConvergenceID, EulerFactorsNonzeroID, InfiniteProductTheoremID}, Transformation: DeriveZeroFreeID, Source: dlmfZeroReference},
-	}
-	if err := g.AddClaim(zeroFree); err != nil {
-		return M1Result{}, err
-	}
-	if err := g.AddTransformation(Transformation{ID: DeriveZeroFreeID, Pass: "euler-product-nonvanishing", From: EulerRepresentationID, Premises: []semantic.ClaimID{EulerConvergenceID, EulerFactorsNonzeroID, InfiniteProductTheoremID}, To: ZeroFreeHalfPlaneID, Relation: Implies, Provenance: dlmfZeroReference}); err != nil {
+	engine := NewContractEngine(g, registry)
+	if err := engine.Saturate(); err != nil {
 		return M1Result{}, err
 	}
 	certified, diagnostics := g.Certify(ZeroFreeHalfPlaneID)
-	return M1Result{Graph: g, ZeroFreeCertified: certified, ZeroFreeDiagnostics: diagnostics, BoundedToRH: g.AttemptProof(BoundedZerosID, RHClaimID), DensityToRH: g.AttemptProof(DensityOneID, RHClaimID), ZeroFreeToRH: g.AttemptProof(ZeroFreeHalfPlaneID, RHClaimID)}, nil
+	return M1Result{Graph: g, Registry: registry, Applications: append([]TheoremApplication(nil), engine.Applications...), ZeroFreeCertified: certified, ZeroFreeDiagnostics: diagnostics, BoundedToRH: g.AttemptProof(BoundedZerosID, RHClaimID), DensityToRH: g.AttemptProof(DensityOneID, RHClaimID), ZeroFreeToRH: g.AttemptProof(ZeroFreeHalfPlaneID, RHClaimID)}, nil
+}
+
+func m2TheoremRegistry(options M1Options) (*ContractRegistry, error) {
+	halfPlane := semantic.HalfPlaneReGreaterThanOne()
+	exact := semantic.Exact
+	registry := NewContractRegistry()
+	known := func(ref semantic.Reference) semantic.Evidence {
+		return semantic.Evidence{Kind: semantic.KnownTheoremEvidence, Source: ref}
+	}
+	contracts := []TheoremContract{
+		{ID: DirichletTheoremID, ConclusionID: DirichletRepresentationID, Conclusion: Pattern{Kind: semantic.RepresentationKind, Object: ConstObject(semantic.RiemannZeta), Representation: ConstRepresentation(semantic.DirichletSeriesRepresentation), Domain: ConstDomain(halfPlane), Exactness: exact, Formula: "ζ(s) = Σ_{n≥1} n^-s", Affordances: []string{"additive summation structure"}}, Relation: Equivalent, Evidence: semantic.Evidence{Kind: semantic.DefinitionEvidence, Source: dlmfDefinitionReference}, Trust: TrustedExternalTheorem, Citation: "NIST DLMF 25.2.1"},
+		{ID: EulerProductTheoremID, Premises: []Pattern{{Kind: semantic.RepresentationKind, Object: ConstObject(semantic.RiemannZeta), Representation: ConstRepresentation(semantic.DirichletSeriesRepresentation), Domain: ConstDomain(halfPlane), Exactness: exact}}, ConclusionID: EulerRepresentationID, Conclusion: Pattern{Kind: semantic.RepresentationKind, Object: ConstObject(semantic.RiemannZeta), Representation: ConstRepresentation(semantic.EulerProductRepresentation), Domain: ConstDomain(halfPlane), Exactness: exact, Formula: "ζ(s) = ∏_p (1 - p^-s)^-1", Affordances: []string{"prime factorization / multiplicative structure", "factor-wise nonvanishing argument"}}, Relation: Equivalent, Evidence: known(dlmfEulerReference), Trust: TrustedExternalTheorem, Citation: "NIST DLMF 25.2.11"},
+		{ID: EulerConvergenceTheoremID, ConclusionID: EulerConvergenceID, Conclusion: Pattern{Kind: semantic.AnalyticFactKind, AnalyticFact: ConstAnalyticFact(semantic.EulerProductConvergesAbsolutely), Object: ConstObject(semantic.RiemannZeta), Domain: ConstDomain(halfPlane), Exactness: exact}, Relation: Implies, Evidence: known(apostolProductReference), Trust: TrustedExternalTheorem, Citation: "NIST DLMF 25.2(iv); Apostol Theorem 11.7"},
+	}
+	if !options.OmitEulerFactorsTheorem {
+		contracts = append(contracts, TheoremContract{ID: EulerFactorsTheoremID, ConclusionID: EulerFactorsNonzeroID, Conclusion: Pattern{Kind: semantic.AnalyticFactKind, AnalyticFact: ConstAnalyticFact(semantic.EulerProductFactorsNonzero), Object: ConstObject(semantic.RiemannZeta), Domain: ConstDomain(halfPlane), Exactness: exact}, Relation: Implies, Evidence: known(dlmfEulerReference), Trust: TrustedExternalTheorem, Citation: "NIST DLMF 25.2.11"})
+	}
+	trust := TrustedExternalTheorem
+	if !options.TrustInfiniteProductTheorem {
+		trust = UntrustedTheorem
+	}
+	contracts = append(contracts, TheoremContract{ID: InfiniteProductTheoremID, Parameters: []Parameter{{ID: "F", Type: ObjectParam}, {ID: "D", Type: DomainParam}}, Premises: []Pattern{
+		{Kind: semantic.RepresentationKind, Object: Var("F"), Representation: ConstRepresentation(semantic.EulerProductRepresentation), Domain: Var("D"), Exactness: exact},
+		{Kind: semantic.AnalyticFactKind, AnalyticFact: ConstAnalyticFact(semantic.EulerProductConvergesAbsolutely), Object: Var("F"), Domain: Var("D"), Exactness: exact},
+		{Kind: semantic.AnalyticFactKind, AnalyticFact: ConstAnalyticFact(semantic.EulerProductFactorsNonzero), Object: Var("F"), Domain: Var("D"), Exactness: exact},
+	}, ConclusionID: ZeroFreeHalfPlaneID, Conclusion: Pattern{Kind: semantic.QuantifiedStatementKind, Quantifier: ConstQuantifier(semantic.ForAll), Domain: Var("D"), Predicate: ConstPredicate(semantic.FunctionNonzeroPredicate), Object: Var("F"), Exactness: exact}, Relation: Implies, Evidence: known(dlmfZeroReference), Trust: trust, Citation: "NIST DLMF 1.10(ix), 25.10(i)"})
+	for _, contract := range contracts {
+		if err := registry.Register(contract); err != nil {
+			return nil, err
+		}
+	}
+	return registry, nil
 }
 
 func authoredMathClaim(id semantic.ClaimID, proposition semantic.Proposition, evidence semantic.EvidenceKind, ref semantic.Reference) semantic.Claim {

@@ -10,6 +10,7 @@ import (
 type ClaimID string
 type TransformationID string
 type AssumptionID string
+type TheoremID string
 
 // Function identifies a mathematical object independently of its representation.
 type Function uint8
@@ -375,6 +376,7 @@ type Provenance struct {
 	Kind           ProvenanceKind   `json:"kind"`
 	Parents        []ClaimID        `json:"parents"`
 	Transformation TransformationID `json:"transformation,omitempty"`
+	Theorem        TheoremID        `json:"theorem,omitempty"`
 	Source         Reference        `json:"source"`
 }
 
@@ -436,4 +438,24 @@ func CloneRepresentation(r Representation) Representation {
 func Quantified(p Proposition) (QuantifiedStatement, bool) {
 	q, ok := p.(QuantifiedStatement)
 	return q, ok
+}
+
+// SemanticKey is canonical identity for the typed meaning of a proposition.
+// Display-only representation formulae and affordances are deliberately absent.
+func SemanticKey(p Proposition) string {
+	switch v := p.(type) {
+	case QuantifiedStatement:
+		return fmt.Sprintf("q|%s|%s|%d|%d|%s|%d", v.Quantifier, v.Domain.Kind, v.Domain.Function, v.Domain.Bound, v.Predicate.Kind, v.Predicate.Function)
+	case RepresentationProposition:
+		r := v.Representation
+		return fmt.Sprintf("r|%d|%s|%s|%d|%d", r.Object, r.Name, r.ValidOn.Kind, r.ValidOn.Function, r.ValidOn.Bound)
+	case RepresentationIdentity:
+		return fmt.Sprintf("i|%d|%s|%s|%s|%d|%d", v.Object, v.Left, v.Right, v.Domain.Kind, v.Domain.Function, v.Domain.Bound)
+	case AnalyticFact:
+		return fmt.Sprintf("a|%s|%d|%s|%d|%d", v.Fact, v.Object, v.Domain.Kind, v.Domain.Function, v.Domain.Bound)
+	case NamedObligation:
+		return "n|" + v.Name
+	default:
+		return fmt.Sprintf("unknown|%T", p)
+	}
 }

@@ -50,6 +50,9 @@ type Transformation struct {
 	Obligations []semantic.ClaimID
 	Losses      []InformationLoss
 	Provenance  semantic.Reference
+	Theorem     semantic.TheoremID
+	Bindings    []Binding
+	Trusted     bool
 }
 
 type Graph struct {
@@ -126,12 +129,15 @@ func (g *Graph) AddTransformation(t Transformation) error {
 	if t.Relation == Approximation && !hasLoss(t.Losses, ApproximationLoss) {
 		return fmt.Errorf("approximation %q fails to declare approximation loss", t.ID)
 	}
-	if to.Provenance.Kind != semantic.DerivedProvenance || to.Provenance.Transformation != t.ID {
+	primaryDerivation := to.Provenance.Kind == semantic.DerivedProvenance && to.Provenance.Transformation == t.ID
+	if !primaryDerivation && t.Theorem == "" {
 		return fmt.Errorf("transformation %q target does not retain matching derived provenance", t.ID)
 	}
-	for _, id := range requiredParents {
-		if !containsID(to.Provenance.Parents, id) {
-			return fmt.Errorf("transformation %q target provenance omits premise %q", t.ID, id)
+	if primaryDerivation {
+		for _, id := range requiredParents {
+			if !containsID(to.Provenance.Parents, id) {
+				return fmt.Errorf("transformation %q target provenance omits premise %q", t.ID, id)
+			}
 		}
 	}
 	g.transformations = append(g.transformations, cloneTransformation(t))
@@ -211,6 +217,15 @@ func (g *Graph) Claims() []semantic.Claim {
 	}
 	return out
 }
+
+func (g *Graph) ClaimBySemanticKey(key string) (semantic.Claim, bool) {
+	for _, id := range g.claimOrder {
+		if semantic.SemanticKey(g.claims[id].Proposition) == key {
+			return cloneClaim(g.claims[id]), true
+		}
+	}
+	return semantic.Claim{}, false
+}
 func (g *Graph) Transformations() []Transformation {
 	out := make([]Transformation, len(g.transformations))
 	for i, t := range g.transformations {
@@ -233,6 +248,7 @@ func cloneTransformation(t Transformation) Transformation {
 	t.Premises = append([]semantic.ClaimID(nil), t.Premises...)
 	t.Obligations = append([]semantic.ClaimID(nil), t.Obligations...)
 	t.Losses = append([]InformationLoss(nil), t.Losses...)
+	t.Bindings = append([]Binding(nil), t.Bindings...)
 	return t
 }
 
@@ -427,6 +443,10 @@ func (g *Graph) certify(id semantic.ClaimID, visiting map[semantic.ClaimID]bool)
 			diagnostics = append(diagnostics, Diagnostic{ApproximationBoundary, "an approximation cannot certify an exact theorem target"})
 			continue
 		}
+		if t.Theorem != "" && !t.Trusted {
+			diagnostics = append(diagnostics, Diagnostic{UncertifiedEvidence, fmt.Sprintf("theorem contract %s is not trusted", t.Theorem)})
+			continue
+		}
 		blocked := false
 		for _, required := range append(append([]semantic.ClaimID{primary}, t.Premises...), t.Obligations...) {
 			if certified, _ := g.certify(required, visiting); !certified {
@@ -456,13 +476,33 @@ func (g *Graph) Lineage(id semantic.ClaimID) ([]semantic.ClaimID, error) {
 			return
 		}
 		seen[current] = true
-		for _, parent := range sortedIDs(g.claims[current].Provenance.Parents) {
+		parents := append([]semantic.ClaimID(nil), g.claims[current].Provenance.Parents...)
+		for _, transformation := range g.transformations {
+			if transformation.To == current {
+				parents = append(parents, transformation.From)
+				parents = append(parents, transformation.Premises...)
+				parents = append(parents, transformation.Obligations...)
+			}
+		}
+		for _, parent := range sortedIDs(uniqueIDs(parents)) {
 			visit(parent)
 		}
 		out = append(out, current)
 	}
 	visit(id)
 	return out, nil
+}
+
+func uniqueIDs(ids []semantic.ClaimID) []semantic.ClaimID {
+	seen := make(map[semantic.ClaimID]bool, len(ids))
+	out := make([]semantic.ClaimID, 0, len(ids))
+	for _, id := range ids {
+		if id != "" && !seen[id] {
+			seen[id] = true
+			out = append(out, id)
+		}
+	}
+	return out
 }
 
 func deduplicateDiagnostics(in []Diagnostic) []Diagnostic {

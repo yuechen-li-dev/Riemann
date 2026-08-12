@@ -30,24 +30,43 @@ func HumanReport(result M0Result) string {
 
 func M1HumanReport(result M1Result) string {
 	var b strings.Builder
-	zeroFree, _ := result.Graph.Claim(ZeroFreeHalfPlaneID)
-	euler, _ := result.Graph.Claim(EulerRepresentationID)
-	fmt.Fprintf(&b, "TARGET\n  %s\n\n", zeroFree.Proposition.Describe())
-	b.WriteString("REPRESENTATION\n  Riemann zeta function\n    → Euler product\n")
-	if p, ok := euler.Proposition.(semantic.RepresentationProposition); ok {
-		fmt.Fprintf(&b, "  formula: %s\n  domain: %s\n  relation: equivalent on stated domain\n", p.Representation.Formula, p.Representation.ValidOn.Describe())
-		for _, affordance := range p.Representation.Affordances {
-			fmt.Fprintf(&b, "  exposes: %s\n", affordance)
+	zeroFree, zeroFreeExists := result.Graph.Claim(ZeroFreeHalfPlaneID)
+	targetDescription := semantic.QuantifiedStatement{Quantifier: semantic.ForAll, Domain: semantic.HalfPlaneReGreaterThanOne(), Predicate: semantic.Predicate{Kind: semantic.FunctionNonzeroPredicate, Function: semantic.RiemannZeta}}.Describe()
+	if zeroFreeExists {
+		targetDescription = zeroFree.Proposition.Describe()
+	}
+	fmt.Fprintf(&b, "TARGET\n  %s\n\n", targetDescription)
+	for _, contract := range result.Registry.Contracts() {
+		fmt.Fprintf(&b, "IMPORT THEOREM\n  schema: %s\n  relation: %s\n  trust: %s\n  source: %s\n\n", contract.ID, contract.Relation, contract.Trust, contract.Evidence.Source.Citation)
+	}
+	for _, application := range result.Applications {
+		fmt.Fprintf(&b, "INSTANTIATE\n  theorem: %s\n", application.Theorem)
+		if len(application.Bindings) == 0 {
+			b.WriteString("  bindings: none\n")
+		}
+		for _, binding := range application.Bindings {
+			fmt.Fprintf(&b, "  bind %s = %s\n", binding.Parameter, describeBinding(binding.Value))
+		}
+		b.WriteString("PREMISES\n")
+		if len(application.Matched) == 0 {
+			b.WriteString("  none (trusted import)\n")
+		}
+		for _, matched := range application.Matched {
+			claim, _ := result.Graph.Claim(matched.Claim)
+			fmt.Fprintf(&b, "  [%d] %s — satisfied by %s\n", matched.Premise, claim.Proposition.Describe(), matched.Claim)
+		}
+		for _, obligation := range application.Obligations {
+			fmt.Fprintf(&b, "  [%d] %s — UNRESOLVED\n", obligation.Premise, obligation.Description)
+		}
+		if application.Complete {
+			claim, _ := result.Graph.Claim(application.Conclusion)
+			fmt.Fprintf(&b, "DERIVE\n  %s (%s)\n\n", claim.Proposition.Describe(), application.Conclusion)
+		} else {
+			b.WriteString("CANDIDATE\n  conclusion withheld until every premise is discharged\n\n")
 		}
 	}
-	b.WriteString("\nPREMISES\n")
-	for _, id := range []semantic.ClaimID{EulerIdentityID, EulerConvergenceID, EulerFactorsNonzeroID, InfiniteProductTheoremID} {
-		claim, _ := result.Graph.Claim(id)
-		fmt.Fprintf(&b, "  %s: %s\n", id, claim.Proposition.Describe())
-	}
-	fmt.Fprintf(&b, "\nDERIVE\n  %s\n", zeroFree.Proposition.Describe())
 	if result.ZeroFreeCertified {
-		b.WriteString("\nCERTIFIED\n  relative to the listed trusted analytic premises\n")
+		b.WriteString("CERTIFIED\n  relative to trusted imported theorem contracts\n")
 	} else {
 		b.WriteString("\nUNCERTIFIED\n")
 		for _, d := range result.ZeroFreeDiagnostics {
@@ -60,11 +79,39 @@ func M1HumanReport(result M1Result) string {
 	return b.String()
 }
 
+func describeBinding(v BindingValue) string {
+	switch v.Type {
+	case ObjectParam:
+		return v.Object.String()
+	case DomainParam:
+		return v.Domain.Describe()
+	case RepresentationParam:
+		return string(v.Representation)
+	case ScalarParam:
+		return fmt.Sprint(v.Scalar)
+	case QuantifierParam:
+		return string(v.Quantifier)
+	case PredicateParam:
+		return string(v.Predicate)
+	case AnalyticFactParam:
+		return string(v.AnalyticFact)
+	default:
+		return "unknown"
+	}
+}
+
 func renderAttempt(b *strings.Builder, g *Graph, attempt ProofAttempt) {
-	from, _ := g.Claim(attempt.From)
-	target, _ := g.Claim(attempt.Target)
+	from, fromOK := g.Claim(attempt.From)
+	target, targetOK := g.Claim(attempt.Target)
 	b.WriteString("\nATTEMPT\n")
-	fmt.Fprintf(b, "  use %q to discharge %q\n", from.Proposition.Describe(), target.Proposition.Describe())
+	fromText, targetText := string(attempt.From), string(attempt.Target)
+	if fromOK {
+		fromText = from.Proposition.Describe()
+	}
+	if targetOK {
+		targetText = target.Proposition.Describe()
+	}
+	fmt.Fprintf(b, "  use %q to discharge %q\n", fromText, targetText)
 	if attempt.Accepted {
 		b.WriteString("ACCEPTED\n")
 		return
@@ -77,6 +124,8 @@ func renderAttempt(b *strings.Builder, g *Graph, attempt ProofAttempt) {
 
 type graphJSON struct {
 	Schema          string               `json:"schema"`
+	Contracts       []TheoremContract    `json:"theorem_contracts"`
+	Applications    []TheoremApplication `json:"theorem_applications"`
 	Claims          []claimJSON          `json:"claims"`
 	Transformations []transformationJSON `json:"transformations"`
 	Certifications  []certificationJSON  `json:"certifications"`
@@ -116,6 +165,9 @@ type transformationJSON struct {
 	Obligations []semantic.ClaimID        `json:"obligations"`
 	Losses      []InformationLoss         `json:"losses"`
 	Provenance  semantic.Reference        `json:"provenance"`
+	Theorem     semantic.TheoremID        `json:"theorem,omitempty"`
+	Bindings    []Binding                 `json:"bindings"`
+	Trusted     bool                      `json:"trusted_theorem,omitempty"`
 }
 
 func JSONReport(result M0Result) ([]byte, error) {
@@ -123,11 +175,15 @@ func JSONReport(result M0Result) ([]byte, error) {
 }
 func M1JSONReport(result M1Result) ([]byte, error) {
 	certifications := []certificationJSON{{Claim: ZeroFreeHalfPlaneID, Certified: result.ZeroFreeCertified, Diagnostics: nonNil(result.ZeroFreeDiagnostics)}}
-	return marshalGraph("riemann.semantic-graph.m1", result.Graph, certifications, []ProofAttempt{result.BoundedToRH, result.DensityToRH, result.ZeroFreeToRH})
+	return marshalGraphWithContracts("riemann.semantic-graph.m2", result.Graph, result.Registry.Contracts(), result.Applications, certifications, []ProofAttempt{result.BoundedToRH, result.DensityToRH, result.ZeroFreeToRH})
 }
 
 func marshalGraph(schema string, g *Graph, certifications []certificationJSON, attempts []ProofAttempt) ([]byte, error) {
-	report := graphJSON{Schema: schema, Certifications: nonNil(certifications), Attempts: nonNil(attempts)}
+	return marshalGraphWithContracts(schema, g, nil, nil, certifications, attempts)
+}
+
+func marshalGraphWithContracts(schema string, g *Graph, contracts []TheoremContract, applications []TheoremApplication, certifications []certificationJSON, attempts []ProofAttempt) ([]byte, error) {
+	report := graphJSON{Schema: schema, Contracts: nonNil(contracts), Applications: nonNil(applications), Certifications: nonNil(certifications), Attempts: nonNil(attempts)}
 	for _, claim := range g.Claims() {
 		item := propositionJSON{Kind: claim.Proposition.Kind(), Description: claim.Proposition.Describe()}
 		switch p := claim.Proposition.(type) {
@@ -146,7 +202,7 @@ func marshalGraph(schema string, g *Graph, certifications []certificationJSON, a
 		report.Claims = append(report.Claims, claimJSON{ID: claim.ID, Proposition: item, Assumptions: nonNil(claim.Assumptions), Evidence: nonNil(claim.Evidence), Exactness: claim.Exactness, Provenance: claim.Provenance})
 	}
 	for _, t := range g.Transformations() {
-		report.Transformations = append(report.Transformations, transformationJSON{ID: t.ID, Pass: t.Pass, From: t.From, Premises: nonNil(t.Premises), To: t.To, Relation: t.Relation, Obligations: nonNil(t.Obligations), Losses: nonNil(t.Losses), Provenance: t.Provenance})
+		report.Transformations = append(report.Transformations, transformationJSON{ID: t.ID, Pass: t.Pass, From: t.From, Premises: nonNil(t.Premises), To: t.To, Relation: t.Relation, Obligations: nonNil(t.Obligations), Losses: nonNil(t.Losses), Provenance: t.Provenance, Theorem: t.Theorem, Bindings: nonNil(t.Bindings), Trusted: t.Trusted})
 	}
 	var b bytes.Buffer
 	encoder := json.NewEncoder(&b)

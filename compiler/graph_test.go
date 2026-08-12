@@ -184,10 +184,13 @@ func TestEulerRepresentationsAttachObjectDomainAndAffordances(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, want := range []semantic.ClaimID{DirichletRepresentationID, EulerIdentityID, EulerRepresentationID, EulerConvergenceID, EulerFactorsNonzeroID, InfiniteProductTheoremID} {
+	for _, want := range []semantic.ClaimID{DirichletRepresentationID, EulerRepresentationID, EulerConvergenceID, EulerFactorsNonzeroID} {
 		if !containsID(lineage, want) {
 			t.Fatalf("zero-free provenance omits %s: %v", want, lineage)
 		}
+	}
+	if !hasApplication(result.Applications, InfiniteProductTheoremID) {
+		t.Fatal("zero-free provenance omits its infinite-product theorem instance")
 	}
 }
 
@@ -201,18 +204,18 @@ func TestEulerMultiPremiseDerivationAndMissingPremise(t *testing.T) {
 	}
 	var derivation Transformation
 	for _, tr := range result.Graph.Transformations() {
-		if tr.ID == DeriveZeroFreeID {
+		if tr.Theorem == InfiniteProductTheoremID {
 			derivation = tr
 		}
 	}
-	if len(derivation.Premises) != 3 {
+	if len(derivation.Premises) != 2 {
 		t.Fatalf("analytic premises not explicit: %+v", derivation)
 	}
 	missing, err := CompileM1WithOptions(M1Options{TrustInfiniteProductTheorem: false})
 	if err != nil {
 		t.Fatal(err)
 	}
-	if missing.ZeroFreeCertified || !hasCode(missing.ZeroFreeDiagnostics, OpenObligation) || !strings.Contains(diagnosticsText(missing.ZeroFreeDiagnostics), string(InfiniteProductTheoremID)) {
+	if missing.ZeroFreeCertified || !hasCode(missing.ZeroFreeDiagnostics, UncertifiedEvidence) || !strings.Contains(diagnosticsText(missing.ZeroFreeDiagnostics), string(InfiniteProductTheoremID)) {
 		t.Fatalf("missing premise not visible: %+v", missing.ZeroFreeDiagnostics)
 	}
 }
@@ -291,12 +294,21 @@ func TestReportsAreDeterministic(t *testing.T) {
 			t.Fatal("M1 report changed")
 		}
 	}
-	if !strings.Contains(string(wantJSON), `"schema": "riemann.semantic-graph.m1"`) || !strings.Contains(string(wantJSON), `"quantifier": "for_all"`) {
+	if !strings.Contains(string(wantJSON), `"schema": "riemann.semantic-graph.m2"`) || !strings.Contains(string(wantJSON), `"quantifier": "for_all"`) {
 		t.Fatal("M1 structural JSON missing")
 	}
 	if !strings.Contains(string(wantJSON), `"certified": true`) {
 		t.Fatal("M1 certification status missing")
 	}
+}
+
+func hasApplication(applications []TheoremApplication, theorem semantic.TheoremID) bool {
+	for _, application := range applications {
+		if application.Theorem == theorem && application.Complete {
+			return true
+		}
+	}
+	return false
 }
 
 func mustAddClaim(t *testing.T, g *Graph, c semantic.Claim) {

@@ -10,8 +10,15 @@ import (
 
 func main() {
 	jsonOutput := flag.Bool("json", false, "emit the deterministic machine-readable proof graph")
+	missingPremise := flag.Bool("missing-premise", false, "demonstrate a bound unresolved theorem premise")
 	flag.Parse()
-	result, err := compiler.CompileM1()
+	var result compiler.M1Result
+	var err error
+	if *missingPremise {
+		result, err = compiler.CompileM1WithOptions(compiler.M1Options{TrustInfiniteProductTheorem: true, OmitEulerFactorsTheorem: true})
+	} else {
+		result, err = compiler.CompileM1()
+	}
 	if err != nil {
 		fail(err)
 	}
