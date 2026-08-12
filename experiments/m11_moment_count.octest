@@ -1,0 +1,129 @@
+package M11MomentCount
+
+// Bounded, exact-integer diagonal-spectrum exploration.  The theorem check is
+// cross-multiplied: residual^2 <= observedCount*frobeniusSquared.  These facts
+// filter candidates and probe equality; they are never certification evidence.
+concept StrictlyPositiveGap = Int {
+    Require(Self > 0, "an eigenvalue counted above threshold needs a strict positive gap")
+}
+
+concept StrictlyPositiveResidual = Int {
+    Require(Self > 0, "the moment theorem needs trace - dimension*threshold > 0")
+}
+
+concept NonnegativeThreshold = Int {
+    Require(Self >= 0, "the selected spectral mass is positive only for a nonnegative threshold")
+}
+
+fn RuntimeInt(value: Int) -> Int { return value }
+
+fn Above(value: Int, threshold: Int) -> Int {
+    var count = 0
+    match StrictlyPositiveGap(RuntimeInt(value - threshold)) {
+        ok(gap) -> {count = 1}
+        err(problem) -> {count = 0}
+    }
+    return count
+}
+
+fn PositiveResidual(trace: Int, dimension: Int, threshold: Int) -> StrictlyPositiveResidual ! Error {
+    return StrictlyPositiveResidual(RuntimeInt(trace - dimension * threshold)) ?
+}
+
+[Fact]
+fn EqualityAtZeroThresholdIsSharp() -> Void {
+    // spectrum [1,1,0,0], trace=2, F^2=2, m=2.
+    let m = Above(1, 0) + Above(1, 0) + Above(0, 0) + Above(0, 0)
+    let s = PositiveResidual(2, 4, 0) !
+    Assert.Equal(s * s, m * 2, "Cauchy bound is attained")
+}
+
+[Fact]
+fn NegativeEigenvaluesDoNotBreakTheorem() -> Void {
+    // spectrum [4,-1,-1], trace=2, F^2=18, theta=0, m=1.
+    let m = Above(4, 0) + Above(-1, 0) + Above(-1, 0)
+    let s = PositiveResidual(2, 3, 0) !
+    Assert.True(s * s <= m * 18, "negative remainder only helps trace split")
+}
+
+[Fact]
+fn OneLargePositiveDirectionIsHandled() -> Void {
+    // spectrum [10,-2,-2,-2], trace=4, F^2=112.
+    let m = Above(10, 0) + Above(-2, 0) + Above(-2, 0) + Above(-2, 0)
+    let s = PositiveResidual(4, 4, 0) !
+    Assert.True(s * s <= m * 112, "Frobenius cost prevents false many-direction claim")
+}
+
+[Fact]
+fn StrictThresholdEqualityBelongsToRemainder() -> Void {
+    // spectrum [3,1,1], theta=1: equality values are excluded.
+    let m = Above(3, 1) + Above(1, 1) + Above(1, 1)
+    let s = PositiveResidual(5, 3, 1) !
+    Assert.Equal(1, m, "strict count")
+    Assert.True(s * s <= m * 11, "dimension-corrected theorem")
+}
+
+[Fact]
+fn NonpositiveResidualIsVacuous() -> Void {
+    // spectrum [1,1,1], theta=1 has residual zero and strict count zero.
+    let m = Above(1, 1) + Above(1, 1) + Above(1, 1)
+    Assert.Error(PositiveResidual(3, 3, 1), "zero residual is rejected by the theorem concept")
+    Assert.Equal(0, m, "no false positive")
+}
+
+[Fact]
+fn DimensionFreeResidualFails() -> Void {
+    // A false residual trace-theta=2 on spectrum [1,1,1], theta=1 would be
+    // positive although the strict count is zero.
+    let falseResidual = 3 - 1
+    let m = Above(1, 1) + Above(1, 1) + Above(1, 1)
+    Assert.True(falseResidual * falseResidual > m * 3, "dimension cannot be omitted")
+}
+
+[Fact]
+fn NegativeThresholdExtensionFails() -> Void {
+    // spectrum [-1], theta=-2 selects a negative eigenvalue. The alleged
+    // positive selected mass is actually -1.
+    let selectedSum = -1
+    let allegedResidual = -1 - 1 * (-2)
+    Assert.True(selectedSum < 0, "selected sum is not positive")
+    Assert.True(allegedResidual > 0, "residual proof gives the wrong sign")
+    Assert.Error(NonnegativeThreshold(RuntimeInt(-2)), "negative theta is rejected at construction")
+}
+
+[Fact]
+fn SecondMomentLowerBoundHasWrongDirection() -> Void {
+    // For [M,-M+1], trace stays 1 and m stays 1 while F^2 grows. Merely knowing
+    // F^2>=2 cannot upper-bound the selected mass.
+    let smallFrob = 1 * 1 + 0 * 0
+    let largeFrob = 100 * 100 + (-99) * (-99)
+    Assert.True(largeFrob > smallFrob, "no usable denominator upper bound")
+}
+
+[Fact]
+fn OperatorNormSquaredCannotDirectlyReplaceFrobeniusSquared() -> Void {
+    // spectrum [1,1] has trace=2 and operator norm squared=1. Substitution in
+    // trace^2/B would falsely demand four directions although dimension is two.
+    let trace = 2
+    let operatorNormSquared = 1
+    let dimension = 2
+    Assert.True(trace * trace > dimension * operatorNormSquared, "Frobenius denominator cannot be replaced verbatim")
+}
+
+[Fact]
+fn NonStrictSubstitutionChangesCount() -> Void {
+    // spectrum [2,2], theta=2.
+    let strictCount = Above(2, 2) + Above(2, 2)
+    let hypotheticalNonStrict = 2
+    Assert.True(hypotheticalNonStrict > strictCount, "M10 convention must remain strict")
+}
+
+[Fact]
+fn IntegerCeilingIsNecessary() -> Void {
+    // spectrum [3,2,1], theta=1: residual^2/F^2=9/14, so a real positive
+    // lower bound forces at least one direction, not floor(9/14)=0.
+    let m = Above(3, 1) + Above(2, 1) + Above(1, 1)
+    let s = PositiveResidual(6, 3, 1) !
+    Assert.True(s * s > 0, "real lower bound is positive")
+    Assert.True(m >= 1, "ceil preserves the integer consequence")
+}

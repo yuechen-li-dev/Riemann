@@ -1,13 +1,15 @@
 # Riemann
 
 Riemann is an experimental compiler for making transformations of mathematical
-claims mechanically inspectable. M10 adds the paper-backed height family
-`G_tilde_T=P_near+Q_near+E_far`, controls the far term in operator norm, and
-uses strict thresholded inertia plus M9 accounting to compile a certified local
-spectral observation into finite simple-critical and distinct-zero counts in
-`(T,2T]`. The first/second-moment input needed to produce a strong thresholded
-spectral observation remains deliberately open. Finite positivity and the
-inherited function-space coverage loss still leave RH unresolved.
+claims mechanically inspectable. M11 adds typed trace, Frobenius-square, and
+dimension claims; proves the generic finite bound
+`n_plus^theta(G) >= ceil((A-d*theta)^2/B)` under its explicit positivity and
+evidence premises; and instantiates it with the paper's first two prime-side
+moments. At bandwidth one this yields
+`n_plus^theta(G_tilde_T) >= (3/4-o(1))N(T,2T)`. Reusing M10 then reconstructs
+the earlier half-stage result for simple critical zeros and the three-quarter
+result for distinct zeros. The later rank-trace optimization is deliberately
+absent, and RH remains unresolved.
 
 ```powershell
 go run ./cmd/riemann
@@ -22,6 +24,6 @@ matrix, decomposes its zero-side meaning into symmetry-orbit contributions,
 accounts for aggregate rank/inertia budgets, and localizes a separate
 height-dependent compression. It rejects approximate, non-strict-threshold,
 wrong-norm, multiplicity-as-rank, and finite-PSD reverse shortcuts. See
-[docs/m10-architecture.md](docs/m10-architecture.md) for the exact window
-theorem, tail estimate, counterexamples, experiment, and remaining spectral
-input. Earlier milestone documents remain available.
+[docs/m11-architecture.md](docs/m11-architecture.md) for the exact moment
+theorem, source normalization, threshold scaling, counterexamples, experiment,
+and M10 composition. Earlier milestone documents remain available.

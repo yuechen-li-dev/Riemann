@@ -29,19 +29,19 @@ func main() {
 		fmt.Print(compiler.M3HumanReport(result))
 		return
 	}
-	result, err := compiler.CompileM10()
+	result, err := compiler.CompileM11()
 	if err != nil {
 		fail(err)
 	}
 	if *jsonOutput {
-		output, err := compiler.M10JSONReport(result)
+		output, err := compiler.M11JSONReport(result)
 		if err != nil {
 			fail(err)
 		}
 		_, _ = os.Stdout.Write(output)
 		return
 	}
-	fmt.Print(compiler.M10HumanReport(result))
+	fmt.Print(compiler.M11HumanReport(result))
 }
 
 func fail(err error) {

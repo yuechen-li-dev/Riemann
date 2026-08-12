@@ -827,3 +827,79 @@ func M10JSONReport(result M10Result) ([]byte, error) {
 	}{"riemann.semantic-graph.m10", json.RawMessage(m9), result.Compression, result.CountVocabulary, result.Decomposition, result.FarBound, result.Perturbation, result.CountingTheorem, result.ExactSanityObservation, result.Architecture, result.Counterexamples, result.Experiment, result.UtilitySchedulerUsed, result.M7RegressionRole, result.Sources}
 	return json.MarshalIndent(report, "", "  ")
 }
+
+func M11HumanReport(result M11Result) string {
+	var b strings.Builder
+	b.WriteString("RIEMANN-M11 — FIRST/SECOND MOMENTS TO THRESHOLDED POSITIVE INDEX\n\n")
+	b.WriteString("MOMENT INPUT\n")
+	for _, m := range result.Moments {
+		fmt.Fprintf(&b, "  %s\n    matrix: %s\n    statement: %s\n    evidence: %s\n", m.Kind, m.MatrixID, m.Expression, m.Evidence)
+	}
+	b.WriteString("  normalization: G_tilde_T=G_T/L, L=lambda*log(T/2pi)\n\n")
+	b.WriteString("FINITE SPECTRAL THEOREM\n")
+	fmt.Fprintf(&b, "  %s\n  assumptions: %v\n  partition: %s\n  trace residual: %s\n  Cauchy-Schwarz: %s\n  real bound: %s\n  integer bound: %s\n\n", result.FiniteTheorem.Name, result.FiniteTheorem.Assumptions, result.FiniteTheorem.Partition, result.FiniteTheorem.TraceResidual, result.FiniteTheorem.CauchySchwarz, result.FiniteTheorem.RealConclusion, result.FiniteTheorem.IntegerConclusion)
+	b.WriteString("ASYMPTOTIC DISCHARGE\n")
+	for _, m := range result.AsymptoticMoments {
+		fmt.Fprintf(&b, "  %s\n    main: %s\n    remainder: %s\n    scale: %s\n", m.Moment.Kind, m.MainTerm, m.Remainder, m.Scale)
+	}
+	fmt.Fprintf(&b, "  moment error: %s\n  dimension: %s\n  threshold: %s\n  penalty: %s\n  relative penalty: %s\n  conclusion: %s\n\n", result.ThresholdScaling.MomentError, result.ThresholdScaling.DimensionAsymptotic, result.ThresholdScaling.Threshold, result.ThresholdScaling.Penalty, result.ThresholdScaling.RelativePenalty, result.ThresholdScaling.Conclusion)
+	b.WriteString("THRESHOLDED POSITIVE INDEX\n")
+	fmt.Fprintf(&b, "  eventually finite: %s\n  asymptotic: %s\n  F(lambda): %s\n  endpoint: %s\n\n", result.AsymptoticCount.FiniteEpsilonBound, result.AsymptoticCount.NormalizedLowerBound, result.AsymptoticCount.BandwidthFunction, result.AsymptoticCount.EndpointIndexBound)
+	b.WriteString("M10 COMPOSITION\n")
+	fmt.Fprintf(&b, "  simple critical zeros: %s\n  distinct zeros: %s\n  fringe: %s\n\n", result.AsymptoticCount.M10SimpleComposition, result.AsymptoticCount.M10DistinctComposition, result.AsymptoticCount.Fringe)
+	b.WriteString("ASYMPTOTIC CONSEQUENCE\n")
+	fmt.Fprintf(&b, "  %s\n  exact constant: %s\n  %s\n  half-type reproduced: %t\n  no stronger rank/trace optimization attempted\n\n", result.AsymptoticCount.SimpleCriticalLiminf, result.AsymptoticCount.ExactSimpleConstant, result.AsymptoticCount.DistinctLiminf, result.AsymptoticCount.HalfTypeReproduced)
+	b.WriteString("COUNTEREXAMPLES TO REJECTED VARIANTS\n")
+	for _, c := range result.Counterexamples {
+		fmt.Fprintf(&b, "  rejected: %s\n    spectrum: %s\n    reason: %s\n", c.RejectedCandidate, c.ExactSpectrum, c.Reason)
+	}
+	b.WriteString("\nOCT EXPERIMENT\n")
+	fmt.Fprintf(&b, "  path: %s\n  check: %s\n  run: %s\n  setup: %s\n  trials: %d\n  execution: %s\n  compiler: %s\n  limits: %s\n  findings: %v\n  evidence: %s\n  when utility used: %t (the paper's Lemma 3.3 fixes the simple branch; no live route choice remained)\n\n", result.Experiment.Path, result.Experiment.CheckCommand, result.Experiment.RunCommand, result.Experiment.Setup, result.Experiment.Trials, result.Experiment.Execution, result.Experiment.CompilerIdentity, result.Experiment.TimingAndLimits, result.Experiment.Findings, result.Experiment.EvidenceClassification, result.UtilitySchedulerUsed)
+	b.WriteString("IMPORTED FROM LITERATURE\n")
+	for _, x := range result.ImportedMathematics {
+		fmt.Fprintf(&b, "  %s\n", x)
+	}
+	b.WriteString("\nNEWLY DERIVED BY COMPILER / RESEARCH LOOP\n")
+	for _, x := range result.DerivedMathematics {
+		fmt.Fprintf(&b, "  %s\n", x)
+	}
+	b.WriteString("\nREPRESENTATION FUSION\n")
+	for _, x := range result.Fusion {
+		fmt.Fprintf(&b, "  %s\n", x)
+	}
+	b.WriteString("\nARCHITECTURAL AWKWARDNESS\n  asymptotic moment claims and exact finite bounds require a deliberate Eventually adapter; encoding them as one scalar claim would launder o-terms. The current string-valued asymptotic algebra is minimal but should not grow into an untyped symbolic engine.\n")
+	b.WriteString("\nCOMPILER THEORY\n  theorem compilation must preserve statistic kind, evidence grade, scale, and integer codomain across representations. The decisive operation is staged representation fusion, not formula substitution.\n")
+	b.WriteString("\nONE NEXT MILESTONE\n  M12: encode and verify the paper's finite rank-trace inequality as a generic Hermitian theorem, then compare its certified index/count consequence with M11's sharp first-two-moment ceiling.\n")
+	b.WriteString("\nSTATUS\n  known half-stage result reproduced: yes\n  simple critical liminf: 1/2\n  distinct-zero liminf from this route: 3/4\n  RH\n  unresolved\n")
+	return b.String()
+}
+
+func M11JSONReport(result M11Result) ([]byte, error) {
+	if err := validateM11Result(result); err != nil {
+		return nil, err
+	}
+	m10, err := M10JSONReport(result.M10)
+	if err != nil {
+		return nil, err
+	}
+	report := struct {
+		Schema               string                               `json:"schema"`
+		M10                  json.RawMessage                      `json:"m10"`
+		Moments              []semantic.SpectralMomentClaim       `json:"moment_inputs"`
+		AsymptoticMoments    []semantic.AsymptoticMomentStatement `json:"asymptotic_moments"`
+		EventuallyBounds     []semantic.EventuallyBound           `json:"eventually_finite_bounds"`
+		FiniteTheorem        semantic.FiniteMomentCountTheorem    `json:"finite_spectral_theorem"`
+		ExactSanity          semantic.MomentCountResult           `json:"exact_sanity"`
+		ThresholdScaling     M11ThresholdScaling                  `json:"threshold_scaling"`
+		AsymptoticCount      M11AsymptoticCount                   `json:"asymptotic_count"`
+		M10ReuseSanity       WindowCountBounds                    `json:"m10_reuse_sanity"`
+		Counterexamples      []M11Counterexample                  `json:"counterexamples"`
+		Experiment           M11Experiment                        `json:"oct_experiment"`
+		UtilitySchedulerUsed bool                                 `json:"when_utility_used"`
+		Fusion               []string                             `json:"representation_fusion"`
+		Imported             []string                             `json:"imported_from_literature"`
+		Derived              []string                             `json:"newly_derived_by_compiler_research_loop"`
+		Sources              []semantic.Reference                 `json:"sources"`
+	}{"riemann.semantic-graph.m11", json.RawMessage(m10), result.Moments, result.AsymptoticMoments, result.EventuallyBounds, result.FiniteTheorem, result.ExactSanity, result.ThresholdScaling, result.AsymptoticCount, result.M10ReuseSanity, result.Counterexamples, result.Experiment, result.UtilitySchedulerUsed, result.Fusion, result.ImportedMathematics, result.DerivedMathematics, result.Sources}
+	return json.MarshalIndent(report, "", "  ")
+}
