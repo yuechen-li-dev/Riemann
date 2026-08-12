@@ -128,6 +128,12 @@ type Pattern struct {
 	Exactness      semantic.Exactness       `json:"exactness"`
 	Formula        string                   `json:"formula,omitempty"`
 	Affordances    []string                 `json:"affordances,omitempty"`
+	// M4's first functional theorem is concrete. Keeping these fields typed and
+	// non-parametric avoids pretending the compiler has a general binder calculus.
+	FunctionClass       *semantic.FunctionClass          `json:"function_class,omitempty"`
+	Functional          semantic.FunctionalID            `json:"functional,omitempty"`
+	FunctionalPredicate semantic.FunctionalPredicateKind `json:"functional_predicate,omitempty"`
+	TransformConvention semantic.TransformConventionID   `json:"transform_convention,omitempty"`
 }
 
 type TheoremTrust string
@@ -224,8 +230,22 @@ func cloneContract(c TheoremContract) TheoremContract {
 	c.SideConditions = append([]Pattern(nil), c.SideConditions...)
 	for i := range c.Premises {
 		c.Premises[i].Affordances = append([]string(nil), c.Premises[i].Affordances...)
+		if c.Premises[i].FunctionClass != nil {
+			x := semantic.CloneFunctionClass(*c.Premises[i].FunctionClass)
+			c.Premises[i].FunctionClass = &x
+		}
+	}
+	for i := range c.SideConditions {
+		if c.SideConditions[i].FunctionClass != nil {
+			x := semantic.CloneFunctionClass(*c.SideConditions[i].FunctionClass)
+			c.SideConditions[i].FunctionClass = &x
+		}
 	}
 	c.Conclusion.Affordances = append([]string(nil), c.Conclusion.Affordances...)
+	if c.Conclusion.FunctionClass != nil {
+		x := semantic.CloneFunctionClass(*c.Conclusion.FunctionClass)
+		c.Conclusion.FunctionClass = &x
+	}
 	return c
 }
 
@@ -395,6 +415,16 @@ func validatePattern(p Pattern, declared map[ParamID]ParamType) error {
 			term Term
 			kind ParamType
 		}{p.Classification, ZeroClassificationParam})
+	case semantic.UniversalFunctionalStatementKind:
+		if p.FunctionClass == nil || p.Functional == "" || p.FunctionalPredicate != semantic.FunctionalNonnegative || p.TransformConvention == "" {
+			return fmt.Errorf("incomplete functional statement pattern")
+		}
+		if err := p.FunctionClass.Validate(); err != nil {
+			return err
+		}
+		if p.FunctionClass.TransformConvention != p.TransformConvention {
+			return fmt.Errorf("functional pattern transform mismatch")
+		}
 	default:
 		return fmt.Errorf("unsupported proposition pattern kind %q", p.Kind)
 	}
@@ -509,6 +539,8 @@ func matchPattern(p Pattern, claim semantic.Claim, env bindingEnv) bool {
 		return env.bind(p.Region, BindingValue{Type: DomainParam, Domain: v.Region})
 	case semantic.ZeroClassification:
 		return env.bind(p.Object, BindingValue{Type: ObjectParam, Object: v.Object}) && env.bind(p.Classification, BindingValue{Type: ZeroClassificationParam, ZeroClassification: v.Classification})
+	case semantic.UniversalFunctionalStatement:
+		return p.FunctionClass != nil && v.Quantifier == semantic.ForAll && v.FunctionClass.Key() == p.FunctionClass.Key() && v.Functional == p.Functional && v.Predicate == p.FunctionalPredicate && v.TransformConvention == p.TransformConvention
 	}
 	return false
 }
@@ -711,6 +743,11 @@ func instantiate(p Pattern, env bindingEnv) (semantic.Proposition, error) {
 			return nil, err
 		}
 		return semantic.ZeroClassification{Object: o.Object, Classification: c.ZeroClassification}, nil
+	case semantic.UniversalFunctionalStatementKind:
+		if p.FunctionClass == nil {
+			return nil, fmt.Errorf("functional statement has no class")
+		}
+		return semantic.UniversalFunctionalStatement{Quantifier: semantic.ForAll, Variable: "f", FunctionClass: *p.FunctionClass, Functional: p.Functional, Predicate: p.FunctionalPredicate, TransformConvention: p.TransformConvention}, nil
 	default:
 		return nil, fmt.Errorf("unsupported pattern kind %s", p.Kind)
 	}

@@ -153,6 +153,47 @@ func M3HumanReport(result M3Result) string {
 	return b.String()
 }
 
+func M4HumanReport(result M4Result) string {
+	var b strings.Builder
+	b.WriteString("RIEMANN-M4 — WEIL CRITERION + TEST-FUNCTION IR\n\n")
+	rh, _ := result.Graph.Claim(ZeroLocationID)
+	positivity, _ := result.Graph.Claim(WeilPositivityID)
+	fmt.Fprintf(&b, "TARGET\n  %s\n\n", rh.Proposition.Describe())
+	b.WriteString("LOWER\n  theorem: Weil positivity criterion (Lagarias, Theorem 3.2)\n  relation: equivalent\n  trust: trusted imported mathematics\n")
+	b.WriteString("  normalization: M[f](s) = integral_0^infinity f(x)x^s dx/x\n")
+	b.WriteString("  involution: tilde(g)(x) = x^-1 g(x^-1)\n")
+	b.WriteString("  quadratic input: h = f * tilde(conjugate(f)), using multiplicative convolution\n")
+	fmt.Fprintf(&b, "RESULT\n  %s\n\n", positivity.Proposition.Describe())
+
+	definition, _ := result.Graph.Claim(WeilFunctionalDefinitionID)
+	q := definition.Proposition.(semantic.FunctionalDefinition).Functional
+	fmt.Fprintf(&b, "FUNCTIONAL\n  %s\n  contributions:\n", q.ID)
+	for _, c := range q.Contributions {
+		fmt.Fprintf(&b, "    %s [%s] (sign %+d): %s\n", c.Kind, c.RepresentationSide, c.Sign, c.Formula)
+		if c.Aggregate != nil {
+			fmt.Fprintf(&b, "      aggregate domain: %s\n      transform: %s\n      theorem lineage: %v\n", c.Aggregate.IndexDomain.Describe(), c.Aggregate.TransformConvention, c.Aggregate.TheoremLineage)
+		}
+	}
+	b.WriteString("\nEXPLICIT-FORMULA TRUST BOUNDARY\n  definition: Q(f) is the zero-side quadratic functional W^(1)(f*tilde(conjugate(f)))\n  imported theorem: Wspec(h) = Warith(h) (Lagarias, Theorem 3.1)\n  derived decomposition: Q(f) = endpoint terms - prime-power terms - archimedean term\n\n")
+
+	finite, _ := result.Graph.Claim(FiniteWeilPositivityID)
+	fmt.Fprintf(&b, "RESTRICT\n  test-function domain:\n    %s\n  →\n    %s\n", positivity.Proposition.(semantic.UniversalFunctionalStatement).FunctionClass.Describe(), result.FiniteFamily.Describe())
+	b.WriteString("  relation: implies\n  information loss: function_space_restriction — finite coverage is a strict subclass\n")
+	fmt.Fprintf(&b, "RESULT\n  %s\n\n", finite.Proposition.Describe())
+
+	b.WriteString("ATTEMPT\n  use finite-family positivity to certify RH\nRH CERTIFICATION\n  REJECTED\n")
+	for _, d := range result.FiniteToRH.Diagnostics {
+		fmt.Fprintf(&b, "  [%s] %s\n", d.Code, d.Message)
+	}
+	b.WriteString("\nNUMERICAL EVIDENCE BOUNDARY\n  sampled finite family {f1, f2}; hypothetical values recorded as nonnegative\nEVIDENCE\n  numerical only (approximate finite-family claim)\nRH CERTIFICATION\n  REJECTED\n")
+	for _, d := range result.NumericalToUniversal.Diagnostics {
+		fmt.Fprintf(&b, "  [%s] %s\n", d.Code, d.Message)
+	}
+	b.WriteString("\nOCT EXPERIMENT\n  path: experiments/m4_weil_toy.octest\n  setup: real reflection-pair block q(a,b)=2ab and critical fixed-point block q(a)=a^2\n  result: 3 passed; compiled 3; interpreted fallback 0; off-critical sample q(1,-1)=-2\n  scope: sign-convention toy only; no admissible function construction and no zeta-functional evaluation\n")
+	b.WriteString("\nSTATUS\n  The RH ↔ universal Weil-positivity lowering is represented exactly relative to trusted imports.\n  Neither universal positivity nor RH is certified.\n")
+	return b.String()
+}
+
 func describeBinding(v BindingValue) string {
 	switch v.Type {
 	case ObjectParam:
@@ -232,19 +273,23 @@ type claimJSON struct {
 	Provenance  semantic.Provenance   `json:"provenance"`
 }
 type propositionJSON struct {
-	Kind                   semantic.PropositionKind         `json:"kind"`
-	Description            string                           `json:"description"`
-	Quantifier             semantic.QuantifierKind          `json:"quantifier,omitempty"`
-	Domain                 *semantic.Domain                 `json:"domain,omitempty"`
-	Predicate              *semantic.Predicate              `json:"predicate,omitempty"`
-	Representation         *semantic.Representation         `json:"representation,omitempty"`
-	RepresentationIdentity *semantic.RepresentationIdentity `json:"representation_identity,omitempty"`
-	AnalyticFact           *semantic.AnalyticFact           `json:"analytic_fact,omitempty"`
-	ZeroAtPoint            *semantic.ZeroAtPoint            `json:"zero_at_point,omitempty"`
-	SideCondition          *semantic.SideCondition          `json:"side_condition,omitempty"`
-	FunctionalIdentity     *semantic.FunctionalIdentity     `json:"functional_identity,omitempty"`
-	ZeroSetProperty        *semantic.ZeroSetProperty        `json:"zero_set_property,omitempty"`
-	ZeroClassification     *semantic.ZeroClassification     `json:"zero_classification,omitempty"`
+	Kind                         semantic.PropositionKind               `json:"kind"`
+	Description                  string                                 `json:"description"`
+	Quantifier                   semantic.QuantifierKind                `json:"quantifier,omitempty"`
+	Domain                       *semantic.Domain                       `json:"domain,omitempty"`
+	Predicate                    *semantic.Predicate                    `json:"predicate,omitempty"`
+	Representation               *semantic.Representation               `json:"representation,omitempty"`
+	RepresentationIdentity       *semantic.RepresentationIdentity       `json:"representation_identity,omitempty"`
+	AnalyticFact                 *semantic.AnalyticFact                 `json:"analytic_fact,omitempty"`
+	ZeroAtPoint                  *semantic.ZeroAtPoint                  `json:"zero_at_point,omitempty"`
+	SideCondition                *semantic.SideCondition                `json:"side_condition,omitempty"`
+	FunctionalIdentity           *semantic.FunctionalIdentity           `json:"functional_identity,omitempty"`
+	ZeroSetProperty              *semantic.ZeroSetProperty              `json:"zero_set_property,omitempty"`
+	ZeroClassification           *semantic.ZeroClassification           `json:"zero_classification,omitempty"`
+	FunctionalDefinition         *semantic.FunctionalDefinition         `json:"functional_definition,omitempty"`
+	UniversalFunctionalStatement *semantic.UniversalFunctionalStatement `json:"universal_functional_statement,omitempty"`
+	TestFunctionAdmissibility    *semantic.TestFunctionAdmissibility    `json:"test_function_admissibility,omitempty"`
+	ExplicitFormulaIdentity      *semantic.ExplicitFormulaIdentity      `json:"explicit_formula_identity,omitempty"`
 }
 type transformationJSON struct {
 	ID          semantic.TransformationID `json:"id"`
@@ -277,6 +322,22 @@ func M3JSONReport(result M3Result) ([]byte, error) {
 	return marshalGraphWithContracts("riemann.semantic-graph.m3", result.Graph, contracts, applications, certifications, []ProofAttempt{result.M1.BoundedToRH, result.M1.DensityToRH, result.M1.ZeroFreeToRH})
 }
 
+func M4JSONReport(result M4Result) ([]byte, error) {
+	contracts := append(result.M3.M1.Registry.Contracts(), result.M3.Registry.Contracts()...)
+	contracts = append(contracts, result.Registry.Contracts()...)
+	sort.Slice(contracts, func(i, j int) bool { return contracts[i].ID < contracts[j].ID })
+	applications := append(append([]TheoremApplication(nil), result.M3.M1.Applications...), result.M3.Applications...)
+	positivityCertified, positivityDiagnostics := result.Graph.Certify(WeilPositivityID)
+	finiteCertified, finiteDiagnostics := result.Graph.Certify(FiniteWeilPositivityID)
+	certifications := []certificationJSON{
+		{Claim: CriticalReflectionInvariantID, Certified: result.M3.SymmetryCertified, Diagnostics: nonNil(result.M3.SymmetryDiagnostics)},
+		{Claim: CriticalStripConfinementID, Certified: result.M3.StripCertified, Diagnostics: nonNil(result.M3.StripDiagnostics)},
+		{Claim: WeilPositivityID, Certified: positivityCertified, Diagnostics: nonNil(positivityDiagnostics)},
+		{Claim: FiniteWeilPositivityID, Certified: finiteCertified, Diagnostics: nonNil(finiteDiagnostics)},
+	}
+	return marshalGraphWithContracts("riemann.semantic-graph.m4", result.Graph, contracts, applications, certifications, []ProofAttempt{result.FullToFinite, result.FiniteToRH, result.NumericalToUniversal})
+}
+
 func marshalGraph(schema string, g *Graph, certifications []certificationJSON, attempts []ProofAttempt) ([]byte, error) {
 	return marshalGraphWithContracts(schema, g, nil, nil, certifications, attempts)
 }
@@ -307,6 +368,14 @@ func marshalGraphWithContracts(schema string, g *Graph, contracts []TheoremContr
 			item.ZeroSetProperty = &p
 		case semantic.ZeroClassification:
 			item.ZeroClassification = &p
+		case semantic.FunctionalDefinition:
+			item.FunctionalDefinition = &p
+		case semantic.UniversalFunctionalStatement:
+			item.UniversalFunctionalStatement = &p
+		case semantic.TestFunctionAdmissibility:
+			item.TestFunctionAdmissibility = &p
+		case semantic.ExplicitFormulaIdentity:
+			item.ExplicitFormulaIdentity = &p
 		}
 		report.Claims = append(report.Claims, claimJSON{ID: claim.ID, Proposition: item, Assumptions: nonNil(claim.Assumptions), Evidence: nonNil(claim.Evidence), Exactness: claim.Exactness, Provenance: claim.Provenance})
 	}

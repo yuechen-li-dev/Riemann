@@ -27,9 +27,10 @@ func (r Relation) Reversible() bool { return r == Equivalent }
 type LossKind string
 
 const (
-	QuantifierWeakening    LossKind = "quantifier_weakening"
-	DomainScopeRestriction LossKind = "domain_restriction"
-	ApproximationLoss      LossKind = "approximation"
+	QuantifierWeakening      LossKind = "quantifier_weakening"
+	DomainScopeRestriction   LossKind = "domain_restriction"
+	ApproximationLoss        LossKind = "approximation"
+	FunctionSpaceRestriction LossKind = "function_space_restriction"
 )
 
 type InformationLoss struct {
@@ -122,6 +123,11 @@ func (g *Graph) AddTransformation(t Transformation) error {
 		if !hasLoss(t.Losses, required) {
 			return fmt.Errorf("transformation %q fails to declare structural loss %s", t.ID, required)
 		}
+		if required == FunctionSpaceRestriction {
+			if err := g.validateFunctionRestrictionPremises(from, to, t.Premises); err != nil {
+				return fmt.Errorf("transformation %q: %w", t.ID, err)
+			}
+		}
 	}
 	if strengthening := structuralStrengthening(from.Proposition, to.Proposition); strengthening != "" && !(t.Relation == Equivalent && len(t.Obligations) > 0) {
 		return fmt.Errorf("transformation %q attempts unsupported structural strengthening: %s", t.ID, strengthening)
@@ -144,7 +150,34 @@ func (g *Graph) AddTransformation(t Transformation) error {
 	return nil
 }
 
+func (g *Graph) validateFunctionRestrictionPremises(from, to semantic.Claim, premises []semantic.ClaimID) error {
+	source := from.Proposition.(semantic.UniversalFunctionalStatement)
+	target := to.Proposition.(semantic.UniversalFunctionalStatement)
+	for _, member := range target.FunctionClass.Members {
+		covered := false
+		for _, id := range premises {
+			claim := g.claims[id]
+			admissible, ok := claim.Proposition.(semantic.TestFunctionAdmissibility)
+			if ok && admissible.Function.Key() == member.Key() && admissible.Class.Key() == source.FunctionClass.Key() {
+				if certified, _ := g.Certify(id); certified {
+					covered = true
+					break
+				}
+			}
+		}
+		if !covered {
+			return fmt.Errorf("function-space restriction lacks a certified admissibility premise for %s", member.Symbol)
+		}
+	}
+	return nil
+}
+
 func structuralLosses(from, to semantic.Proposition) []LossKind {
+	if a, aok := from.(semantic.UniversalFunctionalStatement); aok {
+		if b, bok := to.(semantic.UniversalFunctionalStatement); bok && sameFunctionalPredicate(a, b) && a.FunctionClass.Key() != b.FunctionClass.Key() && functionClassShapeSubset(b.FunctionClass, a.FunctionClass) {
+			return []LossKind{FunctionSpaceRestriction}
+		}
+	}
 	a, aok := semantic.Quantified(from)
 	b, bok := semantic.Quantified(to)
 	if !aok || !bok || a.Predicate != b.Predicate {
@@ -161,6 +194,11 @@ func structuralLosses(from, to semantic.Proposition) []LossKind {
 }
 
 func structuralStrengthening(from, to semantic.Proposition) string {
+	if a, aok := from.(semantic.UniversalFunctionalStatement); aok {
+		if b, bok := to.(semantic.UniversalFunctionalStatement); bok && sameFunctionalPredicate(a, b) && a.FunctionClass.Key() != b.FunctionClass.Key() && !functionClassShapeSubset(b.FunctionClass, a.FunctionClass) {
+			return "conclusion function class is not covered by source function class"
+		}
+	}
 	a, aok := semantic.Quantified(from)
 	b, bok := semantic.Quantified(to)
 	if !aok || !bok || a.Predicate != b.Predicate {
@@ -242,6 +280,23 @@ func cloneClaim(claim semantic.Claim) semantic.Claim {
 		p.Representation = semantic.CloneRepresentation(p.Representation)
 		claim.Proposition = p
 	}
+	switch p := claim.Proposition.(type) {
+	case semantic.FunctionalDefinition:
+		p.Functional = semantic.CloneQuadraticFunctional(p.Functional)
+		claim.Proposition = p
+	case semantic.UniversalFunctionalStatement:
+		p.FunctionClass = semantic.CloneFunctionClass(p.FunctionClass)
+		claim.Proposition = p
+	case semantic.TestFunctionAdmissibility:
+		p.Function = semantic.CloneTestFunction(p.Function)
+		p.Class = semantic.CloneFunctionClass(p.Class)
+		claim.Proposition = p
+	case semantic.ExplicitFormulaIdentity:
+		p.FunctionClass = semantic.CloneFunctionClass(p.FunctionClass)
+		p.ZeroSide = semantic.CloneAggregate(p.ZeroSide)
+		p.ArithmeticSide = append([]semantic.FunctionalContribution(nil), p.ArithmeticSide...)
+		claim.Proposition = p
+	}
 	return claim
 }
 func cloneTransformation(t Transformation) Transformation {
@@ -296,6 +351,9 @@ func (g *Graph) CheckDischarge(fromID, targetID semantic.ClaimID) ProofAttempt {
 		attempt.Diagnostics = []Diagnostic{{NoEstablishedDirection, "source or target claim is unknown"}}
 		return attempt
 	}
+	if from.Exactness == semantic.Approximate && target.Exactness == semantic.Exact {
+		attempt.Diagnostics = append(attempt.Diagnostics, Diagnostic{ApproximationBoundary, "an approximate or numerical claim cannot certify an exact theorem target"})
+	}
 	path, found := g.findPath(fromID, targetID)
 	if !found {
 		message := fmt.Sprintf("no established transformation permits %s → %s", fromID, targetID)
@@ -337,6 +395,21 @@ func (g *Graph) CheckDischarge(fromID, targetID semantic.ClaimID) ProofAttempt {
 }
 
 func compareStructuralStrength(from, target semantic.Proposition) []Diagnostic {
+	if a, aok := from.(semantic.UniversalFunctionalStatement); aok {
+		if b, bok := target.(semantic.UniversalFunctionalStatement); bok {
+			var out []Diagnostic
+			if a.Functional != b.Functional || a.Predicate != b.Predicate {
+				out = append(out, Diagnostic{PredicateMismatch, "source and target use different functional predicates"})
+			}
+			if a.TransformConvention != b.TransformConvention {
+				out = append(out, Diagnostic{PredicateMismatch, "source and target use incompatible transform conventions"})
+			}
+			if !functionClassShapeSubset(b.FunctionClass, a.FunctionClass) {
+				out = append(out, Diagnostic{DomainMismatch, fmt.Sprintf("source function class %s does not cover target function class %s", a.FunctionClass.Describe(), b.FunctionClass.Describe())})
+			}
+			return out
+		}
+	}
 	a, aok := semantic.Quantified(from)
 	b, bok := semantic.Quantified(target)
 	if !aok || !bok {
@@ -371,7 +444,27 @@ func (g *Graph) lossBlocksTarget(step Transformation, kind LossKind, target sema
 		narrowed, ok := semantic.Quantified(g.claims[step.To].Proposition)
 		return ok && !semantic.IsSubset(q.Domain, narrowed.Domain)
 	}
+	if kind == FunctionSpaceRestriction {
+		targetFunctional, ok := target.(semantic.UniversalFunctionalStatement)
+		narrowed, narrowedOK := g.claims[step.To].Proposition.(semantic.UniversalFunctionalStatement)
+		// A loss of universal function-space coverage cannot disappear merely
+		// because a later equivalent representation (such as RH) changes IR family.
+		return !ok || (narrowedOK && !functionClassShapeSubset(targetFunctional.FunctionClass, narrowed.FunctionClass))
+	}
 	return kind == ApproximationLoss
+}
+
+func sameFunctionalPredicate(a, b semantic.UniversalFunctionalStatement) bool {
+	return a.Quantifier == b.Quantifier && a.Functional == b.Functional && a.Predicate == b.Predicate && a.TransformConvention == b.TransformConvention
+}
+
+// Shape inclusion is intentionally small. Membership evidence is checked by
+// FunctionClassRestriction before a graph edge is admitted.
+func functionClassShapeSubset(sub, sup semantic.FunctionClass) bool {
+	if sub.Key() == sup.Key() {
+		return true
+	}
+	return sub.Kind == semantic.FiniteFunctionClass && sup.Kind == semantic.WeilNiceFunctionClass && sub.TransformConvention == sup.TransformConvention
 }
 
 func (g *Graph) findPath(from, target semantic.ClaimID) ([]Transformation, bool) {

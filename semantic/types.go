@@ -197,16 +197,20 @@ type Proposition interface {
 type PropositionKind string
 
 const (
-	QuantifiedStatementKind    PropositionKind = "quantified_statement"
-	RepresentationKind         PropositionKind = "representation"
-	RepresentationIdentityKind PropositionKind = "representation_identity"
-	AnalyticFactKind           PropositionKind = "analytic_fact"
-	NamedObligationKind        PropositionKind = "named_obligation"
-	ZeroAtPointKind            PropositionKind = "zero_at_point"
-	SideConditionKind          PropositionKind = "side_condition"
-	FunctionalIdentityKind     PropositionKind = "functional_identity"
-	ZeroSetPropertyKind        PropositionKind = "zero_set_property"
-	ZeroClassificationKind     PropositionKind = "zero_classification"
+	QuantifiedStatementKind          PropositionKind = "quantified_statement"
+	RepresentationKind               PropositionKind = "representation"
+	RepresentationIdentityKind       PropositionKind = "representation_identity"
+	AnalyticFactKind                 PropositionKind = "analytic_fact"
+	NamedObligationKind              PropositionKind = "named_obligation"
+	ZeroAtPointKind                  PropositionKind = "zero_at_point"
+	SideConditionKind                PropositionKind = "side_condition"
+	FunctionalIdentityKind           PropositionKind = "functional_identity"
+	ZeroSetPropertyKind              PropositionKind = "zero_set_property"
+	ZeroClassificationKind           PropositionKind = "zero_classification"
+	FunctionalDefinitionKind         PropositionKind = "functional_definition"
+	UniversalFunctionalStatementKind PropositionKind = "universal_functional_statement"
+	TestFunctionAdmissibilityKind    PropositionKind = "test_function_admissibility"
+	ExplicitFormulaIdentityKind      PropositionKind = "explicit_formula_identity"
 )
 
 type QuantifiedStatement struct {
@@ -466,6 +470,22 @@ func (c Claim) Validate() error {
 		if err := p.Validate(); err != nil {
 			return fmt.Errorf("claim %q: %w", c.ID, err)
 		}
+	case FunctionalDefinition:
+		if err := p.Functional.Validate(); err != nil {
+			return fmt.Errorf("claim %q: %w", c.ID, err)
+		}
+	case UniversalFunctionalStatement:
+		if err := p.Validate(); err != nil {
+			return fmt.Errorf("claim %q: %w", c.ID, err)
+		}
+	case TestFunctionAdmissibility:
+		if err := p.Validate(); err != nil {
+			return fmt.Errorf("claim %q: %w", c.ID, err)
+		}
+	case ExplicitFormulaIdentity:
+		if err := p.Validate(); err != nil {
+			return fmt.Errorf("claim %q: %w", c.ID, err)
+		}
 	}
 	seen := make(map[AssumptionID]bool, len(c.Assumptions))
 	for _, assumption := range c.Assumptions {
@@ -514,6 +534,14 @@ func SemanticKey(p Proposition) string {
 		return fmt.Sprintf("g|%s|%s|%s|%s", domainKey(v.Set), v.Property, v.Transform, domainKey(v.Region))
 	case ZeroClassification:
 		return fmt.Sprintf("c|%d|%s", v.Object, v.Classification)
+	case FunctionalDefinition:
+		return "fd|" + string(v.Functional.ID) + "|" + string(v.Functional.TransformConvention)
+	case UniversalFunctionalStatement:
+		return fmt.Sprintf("uf|%s|%s|%s|%s|%s", v.Quantifier, v.FunctionClass.Key(), v.Functional, v.Predicate, v.TransformConvention)
+	case TestFunctionAdmissibility:
+		return "ta|" + v.Function.Key() + "|" + v.Class.Key()
+	case ExplicitFormulaIdentity:
+		return "ef|" + string(v.Functional) + "|" + v.FunctionClass.Key() + "|" + string(v.TransformConvention.ID) + "|" + string(v.Theorem)
 	default:
 		return fmt.Sprintf("unknown|%T", p)
 	}

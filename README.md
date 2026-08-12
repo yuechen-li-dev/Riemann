@@ -1,12 +1,11 @@
 # Riemann
 
 Riemann is an experimental compiler for making transformations of mathematical
-claims mechanically inspectable. M3 represents zeta symmetry as typed
-information transport: theorem contracts move zero claims across structural
-complex-point transforms while retaining domain checks, prefactor conditions,
-assumptions, evidence, and theorem provenance. It derives the four generated
-symmetry transforms without assuming four distinct locations, compiles the
-known critical-strip geometry, and lowers RH to a fixed-point obligation.
+claims mechanically inspectable. M4 lowers RH from typed zero geometry to the
+equivalent universal positivity of the Weil quadratic functional on a typed
+test-function class. It records the Mellin convention, zero/prime/archimedean
+explicit-formula structure, certified finite-family restriction, coverage
+loss, and the numerical evidence boundary.
 
 ```powershell
 go run ./cmd/riemann
@@ -15,8 +14,8 @@ go run ./cmd/riemann --missing-premise
 go test ./...
 ```
 
-The demonstration also rejects three invalid attempts to prove RH: bounded
-zero verification, density-one information, and zero-exclusion on `Re(s)>1`.
-See [docs/m3-architecture.md](docs/m3-architecture.md) for the functional
-equation normalization, transport derivations, side conditions, trust boundary,
-citations, and M3 findings. Earlier milestone documents remain available.
+The demonstration lowers RH to universal Weil positivity, restricts that claim
+to a certified finite family, and rejects both finite and numerical positivity
+as proofs of RH. See [docs/m4-architecture.md](docs/m4-architecture.md) for the
+criterion, normalization, trust boundary, IR, Oct experiment, and findings.
+Earlier milestone documents remain available.

@@ -1,0 +1,29 @@
+package M4WeilToy
+
+// This is the real-coordinate restriction of the off-critical reflection-pair
+// block a*conjugate(b)+b*conjugate(a). It models transform values, not the
+// construction of an admissible function attaining those values.
+fn OffCriticalPairForm(a: Float, b: Float) -> Float {
+    return 2.0 * a * b
+}
+
+// At a critical-line fixed point, the same Weil summand is |a|^2.
+fn CriticalFixedPointForm(a: Float) -> Float {
+    return a * a
+}
+
+[Fact]
+fn OffCriticalToyBlockHasNegativeDirection() -> Void {
+    Assert.Equal(-2.0, OffCriticalPairForm(1.0, -1.0), "reflection-pair block should expose a negative direction")
+}
+
+[Fact]
+fn OffCriticalToyBlockAlsoHasPositiveDirection() -> Void {
+    Assert.Equal(2.0, OffCriticalPairForm(1.0, 1.0), "reflection-pair block should be indefinite")
+}
+
+[Fact]
+fn CriticalFixedPointSamplesAreNonnegative() -> Void {
+    Assert.Equal(0.0, CriticalFixedPointForm(0.0), "zero transform value should contribute zero")
+    Assert.Equal(4.0, CriticalFixedPointForm(-2.0), "critical-line contribution should be a square")
+}

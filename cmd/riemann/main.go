@@ -12,25 +12,36 @@ func main() {
 	jsonOutput := flag.Bool("json", false, "emit the deterministic machine-readable proof graph")
 	missingPremise := flag.Bool("missing-premise", false, "demonstrate an unresolved M3 completion-factor side condition")
 	flag.Parse()
-	var result compiler.M3Result
 	var err error
 	if *missingPremise {
-		result, err = compiler.CompileM3WithOptions(compiler.M3Options{OmitCompletionFactor: true})
-	} else {
-		result, err = compiler.CompileM3()
+		result, compileErr := compiler.CompileM3WithOptions(compiler.M3Options{OmitCompletionFactor: true})
+		if compileErr != nil {
+			fail(compileErr)
+		}
+		if *jsonOutput {
+			output, reportErr := compiler.M3JSONReport(result)
+			if reportErr != nil {
+				fail(reportErr)
+			}
+			_, _ = os.Stdout.Write(output)
+			return
+		}
+		fmt.Print(compiler.M3HumanReport(result))
+		return
 	}
+	result, err := compiler.CompileM4()
 	if err != nil {
 		fail(err)
 	}
 	if *jsonOutput {
-		output, err := compiler.M3JSONReport(result)
+		output, err := compiler.M4JSONReport(result)
 		if err != nil {
 			fail(err)
 		}
 		_, _ = os.Stdout.Write(output)
 		return
 	}
-	fmt.Print(compiler.M3HumanReport(result))
+	fmt.Print(compiler.M4HumanReport(result))
 }
 
 func fail(err error) {
