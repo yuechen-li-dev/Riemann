@@ -15,11 +15,17 @@ type TheoremID string
 // Function identifies a mathematical object independently of its representation.
 type Function uint8
 
-const RiemannZeta Function = 1
+const (
+	RiemannZeta Function = 1
+	RiemannXi   Function = 2
+)
 
 func (f Function) String() string {
 	if f == RiemannZeta {
 		return "Riemann zeta function"
+	}
+	if f == RiemannXi {
+		return "Riemann xi function"
 	}
 	return fmt.Sprintf("unknown function (%d)", f)
 }
@@ -66,6 +72,8 @@ const (
 	NontrivialZerosDomain  DomainKind = "nontrivial_zeros"
 	ZerosBelowHeightDomain DomainKind = "zeros_below_height"
 	CriticalLineDomain     DomainKind = "critical_line"
+	ComplexExceptOneDomain DomainKind = "complex_plane_except_one"
+	BoundaryLineDomain     DomainKind = "line_re_eq_1"
 )
 
 func ComplexPlane() Domain              { return Domain{Kind: ComplexPlaneDomain} }
@@ -75,11 +83,13 @@ func NontrivialZeros(f Function) Domain { return Domain{Kind: NontrivialZerosDom
 func ZerosBelowHeight(f Function, t uint64) Domain {
 	return Domain{Kind: ZerosBelowHeightDomain, Function: f, Bound: t}
 }
-func CriticalLine() Domain { return Domain{Kind: CriticalLineDomain} }
+func CriticalLine() Domain          { return Domain{Kind: CriticalLineDomain} }
+func ComplexPlaneExceptOne() Domain { return Domain{Kind: ComplexExceptOneDomain} }
+func LineReEqualsOne() Domain       { return Domain{Kind: BoundaryLineDomain} }
 
 func (d Domain) Validate() error {
 	switch d.Kind {
-	case ComplexPlaneDomain, RightHalfPlaneDomain, CriticalStripDomain, CriticalLineDomain:
+	case ComplexPlaneDomain, RightHalfPlaneDomain, CriticalStripDomain, CriticalLineDomain, ComplexExceptOneDomain, BoundaryLineDomain:
 		if d.Function != 0 || d.Bound != 0 {
 			return fmt.Errorf("domain %s has extraneous parameters", d.Kind)
 		}
@@ -111,6 +121,10 @@ func (d Domain) Describe() string {
 		return fmt.Sprintf("the nontrivial zeros of the %s with |Im(ρ)| ≤ %d", d.Function.String(), d.Bound)
 	case CriticalLineDomain:
 		return "the critical line Re(s) = 1/2"
+	case ComplexExceptOneDomain:
+		return "the complex plane except s = 1"
+	case BoundaryLineDomain:
+		return "the line Re(s) = 1"
 	default:
 		return "an unknown domain"
 	}
@@ -128,9 +142,6 @@ func IsSubset(sub, sup Domain) bool {
 	if sub.Kind == CriticalLineDomain && sup.Kind == CriticalStripDomain {
 		return true
 	}
-	if sup.Kind == CriticalStripDomain && (sub.Kind == NontrivialZerosDomain || sub.Kind == ZerosBelowHeightDomain) {
-		return sub.Function == RiemannZeta
-	}
 	if sub.Kind == ZerosBelowHeightDomain && sup.Kind == NontrivialZerosDomain {
 		return sub.Function == sup.Function
 	}
@@ -143,8 +154,9 @@ func IsSubset(sub, sup Domain) bool {
 type PredicateKind string
 
 const (
-	RealPartEqualsHalfPredicate PredicateKind = "real_part_equals_one_half"
-	FunctionNonzeroPredicate    PredicateKind = "function_nonzero"
+	RealPartEqualsHalfPredicate      PredicateKind = "real_part_equals_one_half"
+	FunctionNonzeroPredicate         PredicateKind = "function_nonzero"
+	CriticalReflectionFixedPredicate PredicateKind = "critical_reflection_fixed"
 )
 
 type Predicate struct {
@@ -156,7 +168,7 @@ func (p Predicate) Validate() error {
 	if p.Function == 0 {
 		return fmt.Errorf("predicate has no function")
 	}
-	if p.Kind != RealPartEqualsHalfPredicate && p.Kind != FunctionNonzeroPredicate {
+	if p.Kind != RealPartEqualsHalfPredicate && p.Kind != FunctionNonzeroPredicate && p.Kind != CriticalReflectionFixedPredicate {
 		return fmt.Errorf("unknown predicate %q", p.Kind)
 	}
 	return nil
@@ -168,6 +180,8 @@ func (p Predicate) Describe(variable string) string {
 		return fmt.Sprintf("Re(%s) = 1/2", variable)
 	case FunctionNonzeroPredicate:
 		return fmt.Sprintf("ζ(%s) ≠ 0", variable)
+	case CriticalReflectionFixedPredicate:
+		return fmt.Sprintf("1-conjugate(%s) = %s", variable, variable)
 	default:
 		return "unknown predicate"
 	}
@@ -188,6 +202,11 @@ const (
 	RepresentationIdentityKind PropositionKind = "representation_identity"
 	AnalyticFactKind           PropositionKind = "analytic_fact"
 	NamedObligationKind        PropositionKind = "named_obligation"
+	ZeroAtPointKind            PropositionKind = "zero_at_point"
+	SideConditionKind          PropositionKind = "side_condition"
+	FunctionalIdentityKind     PropositionKind = "functional_identity"
+	ZeroSetPropertyKind        PropositionKind = "zero_set_property"
+	ZeroClassificationKind     PropositionKind = "zero_classification"
 )
 
 type QuantifiedStatement struct {
@@ -218,12 +237,15 @@ func (p QuantifiedStatement) Describe() string {
 type RepresentationName string
 
 const (
-	DirichletSeriesRepresentation RepresentationName = "dirichlet_series"
-	EulerProductRepresentation    RepresentationName = "euler_product"
+	DirichletSeriesRepresentation      RepresentationName = "dirichlet_series"
+	EulerProductRepresentation         RepresentationName = "euler_product"
+	AnalyticContinuationRepresentation RepresentationName = "analytic_continuation"
+	CompletedXiRepresentation          RepresentationName = "completed_xi"
 )
 
 type Representation struct {
 	Object      Function           `json:"object"`
+	BaseObject  Function           `json:"base_object,omitempty"`
 	Name        RepresentationName `json:"name"`
 	ValidOn     Domain             `json:"valid_on"`
 	Formula     string             `json:"formula"`
@@ -231,8 +253,15 @@ type Representation struct {
 }
 
 func (r Representation) Validate() error {
-	if r.Object == 0 || (r.Name != DirichletSeriesRepresentation && r.Name != EulerProductRepresentation) {
+	if r.Object == 0 || (r.Name != DirichletSeriesRepresentation && r.Name != EulerProductRepresentation && r.Name != AnalyticContinuationRepresentation && r.Name != CompletedXiRepresentation) {
 		return fmt.Errorf("invalid representation identity")
+	}
+	if r.Name == CompletedXiRepresentation {
+		if r.Object != RiemannXi || r.BaseObject != RiemannZeta {
+			return fmt.Errorf("completed xi must structurally reference zeta")
+		}
+	} else if r.BaseObject != 0 {
+		return fmt.Errorf("base object is only valid for completed xi")
 	}
 	if err := r.ValidOn.Validate(); err != nil {
 		return err
@@ -417,6 +446,26 @@ func (c Claim) Validate() error {
 		if strings.TrimSpace(p.Name) == "" {
 			return fmt.Errorf("claim %q has an empty named obligation", c.ID)
 		}
+	case ZeroAtPoint:
+		if err := p.Validate(); err != nil {
+			return fmt.Errorf("claim %q: %w", c.ID, err)
+		}
+	case SideCondition:
+		if err := p.Validate(); err != nil {
+			return fmt.Errorf("claim %q: %w", c.ID, err)
+		}
+	case FunctionalIdentity:
+		if err := p.Validate(); err != nil {
+			return fmt.Errorf("claim %q: %w", c.ID, err)
+		}
+	case ZeroSetProperty:
+		if err := p.Validate(); err != nil {
+			return fmt.Errorf("claim %q: %w", c.ID, err)
+		}
+	case ZeroClassification:
+		if err := p.Validate(); err != nil {
+			return fmt.Errorf("claim %q: %w", c.ID, err)
+		}
 	}
 	seen := make(map[AssumptionID]bool, len(c.Assumptions))
 	for _, assumption := range c.Assumptions {
@@ -448,14 +497,26 @@ func SemanticKey(p Proposition) string {
 		return fmt.Sprintf("q|%s|%s|%d|%d|%s|%d", v.Quantifier, v.Domain.Kind, v.Domain.Function, v.Domain.Bound, v.Predicate.Kind, v.Predicate.Function)
 	case RepresentationProposition:
 		r := v.Representation
-		return fmt.Sprintf("r|%d|%s|%s|%d|%d", r.Object, r.Name, r.ValidOn.Kind, r.ValidOn.Function, r.ValidOn.Bound)
+		return fmt.Sprintf("r|%d|%d|%s|%s|%d|%d", r.Object, r.BaseObject, r.Name, r.ValidOn.Kind, r.ValidOn.Function, r.ValidOn.Bound)
 	case RepresentationIdentity:
 		return fmt.Sprintf("i|%d|%s|%s|%s|%d|%d", v.Object, v.Left, v.Right, v.Domain.Kind, v.Domain.Function, v.Domain.Bound)
 	case AnalyticFact:
 		return fmt.Sprintf("a|%s|%d|%s|%d|%d", v.Fact, v.Object, v.Domain.Kind, v.Domain.Function, v.Domain.Bound)
 	case NamedObligation:
 		return "n|" + v.Name
+	case ZeroAtPoint:
+		return fmt.Sprintf("z|%d|%s|%s", v.Object, v.Point.Key(), v.Classification)
+	case SideCondition:
+		return fmt.Sprintf("s|%s|%d|%s|%s", v.Condition, v.Object, v.Point.Key(), domainKey(v.Domain))
+	case FunctionalIdentity:
+		return fmt.Sprintf("f|%d|%s|%s|%s", v.Object, v.Left, v.Right, domainKey(v.Domain))
+	case ZeroSetProperty:
+		return fmt.Sprintf("g|%s|%s|%s|%s", domainKey(v.Set), v.Property, v.Transform, domainKey(v.Region))
+	case ZeroClassification:
+		return fmt.Sprintf("c|%d|%s", v.Object, v.Classification)
 	default:
 		return fmt.Sprintf("unknown|%T", p)
 	}
 }
+
+func domainKey(d Domain) string { return fmt.Sprintf("%s|%d|%d", d.Kind, d.Function, d.Bound) }

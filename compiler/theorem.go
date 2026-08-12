@@ -13,13 +13,19 @@ type ParamID string
 type ParamType string
 
 const (
-	ObjectParam         ParamType = "object"
-	DomainParam         ParamType = "domain"
-	RepresentationParam ParamType = "representation"
-	ScalarParam         ParamType = "scalar"
-	QuantifierParam     ParamType = "quantifier"
-	PredicateParam      ParamType = "predicate"
-	AnalyticFactParam   ParamType = "analytic_fact"
+	ObjectParam             ParamType = "object"
+	DomainParam             ParamType = "domain"
+	RepresentationParam     ParamType = "representation"
+	ScalarParam             ParamType = "scalar"
+	QuantifierParam         ParamType = "quantifier"
+	PredicateParam          ParamType = "predicate"
+	AnalyticFactParam       ParamType = "analytic_fact"
+	PointParam              ParamType = "point"
+	ZeroClassParam          ParamType = "zero_class"
+	SideConditionParam      ParamType = "side_condition"
+	TransformParam          ParamType = "point_transform"
+	ZeroSetPropertyParam    ParamType = "zero_set_property"
+	ZeroClassificationParam ParamType = "zero_classification"
 )
 
 type Parameter struct {
@@ -30,19 +36,29 @@ type Parameter struct {
 // BindingValue is a closed tagged union. Only the field selected by Type is
 // semantic; keeping it comparable makes repeated-variable unification exact.
 type BindingValue struct {
-	Type           ParamType                   `json:"type"`
-	Object         semantic.Function           `json:"object,omitempty"`
-	Domain         semantic.Domain             `json:"domain,omitempty"`
-	Representation semantic.RepresentationName `json:"representation,omitempty"`
-	Scalar         uint64                      `json:"scalar,omitempty"`
-	Quantifier     semantic.QuantifierKind     `json:"quantifier,omitempty"`
-	Predicate      semantic.PredicateKind      `json:"predicate,omitempty"`
-	AnalyticFact   semantic.AnalyticFactName   `json:"analytic_fact,omitempty"`
+	Type               ParamType                       `json:"type"`
+	Object             semantic.Function               `json:"object,omitempty"`
+	Domain             semantic.Domain                 `json:"domain,omitempty"`
+	Representation     semantic.RepresentationName     `json:"representation,omitempty"`
+	Scalar             uint64                          `json:"scalar,omitempty"`
+	Quantifier         semantic.QuantifierKind         `json:"quantifier,omitempty"`
+	Predicate          semantic.PredicateKind          `json:"predicate,omitempty"`
+	AnalyticFact       semantic.AnalyticFactName       `json:"analytic_fact,omitempty"`
+	Point              semantic.PointExpr              `json:"point,omitempty"`
+	ZeroClass          semantic.ZeroClass              `json:"zero_class,omitempty"`
+	SideCondition      semantic.SideConditionName      `json:"side_condition,omitempty"`
+	Transform          semantic.PointTransform         `json:"point_transform,omitempty"`
+	ZeroSetProperty    semantic.ZeroSetPropertyName    `json:"zero_set_property,omitempty"`
+	ZeroClassification semantic.ZeroClassificationName `json:"zero_classification,omitempty"`
 }
 
 type Term struct {
 	Parameter ParamID       `json:"parameter,omitempty"`
 	Constant  *BindingValue `json:"constant,omitempty"`
+	// Transform is meaningful only for point terms. It records transport in
+	// the contract itself and is resolved through semantic transform composition.
+	Transform          semantic.PointTransform `json:"point_transform,omitempty"`
+	TransformParameter ParamID                 `json:"point_transform_parameter,omitempty"`
 }
 
 func Var(id ParamID) Term { return Term{Parameter: id} }
@@ -64,6 +80,30 @@ func ConstPredicate(v semantic.PredicateKind) Term {
 func ConstAnalyticFact(v semantic.AnalyticFactName) Term {
 	return constant(BindingValue{Type: AnalyticFactParam, AnalyticFact: v})
 }
+func ConstPoint(v semantic.PointExpr) Term {
+	return constant(BindingValue{Type: PointParam, Point: v.Canonical()})
+}
+func TransformedPoint(id ParamID, transform semantic.PointTransform) Term {
+	return Term{Parameter: id, Transform: transform}
+}
+func PointTransformedBy(id, transform ParamID) Term {
+	return Term{Parameter: id, TransformParameter: transform}
+}
+func ConstZeroClass(v semantic.ZeroClass) Term {
+	return constant(BindingValue{Type: ZeroClassParam, ZeroClass: v})
+}
+func ConstSideCondition(v semantic.SideConditionName) Term {
+	return constant(BindingValue{Type: SideConditionParam, SideCondition: v})
+}
+func ConstTransform(v semantic.PointTransform) Term {
+	return constant(BindingValue{Type: TransformParam, Transform: v})
+}
+func ConstZeroSetProperty(v semantic.ZeroSetPropertyName) Term {
+	return constant(BindingValue{Type: ZeroSetPropertyParam, ZeroSetProperty: v})
+}
+func ConstZeroClassification(v semantic.ZeroClassificationName) Term {
+	return constant(BindingValue{Type: ZeroClassificationParam, ZeroClassification: v})
+}
 func constant(v BindingValue) Term { return Term{Constant: &v} }
 
 // Pattern is a typed semantic proposition template. Fields irrelevant to Kind
@@ -71,6 +111,7 @@ func constant(v BindingValue) Term { return Term{Constant: &v} }
 type Pattern struct {
 	Kind           semantic.PropositionKind `json:"kind"`
 	Object         Term                     `json:"object,omitempty"`
+	BaseObject     Term                     `json:"base_object,omitempty"`
 	Domain         Term                     `json:"domain,omitempty"`
 	Representation Term                     `json:"representation,omitempty"`
 	Left           Term                     `json:"left,omitempty"`
@@ -78,6 +119,12 @@ type Pattern struct {
 	Quantifier     Term                     `json:"quantifier,omitempty"`
 	Predicate      Term                     `json:"predicate,omitempty"`
 	AnalyticFact   Term                     `json:"analytic_fact,omitempty"`
+	Point          Term                     `json:"point,omitempty"`
+	Classification Term                     `json:"classification,omitempty"`
+	SideCondition  Term                     `json:"side_condition,omitempty"`
+	Transform      Term                     `json:"point_transform,omitempty"`
+	Property       Term                     `json:"property,omitempty"`
+	Region         Term                     `json:"region,omitempty"`
 	Exactness      semantic.Exactness       `json:"exactness"`
 	Formula        string                   `json:"formula,omitempty"`
 	Affordances    []string                 `json:"affordances,omitempty"`
@@ -87,19 +134,21 @@ type TheoremTrust string
 
 const (
 	TrustedExternalTheorem TheoremTrust = "trusted_external_theorem"
+	CompilerVerifiedRule   TheoremTrust = "compiler_verified_rule"
 	UntrustedTheorem       TheoremTrust = "untrusted"
 )
 
 type TheoremContract struct {
-	ID           semantic.TheoremID `json:"id"`
-	Parameters   []Parameter        `json:"parameters"`
-	Premises     []Pattern          `json:"premises"`
-	Conclusion   Pattern            `json:"conclusion"`
-	ConclusionID semantic.ClaimID   `json:"conclusion_id,omitempty"`
-	Relation     Relation           `json:"relation"`
-	Evidence     semantic.Evidence  `json:"evidence"`
-	Trust        TheoremTrust       `json:"trust"`
-	Citation     string             `json:"citation,omitempty"`
+	ID             semantic.TheoremID `json:"id"`
+	Parameters     []Parameter        `json:"parameters"`
+	Premises       []Pattern          `json:"premises"`
+	SideConditions []Pattern          `json:"side_conditions"`
+	Conclusion     Pattern            `json:"conclusion"`
+	ConclusionID   semantic.ClaimID   `json:"conclusion_id,omitempty"`
+	Relation       Relation           `json:"relation"`
+	Evidence       semantic.Evidence  `json:"evidence"`
+	Trust          TheoremTrust       `json:"trust"`
+	Citation       string             `json:"citation,omitempty"`
 }
 
 type Binding struct {
@@ -108,15 +157,17 @@ type Binding struct {
 }
 
 type PremiseMatch struct {
-	Premise int              `json:"premise"`
-	Claim   semantic.ClaimID `json:"claim"`
+	Premise       int              `json:"premise"`
+	Claim         semantic.ClaimID `json:"claim"`
+	SideCondition bool             `json:"side_condition,omitempty"`
 }
 
 type TheoremObligation struct {
-	Premise     int                  `json:"premise"`
-	Pattern     Pattern              `json:"pattern"`
-	Proposition semantic.Proposition `json:"-"`
-	Description string               `json:"description"`
+	Premise       int                  `json:"premise"`
+	Pattern       Pattern              `json:"pattern"`
+	Proposition   semantic.Proposition `json:"-"`
+	Description   string               `json:"description"`
+	SideCondition bool                 `json:"side_condition,omitempty"`
 }
 
 type TheoremApplication struct {
@@ -170,6 +221,7 @@ func (r *ContractRegistry) Contracts() []TheoremContract {
 func cloneContract(c TheoremContract) TheoremContract {
 	c.Parameters = append([]Parameter(nil), c.Parameters...)
 	c.Premises = append([]Pattern(nil), c.Premises...)
+	c.SideConditions = append([]Pattern(nil), c.SideConditions...)
 	for i := range c.Premises {
 		c.Premises[i].Affordances = append([]string(nil), c.Premises[i].Affordances...)
 	}
@@ -178,7 +230,7 @@ func cloneContract(c TheoremContract) TheoremContract {
 }
 
 func validateContract(c TheoremContract) error {
-	if c.ID == "" || !c.Relation.Valid() || (c.Trust != TrustedExternalTheorem && c.Trust != UntrustedTheorem) {
+	if c.ID == "" || !c.Relation.Valid() || (c.Trust != TrustedExternalTheorem && c.Trust != CompilerVerifiedRule && c.Trust != UntrustedTheorem) {
 		return fmt.Errorf("invalid theorem contract metadata")
 	}
 	declared := make(map[ParamID]ParamType)
@@ -188,7 +240,8 @@ func validateContract(c TheoremContract) error {
 		}
 		declared[p.ID] = p.Type
 	}
-	for i, p := range append(append([]Pattern(nil), c.Premises...), c.Conclusion) {
+	patterns := append(append(append([]Pattern(nil), c.Premises...), c.SideConditions...), c.Conclusion)
+	for i, p := range patterns {
 		if err := validatePattern(p, declared); err != nil {
 			return fmt.Errorf("theorem %s pattern %d: %w", c.ID, i, err)
 		}
@@ -197,7 +250,7 @@ func validateContract(c TheoremContract) error {
 }
 
 func validParamType(t ParamType) bool {
-	return t == ObjectParam || t == DomainParam || t == RepresentationParam || t == ScalarParam || t == QuantifierParam || t == PredicateParam || t == AnalyticFactParam
+	return t == ObjectParam || t == DomainParam || t == RepresentationParam || t == ScalarParam || t == QuantifierParam || t == PredicateParam || t == AnalyticFactParam || t == PointParam || t == ZeroClassParam || t == SideConditionParam || t == TransformParam || t == ZeroSetPropertyParam || t == ZeroClassificationParam
 }
 
 func validatePattern(p Pattern, declared map[ParamID]ParamType) error {
@@ -220,6 +273,12 @@ func validatePattern(p Pattern, declared map[ParamID]ParamType) error {
 			term Term
 			kind ParamType
 		}{p.Domain, DomainParam})
+		if p.Representation.Constant != nil && p.Representation.Constant.Representation == semantic.CompletedXiRepresentation {
+			required = append(required, struct {
+				term Term
+				kind ParamType
+			}{p.BaseObject, ObjectParam})
+		}
 	case semantic.RepresentationIdentityKind:
 		required = append(required, struct {
 			term Term
@@ -259,6 +318,83 @@ func validatePattern(p Pattern, declared map[ParamID]ParamType) error {
 			term Term
 			kind ParamType
 		}{p.Object, ObjectParam})
+	case semantic.ZeroAtPointKind:
+		required = append(required, struct {
+			term Term
+			kind ParamType
+		}{p.Object, ObjectParam}, struct {
+			term Term
+			kind ParamType
+		}{p.Point, PointParam}, struct {
+			term Term
+			kind ParamType
+		}{p.Classification, ZeroClassParam})
+	case semantic.SideConditionKind:
+		required = append(required, struct {
+			term Term
+			kind ParamType
+		}{p.SideCondition, SideConditionParam}, struct {
+			term Term
+			kind ParamType
+		}{p.Object, ObjectParam})
+		if p.SideCondition.Constant != nil && (p.SideCondition.Constant.SideCondition == semantic.PointInValidityDomain || p.SideCondition.Constant.SideCondition == semantic.CompletionFactorRegularNonzero) {
+			required = append(required, struct {
+				term Term
+				kind ParamType
+			}{p.Point, PointParam})
+			if p.SideCondition.Constant.SideCondition == semantic.PointInValidityDomain {
+				required = append(required, struct {
+					term Term
+					kind ParamType
+				}{p.Domain, DomainParam})
+			}
+		} else {
+			required = append(required, struct {
+				term Term
+				kind ParamType
+			}{p.Domain, DomainParam})
+		}
+	case semantic.FunctionalIdentityKind:
+		required = append(required, struct {
+			term Term
+			kind ParamType
+		}{p.Object, ObjectParam}, struct {
+			term Term
+			kind ParamType
+		}{p.Left, TransformParam}, struct {
+			term Term
+			kind ParamType
+		}{p.Right, TransformParam}, struct {
+			term Term
+			kind ParamType
+		}{p.Domain, DomainParam})
+	case semantic.ZeroSetPropertyKind:
+		required = append(required, struct {
+			term Term
+			kind ParamType
+		}{p.Domain, DomainParam}, struct {
+			term Term
+			kind ParamType
+		}{p.Property, ZeroSetPropertyParam})
+		if p.Property.Constant != nil && p.Property.Constant.ZeroSetProperty == semantic.InvariantUnderTransform {
+			required = append(required, struct {
+				term Term
+				kind ParamType
+			}{p.Transform, TransformParam})
+		} else {
+			required = append(required, struct {
+				term Term
+				kind ParamType
+			}{p.Region, DomainParam})
+		}
+	case semantic.ZeroClassificationKind:
+		required = append(required, struct {
+			term Term
+			kind ParamType
+		}{p.Object, ObjectParam}, struct {
+			term Term
+			kind ParamType
+		}{p.Classification, ZeroClassificationParam})
 	default:
 		return fmt.Errorf("unsupported proposition pattern kind %q", p.Kind)
 	}
@@ -278,6 +414,12 @@ func validateTerm(t Term, want ParamType, declared map[ParamID]ParamType) error 
 		if declared[t.Parameter] != want {
 			return fmt.Errorf("parameter %s has type %s, want %s", t.Parameter, declared[t.Parameter], want)
 		}
+		if t.Transform != semantic.IdentityTransform && want != PointParam {
+			return fmt.Errorf("only point terms may be transformed")
+		}
+		if t.TransformParameter != "" && (want != PointParam || declared[t.TransformParameter] != TransformParam) {
+			return fmt.Errorf("point transform parameter %s is not declared with transform type", t.TransformParameter)
+		}
 		return nil
 	}
 	if t.Constant.Type != want {
@@ -296,6 +438,20 @@ func (e bindingEnv) clone() bindingEnv {
 	return out
 }
 func (e bindingEnv) bind(t Term, value BindingValue) bool {
+	if t.TransformParameter != "" {
+		tr, ok := e[t.TransformParameter]
+		if !ok || tr.Type != TransformParam || value.Type != PointParam {
+			return false
+		}
+		value.Point = value.Point.Apply(tr.Transform)
+	}
+	if t.Transform != semantic.IdentityTransform {
+		if value.Type != PointParam {
+			return false
+		}
+		// Every member of this Klein-four transform group is self-inverse.
+		value.Point = value.Point.Apply(t.Transform)
+	}
 	if t.Constant != nil {
 		return *t.Constant == value
 	}
@@ -313,13 +469,46 @@ func matchPattern(p Pattern, claim semantic.Claim, env bindingEnv) bool {
 	switch v := claim.Proposition.(type) {
 	case semantic.RepresentationProposition:
 		r := v.Representation
-		return env.bind(p.Object, BindingValue{Type: ObjectParam, Object: r.Object}) && env.bind(p.Representation, BindingValue{Type: RepresentationParam, Representation: r.Name}) && env.bind(p.Domain, BindingValue{Type: DomainParam, Domain: r.ValidOn})
+		ok := env.bind(p.Object, BindingValue{Type: ObjectParam, Object: r.Object}) && env.bind(p.Representation, BindingValue{Type: RepresentationParam, Representation: r.Name}) && env.bind(p.Domain, BindingValue{Type: DomainParam, Domain: r.ValidOn})
+		if !ok {
+			return false
+		}
+		if p.BaseObject.Parameter != "" || p.BaseObject.Constant != nil {
+			return env.bind(p.BaseObject, BindingValue{Type: ObjectParam, Object: r.BaseObject})
+		}
+		return r.BaseObject == 0
 	case semantic.RepresentationIdentity:
 		return env.bind(p.Object, BindingValue{Type: ObjectParam, Object: v.Object}) && env.bind(p.Left, BindingValue{Type: RepresentationParam, Representation: v.Left}) && env.bind(p.Right, BindingValue{Type: RepresentationParam, Representation: v.Right}) && env.bind(p.Domain, BindingValue{Type: DomainParam, Domain: v.Domain})
 	case semantic.AnalyticFact:
 		return env.bind(p.AnalyticFact, BindingValue{Type: AnalyticFactParam, AnalyticFact: v.Fact}) && env.bind(p.Object, BindingValue{Type: ObjectParam, Object: v.Object}) && env.bind(p.Domain, BindingValue{Type: DomainParam, Domain: v.Domain})
 	case semantic.QuantifiedStatement:
 		return env.bind(p.Quantifier, BindingValue{Type: QuantifierParam, Quantifier: v.Quantifier}) && env.bind(p.Domain, BindingValue{Type: DomainParam, Domain: v.Domain}) && env.bind(p.Predicate, BindingValue{Type: PredicateParam, Predicate: v.Predicate.Kind}) && env.bind(p.Object, BindingValue{Type: ObjectParam, Object: v.Predicate.Function})
+	case semantic.ZeroAtPoint:
+		return env.bind(p.Object, BindingValue{Type: ObjectParam, Object: v.Object}) && env.bind(p.Point, BindingValue{Type: PointParam, Point: v.Point.Canonical()}) && env.bind(p.Classification, BindingValue{Type: ZeroClassParam, ZeroClass: v.Classification})
+	case semantic.SideCondition:
+		if !env.bind(p.SideCondition, BindingValue{Type: SideConditionParam, SideCondition: v.Condition}) || !env.bind(p.Object, BindingValue{Type: ObjectParam, Object: v.Object}) {
+			return false
+		}
+		if v.Condition == semantic.PointInValidityDomain || v.Condition == semantic.CompletionFactorRegularNonzero {
+			ok := env.bind(p.Point, BindingValue{Type: PointParam, Point: v.Point.Canonical()})
+			if v.Condition == semantic.PointInValidityDomain {
+				ok = ok && env.bind(p.Domain, BindingValue{Type: DomainParam, Domain: v.Domain})
+			}
+			return ok
+		}
+		return env.bind(p.Domain, BindingValue{Type: DomainParam, Domain: v.Domain})
+	case semantic.FunctionalIdentity:
+		return env.bind(p.Object, BindingValue{Type: ObjectParam, Object: v.Object}) && env.bind(p.Left, BindingValue{Type: TransformParam, Transform: v.Left}) && env.bind(p.Right, BindingValue{Type: TransformParam, Transform: v.Right}) && env.bind(p.Domain, BindingValue{Type: DomainParam, Domain: v.Domain})
+	case semantic.ZeroSetProperty:
+		if !env.bind(p.Domain, BindingValue{Type: DomainParam, Domain: v.Set}) || !env.bind(p.Property, BindingValue{Type: ZeroSetPropertyParam, ZeroSetProperty: v.Property}) {
+			return false
+		}
+		if v.Property == semantic.InvariantUnderTransform {
+			return env.bind(p.Transform, BindingValue{Type: TransformParam, Transform: v.Transform})
+		}
+		return env.bind(p.Region, BindingValue{Type: DomainParam, Domain: v.Region})
+	case semantic.ZeroClassification:
+		return env.bind(p.Object, BindingValue{Type: ObjectParam, Object: v.Object}) && env.bind(p.Classification, BindingValue{Type: ZeroClassificationParam, ZeroClassification: v.Classification})
 	}
 	return false
 }
@@ -332,26 +521,58 @@ func resolve(t Term, env bindingEnv) (BindingValue, error) {
 	if !ok {
 		return BindingValue{}, fmt.Errorf("parameter %s is unbound", t.Parameter)
 	}
+	if t.Transform != semantic.IdentityTransform {
+		if v.Type != PointParam {
+			return BindingValue{}, fmt.Errorf("transform applied to non-point")
+		}
+		v.Point = v.Point.Apply(t.Transform)
+	}
+	if t.TransformParameter != "" {
+		tr, ok := env[t.TransformParameter]
+		if !ok {
+			return BindingValue{}, fmt.Errorf("transform parameter %s is unbound", t.TransformParameter)
+		}
+		if v.Type != PointParam || tr.Type != TransformParam {
+			return BindingValue{}, fmt.Errorf("dynamic transform applied to non-point")
+		}
+		v.Point = v.Point.Apply(tr.Transform)
+	}
 	return v, nil
 }
 
 func instantiate(p Pattern, env bindingEnv) (semantic.Proposition, error) {
-	object, err := resolve(p.Object, env)
-	if err != nil {
-		return nil, err
-	}
-	domain, err := resolve(p.Domain, env)
-	if err != nil {
-		return nil, err
-	}
 	switch p.Kind {
 	case semantic.RepresentationKind:
+		object, err := resolve(p.Object, env)
+		if err != nil {
+			return nil, err
+		}
+		domain, err := resolve(p.Domain, env)
+		if err != nil {
+			return nil, err
+		}
 		r, err := resolve(p.Representation, env)
 		if err != nil {
 			return nil, err
 		}
-		return semantic.RepresentationProposition{Representation: semantic.Representation{Object: object.Object, Name: r.Representation, ValidOn: domain.Domain, Formula: p.Formula, Affordances: append([]string(nil), p.Affordances...)}}, nil
+		base := semantic.Function(0)
+		if p.BaseObject.Parameter != "" || p.BaseObject.Constant != nil {
+			b, err := resolve(p.BaseObject, env)
+			if err != nil {
+				return nil, err
+			}
+			base = b.Object
+		}
+		return semantic.RepresentationProposition{Representation: semantic.Representation{Object: object.Object, BaseObject: base, Name: r.Representation, ValidOn: domain.Domain, Formula: p.Formula, Affordances: append([]string(nil), p.Affordances...)}}, nil
 	case semantic.RepresentationIdentityKind:
+		object, err := resolve(p.Object, env)
+		if err != nil {
+			return nil, err
+		}
+		domain, err := resolve(p.Domain, env)
+		if err != nil {
+			return nil, err
+		}
 		left, err := resolve(p.Left, env)
 		if err != nil {
 			return nil, err
@@ -362,12 +583,28 @@ func instantiate(p Pattern, env bindingEnv) (semantic.Proposition, error) {
 		}
 		return semantic.RepresentationIdentity{Object: object.Object, Left: left.Representation, Right: right.Representation, Domain: domain.Domain}, nil
 	case semantic.AnalyticFactKind:
+		object, err := resolve(p.Object, env)
+		if err != nil {
+			return nil, err
+		}
+		domain, err := resolve(p.Domain, env)
+		if err != nil {
+			return nil, err
+		}
 		fact, err := resolve(p.AnalyticFact, env)
 		if err != nil {
 			return nil, err
 		}
 		return semantic.AnalyticFact{Fact: fact.AnalyticFact, Object: object.Object, Domain: domain.Domain}, nil
 	case semantic.QuantifiedStatementKind:
+		object, err := resolve(p.Object, env)
+		if err != nil {
+			return nil, err
+		}
+		domain, err := resolve(p.Domain, env)
+		if err != nil {
+			return nil, err
+		}
 		q, err := resolve(p.Quantifier, env)
 		if err != nil {
 			return nil, err
@@ -377,6 +614,103 @@ func instantiate(p Pattern, env bindingEnv) (semantic.Proposition, error) {
 			return nil, err
 		}
 		return semantic.QuantifiedStatement{Quantifier: q.Quantifier, Domain: domain.Domain, Predicate: semantic.Predicate{Kind: pred.Predicate, Function: object.Object}}, nil
+	case semantic.ZeroAtPointKind:
+		o, err := resolve(p.Object, env)
+		if err != nil {
+			return nil, err
+		}
+		pt, err := resolve(p.Point, env)
+		if err != nil {
+			return nil, err
+		}
+		z, err := resolve(p.Classification, env)
+		if err != nil {
+			return nil, err
+		}
+		return semantic.ZeroAtPoint{Object: o.Object, Point: pt.Point.Canonical(), Classification: z.ZeroClass}, nil
+	case semantic.SideConditionKind:
+		o, err := resolve(p.Object, env)
+		if err != nil {
+			return nil, err
+		}
+		s, err := resolve(p.SideCondition, env)
+		if err != nil {
+			return nil, err
+		}
+		out := semantic.SideCondition{Condition: s.SideCondition, Object: o.Object}
+		if s.SideCondition == semantic.PointInValidityDomain || s.SideCondition == semantic.CompletionFactorRegularNonzero {
+			pt, err := resolve(p.Point, env)
+			if err != nil {
+				return nil, err
+			}
+			out.Point = pt.Point.Canonical()
+			if s.SideCondition == semantic.PointInValidityDomain {
+				d, err := resolve(p.Domain, env)
+				if err != nil {
+					return nil, err
+				}
+				out.Domain = d.Domain
+			}
+		} else {
+			d, err := resolve(p.Domain, env)
+			if err != nil {
+				return nil, err
+			}
+			out.Domain = d.Domain
+		}
+		return out, nil
+	case semantic.FunctionalIdentityKind:
+		o, err := resolve(p.Object, env)
+		if err != nil {
+			return nil, err
+		}
+		l, err := resolve(p.Left, env)
+		if err != nil {
+			return nil, err
+		}
+		r, err := resolve(p.Right, env)
+		if err != nil {
+			return nil, err
+		}
+		d, err := resolve(p.Domain, env)
+		if err != nil {
+			return nil, err
+		}
+		return semantic.FunctionalIdentity{Object: o.Object, Left: l.Transform, Right: r.Transform, Domain: d.Domain, Formula: p.Formula}, nil
+	case semantic.ZeroSetPropertyKind:
+		d, err := resolve(p.Domain, env)
+		if err != nil {
+			return nil, err
+		}
+		pr, err := resolve(p.Property, env)
+		if err != nil {
+			return nil, err
+		}
+		out := semantic.ZeroSetProperty{Set: d.Domain, Property: pr.ZeroSetProperty}
+		if out.Property == semantic.InvariantUnderTransform {
+			tr, err := resolve(p.Transform, env)
+			if err != nil {
+				return nil, err
+			}
+			out.Transform = tr.Transform
+		} else {
+			r, err := resolve(p.Region, env)
+			if err != nil {
+				return nil, err
+			}
+			out.Region = r.Domain
+		}
+		return out, nil
+	case semantic.ZeroClassificationKind:
+		o, err := resolve(p.Object, env)
+		if err != nil {
+			return nil, err
+		}
+		c, err := resolve(p.Classification, env)
+		if err != nil {
+			return nil, err
+		}
+		return semantic.ZeroClassification{Object: o.Object, Classification: c.ZeroClassification}, nil
 	default:
 		return nil, fmt.Errorf("unsupported pattern kind %s", p.Kind)
 	}
@@ -426,13 +760,14 @@ func (e *ContractEngine) Saturate() error {
 func (e *ContractEngine) fullMatches(c TheoremContract) []matchState {
 	states := []matchState{{env: make(bindingEnv)}}
 	claims := e.sortedClaims()
-	for premiseIndex, pattern := range c.Premises {
+	patterns := append(append([]Pattern(nil), c.Premises...), c.SideConditions...)
+	for premiseIndex, pattern := range patterns {
 		var next []matchState
 		for _, state := range states {
 			for _, claim := range claims {
 				env := state.env.clone()
 				if matchPattern(pattern, claim, env) {
-					matched := append(append([]PremiseMatch(nil), state.matched...), PremiseMatch{Premise: premiseIndex, Claim: claim.ID})
+					matched := append(append([]PremiseMatch(nil), state.matched...), PremiseMatch{Premise: premiseIndex, Claim: claim.ID, SideCondition: premiseIndex >= len(c.Premises)})
 					next = append(next, matchState{env: env, matched: matched})
 				}
 			}
@@ -504,7 +839,13 @@ func (e *ContractEngine) apply(c TheoremContract, state matchState, key string) 
 	}
 	bindings := sortedBindings(state.env)
 	if len(parents) > 0 {
-		t := Transformation{ID: transformID, Pass: "instantiate-theorem-contract", From: parents[0], To: claimID, Relation: c.Relation, Provenance: c.Evidence.Source, Theorem: c.ID, Bindings: bindings, Trusted: c.Trust == TrustedExternalTheorem}
+		pass := "instantiate-theorem-contract"
+		for _, term := range []Term{c.Conclusion.Point} {
+			if term.Transform != semantic.IdentityTransform || term.TransformParameter != "" {
+				pass = "transport-theorem-contract"
+			}
+		}
+		t := Transformation{ID: transformID, Pass: pass, From: parents[0], To: claimID, Relation: c.Relation, Provenance: c.Evidence.Source, Theorem: c.ID, Bindings: bindings, Trusted: c.Trust != UntrustedTheorem}
 		if len(parents) > 1 {
 			t.Premises = append([]semantic.ClaimID(nil), parents[1:]...)
 		}
@@ -538,12 +879,13 @@ func (e *ContractEngine) unionAssumptions(ids []semantic.ClaimID) []semantic.Ass
 
 func (e *ContractEngine) addPartialApplications() {
 	for _, c := range e.Registry.Contracts() {
-		if len(c.Premises) == 0 || len(e.fullMatches(c)) > 0 {
+		patterns := append(append([]Pattern(nil), c.Premises...), c.SideConditions...)
+		if len(patterns) == 0 || len(e.fullMatches(c)) > 0 {
 			continue
 		}
 		state := matchState{env: make(bindingEnv)}
 		used := make(map[semantic.ClaimID]bool)
-		for i, p := range c.Premises {
+		for i, p := range patterns {
 			for _, claim := range e.sortedClaims() {
 				if used[claim.ID] {
 					continue
@@ -551,7 +893,7 @@ func (e *ContractEngine) addPartialApplications() {
 				env := state.env.clone()
 				if matchPattern(p, claim, env) {
 					state.env = env
-					state.matched = append(state.matched, PremiseMatch{Premise: i, Claim: claim.ID})
+					state.matched = append(state.matched, PremiseMatch{Premise: i, Claim: claim.ID, SideCondition: i >= len(c.Premises)})
 					used[claim.ID] = true
 					break
 				}
@@ -565,11 +907,11 @@ func (e *ContractEngine) addPartialApplications() {
 			matchedIndex[m.Premise] = true
 		}
 		var obligations []TheoremObligation
-		for i, p := range c.Premises {
+		for i, p := range patterns {
 			if matchedIndex[i] {
 				continue
 			}
-			o := TheoremObligation{Premise: i, Pattern: p}
+			o := TheoremObligation{Premise: i, Pattern: p, SideCondition: i >= len(c.Premises)}
 			if prop, err := instantiate(p, state.env); err == nil {
 				o.Proposition = prop
 				o.Description = prop.Describe()

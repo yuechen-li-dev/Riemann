@@ -74,8 +74,11 @@ func TestTypedDomainAlgebra(t *testing.T) {
 	if !semantic.IsSubset(semantic.CriticalStrip(), semantic.ComplexPlane()) {
 		t.Fatal("geometric inclusion missing")
 	}
-	if !semantic.IsSubset(semantic.CriticalLine(), semantic.CriticalStrip()) || !semantic.IsSubset(all, semantic.CriticalStrip()) {
-		t.Fatal("modeled critical-strip inclusions are missing")
+	if !semantic.IsSubset(semantic.CriticalLine(), semantic.CriticalStrip()) {
+		t.Fatal("geometric critical-line inclusion is missing")
+	}
+	if semantic.IsSubset(all, semantic.CriticalStrip()) {
+		t.Fatal("nontrivial-zero confinement was assumed by the domain algebra instead of derived")
 	}
 	if semantic.IsSubset(semantic.HalfPlaneReGreaterThanOne(), semantic.CriticalStrip()) {
 		t.Fatal("disjoint geometric domains treated as included")

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/yuechen-li-dev/Riemann/semantic"
@@ -79,6 +80,79 @@ func M1HumanReport(result M1Result) string {
 	return b.String()
 }
 
+func M3HumanReport(result M3Result) string {
+	var b strings.Builder
+	b.WriteString("RIEMANN-M3 — FUNCTIONAL EQUATION + TYPED SYMMETRY TRANSPORT\n\n")
+	for _, id := range []semantic.ClaimID{AnalyticContinuationID, CompletedXiID, XiFunctionalEquationID, ZetaConjugationConditionID, ZetaPoleID, ZetaTrivialZerosID, ZetaBoundaryZeroFreeID} {
+		if claim, ok := result.Graph.Claim(id); ok {
+			fmt.Fprintf(&b, "IMPORT\n  %s\n  source: %s\n\n", claim.Proposition.Describe(), claim.Provenance.Source.Citation)
+		}
+	}
+	source, _ := result.Graph.Claim(SampleZeroID)
+	fmt.Fprintf(&b, "SOURCE CLAIM\n  %s\n  classification: nontrivial zero\n\n", source.Proposition.Describe())
+	for _, application := range result.Applications {
+		if !application.Complete {
+			continue
+		}
+		claim, ok := result.Graph.Claim(application.Conclusion)
+		if !ok {
+			continue
+		}
+		z, zero := claim.Proposition.(semantic.ZeroAtPoint)
+		if !zero {
+			continue
+		}
+		var sourcePoint string
+		for _, binding := range application.Bindings {
+			if binding.Value.Type == PointParam && binding.Parameter == "P" {
+				sourcePoint = binding.Value.Point.Describe()
+			}
+		}
+		fmt.Fprintf(&b, "TRANSPORT\n  theorem: %s\n  map: %s → %s\n", application.Theorem, sourcePoint, z.Point.Describe())
+		for _, matched := range application.Matched {
+			if matched.SideCondition {
+				c, _ := result.Graph.Claim(matched.Claim)
+				fmt.Fprintf(&b, "  side condition: %s — satisfied\n", c.Proposition.Describe())
+			}
+		}
+		fmt.Fprintf(&b, "DERIVE\n  %s\n\n", claim.Proposition.Describe())
+	}
+	for _, application := range result.Applications {
+		if application.Complete {
+			continue
+		}
+		for _, obligation := range application.Obligations {
+			if obligation.SideCondition && obligation.Proposition != nil {
+				fmt.Fprintf(&b, "UNRESOLVED SIDE CONDITION\n  theorem: %s\n  %s\n  conclusion withheld\n\n", application.Theorem, obligation.Description)
+			}
+		}
+	}
+	b.WriteString("CLOSURE\n  four generated symmetry transforms:\n")
+	for _, p := range result.Orbit.Generated {
+		fmt.Fprintf(&b, "    %s\n", p.Describe())
+	}
+	fmt.Fprintf(&b, "  distinct zero locations after semantic deduplication: %d\n", len(result.Orbit.Distinct))
+	for _, p := range result.Orbit.Distinct {
+		fmt.Fprintf(&b, "    %s\n", p.Describe())
+	}
+	b.WriteString("\nGLOBAL GEOMETRY\n")
+	if result.StripCertified {
+		b.WriteString("  KNOWN: nontrivial zeros are confined to 0 < Re(s) < 1\n")
+	} else {
+		b.WriteString("  UNRESOLVED: critical-strip confinement\n")
+	}
+	if result.SymmetryCertified {
+		b.WriteString("  KNOWN: the nontrivial-zero set is invariant under s → 1-conjugate(s)\n")
+	} else {
+		b.WriteString("  UNRESOLVED: critical-line-reflection symmetry\n")
+	}
+	b.WriteString("\nRH REMAINING OBLIGATION\n  TARGET: every nontrivial zero is fixed by critical-line reflection\n  equivalently: Re(ρ) = 1/2\n  unresolved structural defect: exclude off-axis symmetry orbits inside the critical strip\n\n")
+	if result.StripCertified && result.SymmetryCertified {
+		b.WriteString("CERTIFIED\n  global geometry is certified relative to trusted imported theorem contracts\n")
+	}
+	return b.String()
+}
+
 func describeBinding(v BindingValue) string {
 	switch v.Type {
 	case ObjectParam:
@@ -95,6 +169,18 @@ func describeBinding(v BindingValue) string {
 		return string(v.Predicate)
 	case AnalyticFactParam:
 		return string(v.AnalyticFact)
+	case PointParam:
+		return v.Point.Describe()
+	case ZeroClassParam:
+		return string(v.ZeroClass)
+	case SideConditionParam:
+		return string(v.SideCondition)
+	case TransformParam:
+		return v.Transform.String()
+	case ZeroSetPropertyParam:
+		return string(v.ZeroSetProperty)
+	case ZeroClassificationParam:
+		return string(v.ZeroClassification)
 	default:
 		return "unknown"
 	}
@@ -154,6 +240,11 @@ type propositionJSON struct {
 	Representation         *semantic.Representation         `json:"representation,omitempty"`
 	RepresentationIdentity *semantic.RepresentationIdentity `json:"representation_identity,omitempty"`
 	AnalyticFact           *semantic.AnalyticFact           `json:"analytic_fact,omitempty"`
+	ZeroAtPoint            *semantic.ZeroAtPoint            `json:"zero_at_point,omitempty"`
+	SideCondition          *semantic.SideCondition          `json:"side_condition,omitempty"`
+	FunctionalIdentity     *semantic.FunctionalIdentity     `json:"functional_identity,omitempty"`
+	ZeroSetProperty        *semantic.ZeroSetProperty        `json:"zero_set_property,omitempty"`
+	ZeroClassification     *semantic.ZeroClassification     `json:"zero_classification,omitempty"`
 }
 type transformationJSON struct {
 	ID          semantic.TransformationID `json:"id"`
@@ -178,6 +269,14 @@ func M1JSONReport(result M1Result) ([]byte, error) {
 	return marshalGraphWithContracts("riemann.semantic-graph.m2", result.Graph, result.Registry.Contracts(), result.Applications, certifications, []ProofAttempt{result.BoundedToRH, result.DensityToRH, result.ZeroFreeToRH})
 }
 
+func M3JSONReport(result M3Result) ([]byte, error) {
+	contracts := append(result.M1.Registry.Contracts(), result.Registry.Contracts()...)
+	sort.Slice(contracts, func(i, j int) bool { return contracts[i].ID < contracts[j].ID })
+	applications := append(append([]TheoremApplication(nil), result.M1.Applications...), result.Applications...)
+	certifications := []certificationJSON{{Claim: CriticalReflectionInvariantID, Certified: result.SymmetryCertified, Diagnostics: nonNil(result.SymmetryDiagnostics)}, {Claim: CriticalStripConfinementID, Certified: result.StripCertified, Diagnostics: nonNil(result.StripDiagnostics)}}
+	return marshalGraphWithContracts("riemann.semantic-graph.m3", result.Graph, contracts, applications, certifications, []ProofAttempt{result.M1.BoundedToRH, result.M1.DensityToRH, result.M1.ZeroFreeToRH})
+}
+
 func marshalGraph(schema string, g *Graph, certifications []certificationJSON, attempts []ProofAttempt) ([]byte, error) {
 	return marshalGraphWithContracts(schema, g, nil, nil, certifications, attempts)
 }
@@ -198,6 +297,16 @@ func marshalGraphWithContracts(schema string, g *Graph, contracts []TheoremContr
 			item.RepresentationIdentity = &p
 		case semantic.AnalyticFact:
 			item.AnalyticFact = &p
+		case semantic.ZeroAtPoint:
+			item.ZeroAtPoint = &p
+		case semantic.SideCondition:
+			item.SideCondition = &p
+		case semantic.FunctionalIdentity:
+			item.FunctionalIdentity = &p
+		case semantic.ZeroSetProperty:
+			item.ZeroSetProperty = &p
+		case semantic.ZeroClassification:
+			item.ZeroClassification = &p
 		}
 		report.Claims = append(report.Claims, claimJSON{ID: claim.ID, Proposition: item, Assumptions: nonNil(claim.Assumptions), Evidence: nonNil(claim.Evidence), Exactness: claim.Exactness, Provenance: claim.Provenance})
 	}
