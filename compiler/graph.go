@@ -1,5 +1,5 @@
-// Package compiler owns proof state and enforces transformation direction,
-// evidence boundaries, capability requirements, and proof obligations.
+// Package compiler owns proof state and enforces direction, evidence boundaries,
+// structural strength, assumptions, premises, obligations, and provenance.
 package compiler
 
 import (
@@ -20,25 +20,31 @@ const (
 )
 
 func (r Relation) Valid() bool {
-	switch r {
-	case Equivalent, Implies, Relaxation, Approximation:
-		return true
-	default:
-		return false
-	}
+	return r == Equivalent || r == Implies || r == Relaxation || r == Approximation
 }
-
 func (r Relation) Reversible() bool { return r == Equivalent }
 
+type LossKind string
+
+const (
+	QuantifierWeakening    LossKind = "quantifier_weakening"
+	DomainScopeRestriction LossKind = "domain_restriction"
+	ApproximationLoss      LossKind = "approximation"
+)
+
 type InformationLoss struct {
-	Property semantic.Property
-	Reason   string
+	Kind   LossKind `json:"kind"`
+	Reason string   `json:"reason"`
 }
 
+// Transformation has one primary source/result edge. Premises are additional
+// jointly required inputs; Obligations are proof conditions of the rule itself.
+// This is the smallest multi-input extension needed by M1, not a general hypergraph.
 type Transformation struct {
 	ID          semantic.TransformationID
 	Pass        string
 	From        semantic.ClaimID
+	Premises    []semantic.ClaimID
 	To          semantic.ClaimID
 	Relation    Relation
 	Obligations []semantic.ClaimID
@@ -61,9 +67,7 @@ func (g *Graph) AddClaim(claim semantic.Claim) error {
 	if _, exists := g.claims[claim.ID]; exists {
 		return fmt.Errorf("claim %q already exists", claim.ID)
 	}
-	claim.Assumptions = semantic.CloneAssumptions(claim.Assumptions)
-	claim.Evidence = append([]semantic.Evidence(nil), claim.Evidence...)
-	claim.Provenance.Parents = append([]semantic.ClaimID(nil), claim.Provenance.Parents...)
+	claim = cloneClaim(claim)
 	g.claims[claim.ID] = claim
 	g.claimOrder = append(g.claimOrder, claim.ID)
 	return nil
@@ -83,39 +87,95 @@ func (g *Graph) AddTransformation(t Transformation) error {
 			return fmt.Errorf("transformation %q already exists", t.ID)
 		}
 	}
-	for _, obligation := range t.Obligations {
-		if _, ok := g.claims[obligation]; !ok {
-			return fmt.Errorf("transformation %q refers to unknown obligation %q", t.ID, obligation)
+	requiredParents := []semantic.ClaimID{t.From}
+	seenInputs := map[semantic.ClaimID]bool{t.From: true}
+	for _, id := range append(append([]semantic.ClaimID(nil), t.Premises...), t.Obligations...) {
+		if _, ok := g.claims[id]; !ok {
+			return fmt.Errorf("transformation %q refers to unknown premise or obligation %q", t.ID, id)
 		}
+		if seenInputs[id] {
+			return fmt.Errorf("transformation %q repeats input %q", t.ID, id)
+		}
+		seenInputs[id] = true
 	}
-	if !assumptionsContain(to.Assumptions, from.Assumptions) {
-		return fmt.Errorf("transformation %q silently drops assumptions", t.ID)
+	for _, id := range t.Premises {
+		requiredParents = append(requiredParents, id)
+	}
+	for _, id := range t.Obligations {
+		requiredParents = append(requiredParents, id)
+	}
+	for _, id := range append(append([]semantic.ClaimID{t.From}, t.Premises...), t.Obligations...) {
+		if !assumptionsContain(to.Assumptions, g.claims[id].Assumptions) {
+			return fmt.Errorf("transformation %q silently drops assumptions from %q", t.ID, id)
+		}
 	}
 	if t.Relation == Equivalent && !assumptionsContain(from.Assumptions, to.Assumptions) {
 		return fmt.Errorf("equivalence %q changes its assumption set", t.ID)
 	}
-	if t.Relation == Equivalent && (from.Capabilities != to.Capabilities || from.Exactness != to.Exactness) {
-		return fmt.Errorf("equivalence %q changes capabilities or exactness", t.ID)
+	if t.Relation == Equivalent && from.Exactness != to.Exactness {
+		return fmt.Errorf("equivalence %q changes exactness", t.ID)
 	}
-	declaredLoss := semantic.PropertySet(0)
-	for _, loss := range t.Losses {
-		declaredLoss |= semantic.Properties(loss.Property)
+	for _, required := range structuralLosses(from.Proposition, to.Proposition) {
+		if !hasLoss(t.Losses, required) {
+			return fmt.Errorf("transformation %q fails to declare structural loss %s", t.ID, required)
+		}
 	}
-	actualLoss := from.Capabilities.Without(to.Capabilities)
-	if !declaredLoss.Contains(actualLoss) {
-		return fmt.Errorf("transformation %q fails to declare capability loss: %v", t.ID, actualLoss.Names())
+	if strengthening := structuralStrengthening(from.Proposition, to.Proposition); strengthening != "" && !(t.Relation == Equivalent && len(t.Obligations) > 0) {
+		return fmt.Errorf("transformation %q attempts unsupported structural strengthening: %s", t.ID, strengthening)
 	}
-	gained := to.Capabilities.Without(from.Capabilities)
-	if gained != 0 {
-		return fmt.Errorf("transformation %q gains unsupported capabilities: %v", t.ID, gained.Names())
+	if t.Relation == Approximation && !hasLoss(t.Losses, ApproximationLoss) {
+		return fmt.Errorf("approximation %q fails to declare approximation loss", t.ID)
 	}
-	if to.Provenance.Kind != semantic.DerivedProvenance || to.Provenance.Transformation != t.ID || !containsID(to.Provenance.Parents, from.ID) {
+	if to.Provenance.Kind != semantic.DerivedProvenance || to.Provenance.Transformation != t.ID {
 		return fmt.Errorf("transformation %q target does not retain matching derived provenance", t.ID)
 	}
-	t.Obligations = append([]semantic.ClaimID(nil), t.Obligations...)
-	t.Losses = append([]InformationLoss(nil), t.Losses...)
-	g.transformations = append(g.transformations, t)
+	for _, id := range requiredParents {
+		if !containsID(to.Provenance.Parents, id) {
+			return fmt.Errorf("transformation %q target provenance omits premise %q", t.ID, id)
+		}
+	}
+	g.transformations = append(g.transformations, cloneTransformation(t))
 	return nil
+}
+
+func structuralLosses(from, to semantic.Proposition) []LossKind {
+	a, aok := semantic.Quantified(from)
+	b, bok := semantic.Quantified(to)
+	if !aok || !bok || a.Predicate != b.Predicate {
+		return nil
+	}
+	var losses []LossKind
+	if a.Quantifier == semantic.ForAll && b.Quantifier == semantic.DensityOne {
+		losses = append(losses, QuantifierWeakening)
+	}
+	if a.Quantifier == b.Quantifier && a.Domain != b.Domain && semantic.IsSubset(b.Domain, a.Domain) {
+		losses = append(losses, DomainScopeRestriction)
+	}
+	return losses
+}
+
+func structuralStrengthening(from, to semantic.Proposition) string {
+	a, aok := semantic.Quantified(from)
+	b, bok := semantic.Quantified(to)
+	if !aok || !bok || a.Predicate != b.Predicate {
+		return ""
+	}
+	if a.Quantifier == semantic.DensityOne && b.Quantifier == semantic.ForAll {
+		return "density-one to universal quantification"
+	}
+	if a.Quantifier == b.Quantifier && !semantic.IsSubset(b.Domain, a.Domain) {
+		return "conclusion domain is not covered by source domain"
+	}
+	return ""
+}
+
+func hasLoss(losses []InformationLoss, kind LossKind) bool {
+	for _, loss := range losses {
+		if loss.Kind == kind {
+			return true
+		}
+	}
+	return false
 }
 
 func containsID(ids []semantic.ClaimID, want semantic.ClaimID) bool {
@@ -144,19 +204,17 @@ func (g *Graph) Claim(id semantic.ClaimID) (semantic.Claim, bool) {
 	claim, ok := g.claims[id]
 	return cloneClaim(claim), ok
 }
-
 func (g *Graph) Claims() []semantic.Claim {
-	claims := make([]semantic.Claim, 0, len(g.claimOrder))
+	out := make([]semantic.Claim, 0, len(g.claimOrder))
 	for _, id := range g.claimOrder {
-		claims = append(claims, cloneClaim(g.claims[id]))
+		out = append(out, cloneClaim(g.claims[id]))
 	}
-	return claims
+	return out
 }
-
 func (g *Graph) Transformations() []Transformation {
 	out := make([]Transformation, len(g.transformations))
-	for i, transformation := range g.transformations {
-		out[i] = cloneTransformation(transformation)
+	for i, t := range g.transformations {
+		out[i] = cloneTransformation(t)
 	}
 	return out
 }
@@ -165,20 +223,27 @@ func cloneClaim(claim semantic.Claim) semantic.Claim {
 	claim.Assumptions = semantic.CloneAssumptions(claim.Assumptions)
 	claim.Evidence = append([]semantic.Evidence(nil), claim.Evidence...)
 	claim.Provenance.Parents = append([]semantic.ClaimID(nil), claim.Provenance.Parents...)
+	if p, ok := claim.Proposition.(semantic.RepresentationProposition); ok {
+		p.Representation = semantic.CloneRepresentation(p.Representation)
+		claim.Proposition = p
+	}
 	return claim
 }
-
-func cloneTransformation(transformation Transformation) Transformation {
-	transformation.Obligations = append([]semantic.ClaimID(nil), transformation.Obligations...)
-	transformation.Losses = append([]InformationLoss(nil), transformation.Losses...)
-	return transformation
+func cloneTransformation(t Transformation) Transformation {
+	t.Premises = append([]semantic.ClaimID(nil), t.Premises...)
+	t.Obligations = append([]semantic.ClaimID(nil), t.Obligations...)
+	t.Losses = append([]InformationLoss(nil), t.Losses...)
+	return t
 }
 
 type DiagnosticCode string
 
 const (
 	NoEstablishedDirection DiagnosticCode = "no_established_direction"
-	MissingCapability      DiagnosticCode = "missing_capability"
+	QuantifierMismatch     DiagnosticCode = "quantifier_mismatch"
+	DomainMismatch         DiagnosticCode = "domain_mismatch"
+	PredicateMismatch      DiagnosticCode = "predicate_mismatch"
+	InformationLost        DiagnosticCode = "information_lost_on_path"
 	ApproximationBoundary  DiagnosticCode = "approximation_cannot_certify_exact_claim"
 	OpenObligation         DiagnosticCode = "open_obligation"
 	UncertifiedEvidence    DiagnosticCode = "uncertified_evidence"
@@ -188,7 +253,6 @@ type Diagnostic struct {
 	Code    DiagnosticCode `json:"code"`
 	Message string         `json:"message"`
 }
-
 type ProofAttempt struct {
 	From        semantic.ClaimID `json:"from"`
 	Target      semantic.ClaimID `json:"target"`
@@ -196,84 +260,102 @@ type ProofAttempt struct {
 	Diagnostics []Diagnostic     `json:"diagnostics"`
 }
 
-// AttemptProof combines structural discharge checking with evidence
-// certification. Structural errors take precedence so a failed path reports
-// the mathematical mismatch rather than an incidental source-evidence error.
 func (g *Graph) AttemptProof(fromID, targetID semantic.ClaimID) ProofAttempt {
 	attempt := g.CheckDischarge(fromID, targetID)
 	if len(attempt.Diagnostics) != 0 {
 		return attempt
 	}
-	certified, diagnostics := g.Certify(fromID)
-	if !certified {
+	if certified, diagnostics := g.Certify(fromID); !certified {
 		attempt.Diagnostics = append(attempt.Diagnostics, diagnostics...)
 		attempt.Accepted = false
 	}
 	return attempt
 }
 
-// CheckDischarge checks whether an available claim is structurally usable for
-// a target. Truth/certification of the available claim is checked separately by
-// Certify, which is important for inspecting hypothetical compiler lowerings.
 func (g *Graph) CheckDischarge(fromID, targetID semantic.ClaimID) ProofAttempt {
 	attempt := ProofAttempt{From: fromID, Target: targetID}
 	from, fromOK := g.claims[fromID]
 	target, targetOK := g.claims[targetID]
 	if !fromOK || !targetOK {
-		attempt.Diagnostics = append(attempt.Diagnostics, Diagnostic{NoEstablishedDirection, "source or target claim is unknown"})
+		attempt.Diagnostics = []Diagnostic{{NoEstablishedDirection, "source or target claim is unknown"}}
 		return attempt
 	}
-
 	path, found := g.findPath(fromID, targetID)
 	if !found {
 		message := fmt.Sprintf("no established transformation permits %s → %s", fromID, targetID)
-		for _, t := range g.transformations {
-			if t.From == targetID && t.To == fromID && !t.Relation.Reversible() {
-				message = fmt.Sprintf("%s is directional (%s → %s) and cannot be traversed backward", t.Relation, t.From, t.To)
-				break
-			}
-		}
-		if reversePath, reverseFound := g.findPath(targetID, fromID); reverseFound {
-			for _, t := range reversePath {
-				if !t.Relation.Reversible() {
-					message = fmt.Sprintf("the established path contains %s (%s → %s), which cannot be traversed backward", t.Relation, t.From, t.To)
-					break
+		if reversePath, ok := g.findPath(targetID, fromID); ok {
+			for _, step := range reversePath {
+				if !step.Relation.Reversible() {
+					message = fmt.Sprintf("%s is directional (%s → %s) and cannot be traversed backward", step.Relation, step.From, step.To)
+				}
+				for _, loss := range step.Losses {
+					if g.lossBlocksTarget(step, loss.Kind, target.Proposition) {
+						attempt.Diagnostics = append(attempt.Diagnostics, Diagnostic{InformationLost, fmt.Sprintf("the forward path loses %s: %s", loss.Kind, loss.Reason)})
+					}
 				}
 			}
 		}
 		attempt.Diagnostics = append(attempt.Diagnostics, Diagnostic{NoEstablishedDirection, message})
+		attempt.Diagnostics = append(attempt.Diagnostics, compareStructuralStrength(from.Proposition, target.Proposition)...)
 	}
-
-	availableCapabilities := from.Capabilities
 	if found {
 		for _, step := range path {
 			for _, loss := range step.Losses {
-				availableCapabilities = availableCapabilities.Without(semantic.Properties(loss.Property))
+				if g.lossBlocksTarget(step, loss.Kind, target.Proposition) {
+					attempt.Diagnostics = append(attempt.Diagnostics, Diagnostic{InformationLost, fmt.Sprintf("path loses %s: %s", loss.Kind, loss.Reason)})
+				}
 			}
-		}
-	}
-	missing := target.Requirements.Without(availableCapabilities)
-	for _, property := range missing.Names() {
-		attempt.Diagnostics = append(attempt.Diagnostics, Diagnostic{
-			MissingCapability,
-			fmt.Sprintf("target requires %s, which the source representation does not retain", property),
-		})
-	}
-
-	if found {
-		for _, step := range path {
 			if step.Relation == Approximation && target.Exactness == semantic.Exact {
 				attempt.Diagnostics = append(attempt.Diagnostics, Diagnostic{ApproximationBoundary, "an approximation cannot certify an exact theorem target"})
 			}
-			for _, obligation := range step.Obligations {
-				if certified, _ := g.certify(obligation, make(map[semantic.ClaimID]bool)); !certified {
-					attempt.Diagnostics = append(attempt.Diagnostics, Diagnostic{OpenObligation, fmt.Sprintf("proof obligation %s remains open", obligation)})
+			for _, id := range append(append([]semantic.ClaimID(nil), step.Premises...), step.Obligations...) {
+				if certified, _ := g.certify(id, make(map[semantic.ClaimID]bool)); !certified {
+					attempt.Diagnostics = append(attempt.Diagnostics, Diagnostic{OpenObligation, fmt.Sprintf("required premise or proof obligation %s remains open", id)})
 				}
 			}
 		}
 	}
+	attempt.Diagnostics = deduplicateDiagnostics(attempt.Diagnostics)
 	attempt.Accepted = found && len(attempt.Diagnostics) == 0
 	return attempt
+}
+
+func compareStructuralStrength(from, target semantic.Proposition) []Diagnostic {
+	a, aok := semantic.Quantified(from)
+	b, bok := semantic.Quantified(target)
+	if !aok || !bok {
+		return nil
+	}
+	var out []Diagnostic
+	if a.Predicate != b.Predicate {
+		out = append(out, Diagnostic{PredicateMismatch, "source and target assert different predicates"})
+	}
+	if a.Quantifier != b.Quantifier {
+		message := fmt.Sprintf("%s quantification cannot discharge %s quantification", a.Quantifier, b.Quantifier)
+		if a.Quantifier == semantic.DensityOne && b.Quantifier == semantic.ForAll {
+			message = "asymptotic/density-one quantification cannot discharge a universal target"
+		}
+		out = append(out, Diagnostic{QuantifierMismatch, message})
+	}
+	if !semantic.IsSubset(b.Domain, a.Domain) {
+		out = append(out, Diagnostic{DomainMismatch, fmt.Sprintf("source domain %s does not cover target domain %s", a.Domain.Describe(), b.Domain.Describe())})
+	}
+	return out
+}
+
+func (g *Graph) lossBlocksTarget(step Transformation, kind LossKind, target semantic.Proposition) bool {
+	q, ok := semantic.Quantified(target)
+	if !ok {
+		return false
+	}
+	if kind == QuantifierWeakening && q.Quantifier == semantic.ForAll {
+		return true
+	}
+	if kind == DomainScopeRestriction {
+		narrowed, ok := semantic.Quantified(g.claims[step.To].Proposition)
+		return ok && !semantic.IsSubset(q.Domain, narrowed.Domain)
+	}
+	return kind == ApproximationLoss
 }
 
 func (g *Graph) findPath(from, target semantic.ClaimID) ([]Transformation, bool) {
@@ -291,14 +373,14 @@ func (g *Graph) findPath(from, target semantic.ClaimID) ([]Transformation, bool)
 		queue = queue[1:]
 		for _, t := range g.transformations {
 			var next semantic.ClaimID
-			var ok bool
-			switch {
-			case t.From == current.id:
-				next, ok = t.To, true
-			case t.Relation.Reversible() && t.To == current.id:
-				next, ok = t.From, true
+			if t.From == current.id {
+				next = t.To
+			} else if t.Relation.Reversible() && t.To == current.id {
+				next = t.From
+			} else {
+				continue
 			}
-			if !ok || seen[next] {
+			if seen[next] {
 				continue
 			}
 			path := append(append([]Transformation(nil), current.path...), t)
@@ -312,12 +394,9 @@ func (g *Graph) findPath(from, target semantic.ClaimID) ([]Transformation, bool)
 	return nil, false
 }
 
-// Certify determines whether a claim has exact certifying evidence. Numerical
-// evidence and conjectures are retained but never treated as certificates.
 func (g *Graph) Certify(id semantic.ClaimID) (bool, []Diagnostic) {
 	return g.certify(id, make(map[semantic.ClaimID]bool))
 }
-
 func (g *Graph) certify(id semantic.ClaimID, visiting map[semantic.ClaimID]bool) (bool, []Diagnostic) {
 	claim, ok := g.claims[id]
 	if !ok {
@@ -325,9 +404,6 @@ func (g *Graph) certify(id semantic.ClaimID, visiting map[semantic.ClaimID]bool)
 	}
 	if visiting[id] {
 		return false, []Diagnostic{{UncertifiedEvidence, fmt.Sprintf("cyclic derivation at %s", id)}}
-	}
-	if missing := claim.Requirements.Without(claim.Capabilities); missing != 0 {
-		return false, []Diagnostic{{MissingCapability, fmt.Sprintf("claim %s lacks required capabilities: %v", id, missing.Names())}}
 	}
 	for _, evidence := range claim.Evidence {
 		if evidence.Kind == semantic.DefinitionEvidence || evidence.Kind == semantic.KnownTheoremEvidence {
@@ -338,12 +414,12 @@ func (g *Graph) certify(id semantic.ClaimID, visiting map[semantic.ClaimID]bool)
 	defer delete(visiting, id)
 	var diagnostics []Diagnostic
 	for _, t := range g.transformations {
-		parentID := semantic.ClaimID("")
+		var primary semantic.ClaimID
 		switch {
 		case t.To == id:
-			parentID = t.From
+			primary = t.From
 		case t.Relation.Reversible() && t.From == id:
-			parentID = t.To
+			primary = t.To
 		default:
 			continue
 		}
@@ -352,15 +428,11 @@ func (g *Graph) certify(id semantic.ClaimID, visiting map[semantic.ClaimID]bool)
 			continue
 		}
 		blocked := false
-		for _, obligation := range t.Obligations {
-			if certified, _ := g.certify(obligation, visiting); !certified {
-				diagnostics = append(diagnostics, Diagnostic{OpenObligation, fmt.Sprintf("proof obligation %s remains open", obligation)})
+		for _, required := range append(append([]semantic.ClaimID{primary}, t.Premises...), t.Obligations...) {
+			if certified, _ := g.certify(required, visiting); !certified {
+				diagnostics = append(diagnostics, Diagnostic{OpenObligation, fmt.Sprintf("required premise or proof obligation %s remains open", required)})
 				blocked = true
 			}
-		}
-		parentCertified, _ := g.certify(parentID, visiting)
-		if !parentCertified {
-			blocked = true
 		}
 		if !blocked {
 			return true, nil
@@ -372,7 +444,6 @@ func (g *Graph) certify(id semantic.ClaimID, visiting map[semantic.ClaimID]bool)
 	return false, deduplicateDiagnostics(diagnostics)
 }
 
-// Lineage returns a deterministic depth-first provenance trace ending at id.
 func (g *Graph) Lineage(id semantic.ClaimID) ([]semantic.ClaimID, error) {
 	if _, ok := g.claims[id]; !ok {
 		return nil, fmt.Errorf("claim %q is unknown", id)
@@ -385,8 +456,7 @@ func (g *Graph) Lineage(id semantic.ClaimID) ([]semantic.ClaimID, error) {
 			return
 		}
 		seen[current] = true
-		claim := g.claims[current]
-		for _, parent := range sortedIDs(claim.Provenance.Parents) {
+		for _, parent := range sortedIDs(g.claims[current].Provenance.Parents) {
 			visit(parent)
 		}
 		out = append(out, current)

@@ -1,10 +1,9 @@
-// Package semantic defines the deliberately small mathematical vocabulary used
-// by the M0 compiler. It is not intended to be a general expression language.
+// Package semantic defines the deliberately small, typed mathematical
+// vocabulary understood by the compiler. It is not a general logic language.
 package semantic
 
 import (
 	"fmt"
-	"sort"
 	"strings"
 )
 
@@ -12,7 +11,7 @@ type ClaimID string
 type TransformationID string
 type AssumptionID string
 
-// Function is a typed identity for a mathematical function understood by M0.
+// Function identifies a mathematical object independently of its representation.
 type Function uint8
 
 const RiemannZeta Function = 1
@@ -24,8 +23,156 @@ func (f Function) String() string {
 	return fmt.Sprintf("unknown function (%d)", f)
 }
 
-// Proposition is sealed to this package so compiler passes cannot smuggle
-// semantics into arbitrary strings.
+type QuantifierKind string
+
+const (
+	ForAll     QuantifierKind = "for_all"
+	Exists     QuantifierKind = "exists"
+	DensityOne QuantifierKind = "density_one"
+)
+
+func (q QuantifierKind) Valid() bool {
+	return q == ForAll || q == Exists || q == DensityOne
+}
+
+func (q QuantifierKind) Describe() string {
+	switch q {
+	case ForAll:
+		return "for every"
+	case Exists:
+		return "there exists"
+	case DensityOne:
+		return "for a density-one subset of"
+	default:
+		return "unknown quantifier"
+	}
+}
+
+// Domain is a closed, typed fragment of the set vocabulary needed by M1.
+// Bound is meaningful only for ZerosBelowHeightDomain.
+type Domain struct {
+	Kind     DomainKind `json:"kind"`
+	Function Function   `json:"function,omitempty"`
+	Bound    uint64     `json:"bound,omitempty"`
+}
+
+type DomainKind string
+
+const (
+	ComplexPlaneDomain     DomainKind = "complex_plane"
+	RightHalfPlaneDomain   DomainKind = "half_plane_re_gt_1"
+	CriticalStripDomain    DomainKind = "critical_strip"
+	NontrivialZerosDomain  DomainKind = "nontrivial_zeros"
+	ZerosBelowHeightDomain DomainKind = "zeros_below_height"
+	CriticalLineDomain     DomainKind = "critical_line"
+)
+
+func ComplexPlane() Domain              { return Domain{Kind: ComplexPlaneDomain} }
+func HalfPlaneReGreaterThanOne() Domain { return Domain{Kind: RightHalfPlaneDomain} }
+func CriticalStrip() Domain             { return Domain{Kind: CriticalStripDomain} }
+func NontrivialZeros(f Function) Domain { return Domain{Kind: NontrivialZerosDomain, Function: f} }
+func ZerosBelowHeight(f Function, t uint64) Domain {
+	return Domain{Kind: ZerosBelowHeightDomain, Function: f, Bound: t}
+}
+func CriticalLine() Domain { return Domain{Kind: CriticalLineDomain} }
+
+func (d Domain) Validate() error {
+	switch d.Kind {
+	case ComplexPlaneDomain, RightHalfPlaneDomain, CriticalStripDomain, CriticalLineDomain:
+		if d.Function != 0 || d.Bound != 0 {
+			return fmt.Errorf("domain %s has extraneous parameters", d.Kind)
+		}
+	case NontrivialZerosDomain:
+		if d.Function == 0 || d.Bound != 0 {
+			return fmt.Errorf("nontrivial-zero domain has invalid parameters")
+		}
+	case ZerosBelowHeightDomain:
+		if d.Function == 0 || d.Bound == 0 {
+			return fmt.Errorf("bounded-zero domain needs a function and positive height")
+		}
+	default:
+		return fmt.Errorf("unknown domain %q", d.Kind)
+	}
+	return nil
+}
+
+func (d Domain) Describe() string {
+	switch d.Kind {
+	case ComplexPlaneDomain:
+		return "the complex plane"
+	case RightHalfPlaneDomain:
+		return "the half-plane Re(s) > 1"
+	case CriticalStripDomain:
+		return "the critical strip 0 < Re(s) < 1"
+	case NontrivialZerosDomain:
+		return "the nontrivial zeros of the " + d.Function.String()
+	case ZerosBelowHeightDomain:
+		return fmt.Sprintf("the nontrivial zeros of the %s with |Im(ρ)| ≤ %d", d.Function.String(), d.Bound)
+	case CriticalLineDomain:
+		return "the critical line Re(s) = 1/2"
+	default:
+		return "an unknown domain"
+	}
+}
+
+// IsSubset reports only inclusions explicitly known by the M1 domain algebra.
+// false means "not established", not a general symbolic proof of non-inclusion.
+func IsSubset(sub, sup Domain) bool {
+	if sub == sup {
+		return true
+	}
+	if sup.Kind == ComplexPlaneDomain {
+		return true
+	}
+	if sub.Kind == CriticalLineDomain && sup.Kind == CriticalStripDomain {
+		return true
+	}
+	if sup.Kind == CriticalStripDomain && (sub.Kind == NontrivialZerosDomain || sub.Kind == ZerosBelowHeightDomain) {
+		return sub.Function == RiemannZeta
+	}
+	if sub.Kind == ZerosBelowHeightDomain && sup.Kind == NontrivialZerosDomain {
+		return sub.Function == sup.Function
+	}
+	if sub.Kind == ZerosBelowHeightDomain && sup.Kind == ZerosBelowHeightDomain {
+		return sub.Function == sup.Function && sub.Bound <= sup.Bound
+	}
+	return false
+}
+
+type PredicateKind string
+
+const (
+	RealPartEqualsHalfPredicate PredicateKind = "real_part_equals_one_half"
+	FunctionNonzeroPredicate    PredicateKind = "function_nonzero"
+)
+
+type Predicate struct {
+	Kind     PredicateKind `json:"kind"`
+	Function Function      `json:"function"`
+}
+
+func (p Predicate) Validate() error {
+	if p.Function == 0 {
+		return fmt.Errorf("predicate has no function")
+	}
+	if p.Kind != RealPartEqualsHalfPredicate && p.Kind != FunctionNonzeroPredicate {
+		return fmt.Errorf("unknown predicate %q", p.Kind)
+	}
+	return nil
+}
+
+func (p Predicate) Describe(variable string) string {
+	switch p.Kind {
+	case RealPartEqualsHalfPredicate:
+		return fmt.Sprintf("Re(%s) = 1/2", variable)
+	case FunctionNonzeroPredicate:
+		return fmt.Sprintf("ζ(%s) ≠ 0", variable)
+	default:
+		return "unknown predicate"
+	}
+}
+
+// Proposition is sealed so compiler passes cannot smuggle semantics into strings.
 type Proposition interface {
 	Kind() PropositionKind
 	Describe() string
@@ -35,81 +182,145 @@ type Proposition interface {
 type PropositionKind string
 
 const (
-	RiemannHypothesisKind                PropositionKind = "riemann_hypothesis"
-	AllNontrivialZerosOnCriticalLineKind PropositionKind = "all_nontrivial_zeros_on_critical_line"
-	CriticalLineDensityOneKind           PropositionKind = "critical_line_density_one"
-	NamedObligationKind                  PropositionKind = "named_obligation"
+	QuantifiedStatementKind    PropositionKind = "quantified_statement"
+	RepresentationKind         PropositionKind = "representation"
+	RepresentationIdentityKind PropositionKind = "representation_identity"
+	AnalyticFactKind           PropositionKind = "analytic_fact"
+	NamedObligationKind        PropositionKind = "named_obligation"
 )
 
-type RiemannHypothesis struct{ Function Function }
-
-func (RiemannHypothesis) isProposition()        {}
-func (RiemannHypothesis) Kind() PropositionKind { return RiemannHypothesisKind }
-func (p RiemannHypothesis) Describe() string {
-	return "Riemann Hypothesis for the " + p.Function.String()
+type QuantifiedStatement struct {
+	Quantifier QuantifierKind `json:"quantifier"`
+	Domain     Domain         `json:"domain"`
+	Predicate  Predicate      `json:"predicate"`
 }
 
-type AllNontrivialZerosOnCriticalLine struct{ Function Function }
-
-func (AllNontrivialZerosOnCriticalLine) isProposition() {}
-func (AllNontrivialZerosOnCriticalLine) Kind() PropositionKind {
-	return AllNontrivialZerosOnCriticalLineKind
+func (QuantifiedStatement) isProposition()        {}
+func (QuantifiedStatement) Kind() PropositionKind { return QuantifiedStatementKind }
+func (p QuantifiedStatement) Validate() error {
+	if !p.Quantifier.Valid() {
+		return fmt.Errorf("invalid quantifier %q", p.Quantifier)
+	}
+	if err := p.Domain.Validate(); err != nil {
+		return err
+	}
+	return p.Predicate.Validate()
 }
-func (p AllNontrivialZerosOnCriticalLine) Describe() string {
-	return "every nontrivial zero ρ of the " + p.Function.String() + " has Re(ρ) = 1/2"
+func (p QuantifiedStatement) Describe() string {
+	variable := "s"
+	if p.Domain.Kind == NontrivialZerosDomain || p.Domain.Kind == ZerosBelowHeightDomain {
+		variable = "ρ"
+	}
+	return fmt.Sprintf("%s %s in %s: %s", p.Quantifier.Describe(), variable, p.Domain.Describe(), p.Predicate.Describe(variable))
 }
 
-type CriticalLineDensityOne struct{ Function Function }
+type RepresentationName string
 
-func (CriticalLineDensityOne) isProposition()        {}
-func (CriticalLineDensityOne) Kind() PropositionKind { return CriticalLineDensityOneKind }
-func (p CriticalLineDensityOne) Describe() string {
-	return "the asymptotic density of nontrivial zeros of the " + p.Function.String() + " on Re(s) = 1/2 is 1"
+const (
+	DirichletSeriesRepresentation RepresentationName = "dirichlet_series"
+	EulerProductRepresentation    RepresentationName = "euler_product"
+)
+
+type Representation struct {
+	Object      Function           `json:"object"`
+	Name        RepresentationName `json:"name"`
+	ValidOn     Domain             `json:"valid_on"`
+	Formula     string             `json:"formula"`
+	Affordances []string           `json:"affordances"`
 }
 
-// NamedObligation is intentionally only an escape hatch for proof obligations,
-// not a general string-based mathematical proposition.
+func (r Representation) Validate() error {
+	if r.Object == 0 || (r.Name != DirichletSeriesRepresentation && r.Name != EulerProductRepresentation) {
+		return fmt.Errorf("invalid representation identity")
+	}
+	if err := r.ValidOn.Validate(); err != nil {
+		return err
+	}
+	if strings.TrimSpace(r.Formula) == "" {
+		return fmt.Errorf("representation formula is empty")
+	}
+	return nil
+}
+
+type RepresentationProposition struct {
+	Representation Representation `json:"representation"`
+}
+
+func (RepresentationProposition) isProposition()        {}
+func (RepresentationProposition) Kind() PropositionKind { return RepresentationKind }
+func (p RepresentationProposition) Describe() string {
+	return fmt.Sprintf("%s represented by %s on %s", p.Representation.Object.String(), p.Representation.Name, p.Representation.ValidOn.Describe())
+}
+
+type RepresentationIdentity struct {
+	Object Function           `json:"object"`
+	Left   RepresentationName `json:"left"`
+	Right  RepresentationName `json:"right"`
+	Domain Domain             `json:"domain"`
+}
+
+func (p RepresentationIdentity) Validate() error {
+	if p.Object == 0 || p.Left == p.Right {
+		return fmt.Errorf("invalid representation identity")
+	}
+	if (p.Left != DirichletSeriesRepresentation && p.Left != EulerProductRepresentation) ||
+		(p.Right != DirichletSeriesRepresentation && p.Right != EulerProductRepresentation) {
+		return fmt.Errorf("representation identity contains an unknown representation")
+	}
+	return p.Domain.Validate()
+}
+
+func (RepresentationIdentity) isProposition()        {}
+func (RepresentationIdentity) Kind() PropositionKind { return RepresentationIdentityKind }
+func (p RepresentationIdentity) Describe() string {
+	return fmt.Sprintf("%s and %s denote the same %s on %s", p.Left, p.Right, p.Object.String(), p.Domain.Describe())
+}
+
+type AnalyticFactName string
+
+const (
+	EulerProductConvergesAbsolutely AnalyticFactName = "euler_product_converges_absolutely"
+	EulerProductFactorsNonzero      AnalyticFactName = "euler_product_factors_nonzero"
+	ConvergentProductNonzeroLimit   AnalyticFactName = "convergent_product_has_nonzero_limit"
+)
+
+type AnalyticFact struct {
+	Fact   AnalyticFactName `json:"fact"`
+	Object Function         `json:"object"`
+	Domain Domain           `json:"domain"`
+}
+
+func (p AnalyticFact) Validate() error {
+	if p.Object == 0 {
+		return fmt.Errorf("analytic fact has no mathematical object")
+	}
+	if p.Fact != EulerProductConvergesAbsolutely && p.Fact != EulerProductFactorsNonzero && p.Fact != ConvergentProductNonzeroLimit {
+		return fmt.Errorf("unknown analytic fact %q", p.Fact)
+	}
+	return p.Domain.Validate()
+}
+
+func (AnalyticFact) isProposition()        {}
+func (AnalyticFact) Kind() PropositionKind { return AnalyticFactKind }
+func (p AnalyticFact) Describe() string {
+	switch p.Fact {
+	case EulerProductConvergesAbsolutely:
+		return "the Euler product for ζ converges absolutely on " + p.Domain.Describe()
+	case EulerProductFactorsNonzero:
+		return "every Euler factor (1 - p^-s)^-1 is finite and nonzero on " + p.Domain.Describe()
+	case ConvergentProductNonzeroLimit:
+		return "an absolutely convergent product of nonzero factors has a nonzero limit"
+	default:
+		return "unknown analytic fact"
+	}
+}
+
+// NamedObligation remains only as a test/obligation escape hatch.
 type NamedObligation struct{ Name string }
 
 func (NamedObligation) isProposition()        {}
 func (NamedObligation) Kind() PropositionKind { return NamedObligationKind }
 func (p NamedObligation) Describe() string    { return p.Name }
-
-type Property uint8
-
-const ExceptionalSetSensitivity Property = 1
-
-func (p Property) String() string {
-	if p == ExceptionalSetSensitivity {
-		return "exceptional-set sensitivity"
-	}
-	return fmt.Sprintf("unknown property (%d)", p)
-}
-
-// PropertySet is a compact immutable-ish capability set.
-type PropertySet uint64
-
-func Properties(properties ...Property) PropertySet {
-	var set PropertySet
-	for _, property := range properties {
-		set |= 1 << property
-	}
-	return set
-}
-
-func (s PropertySet) Has(property Property) bool            { return s&(1<<property) != 0 }
-func (s PropertySet) Contains(other PropertySet) bool       { return s&other == other }
-func (s PropertySet) Without(other PropertySet) PropertySet { return s &^ other }
-func (s PropertySet) Names() []string {
-	var names []string
-	for property := Property(1); property < 64; property++ {
-		if s.Has(property) {
-			names = append(names, property.String())
-		}
-	}
-	sort.Strings(names)
-	return names
-}
 
 type Exactness string
 
@@ -168,39 +379,61 @@ type Provenance struct {
 }
 
 type Claim struct {
-	ID           ClaimID
-	Proposition  Proposition
-	Assumptions  []Assumption
-	Evidence     []Evidence
-	Requirements PropertySet
-	Capabilities PropertySet
-	Exactness    Exactness
-	Provenance   Provenance
+	ID          ClaimID
+	Proposition Proposition
+	Assumptions []Assumption
+	Evidence    []Evidence
+	Exactness   Exactness
+	Provenance  Provenance
 }
 
 func (c Claim) Validate() error {
-	if c.ID == "" {
-		return fmt.Errorf("claim ID is empty")
-	}
-	if c.Proposition == nil {
-		return fmt.Errorf("claim %q has no proposition", c.ID)
+	if c.ID == "" || c.Proposition == nil {
+		return fmt.Errorf("claim must have an ID and proposition")
 	}
 	if c.Exactness != Exact && c.Exactness != Approximate {
 		return fmt.Errorf("claim %q has invalid exactness %q", c.ID, c.Exactness)
 	}
+	switch p := c.Proposition.(type) {
+	case QuantifiedStatement:
+		if err := p.Validate(); err != nil {
+			return fmt.Errorf("claim %q: %w", c.ID, err)
+		}
+	case RepresentationProposition:
+		if err := p.Representation.Validate(); err != nil {
+			return fmt.Errorf("claim %q: %w", c.ID, err)
+		}
+	case RepresentationIdentity:
+		if err := p.Validate(); err != nil {
+			return fmt.Errorf("claim %q: %w", c.ID, err)
+		}
+	case AnalyticFact:
+		if err := p.Validate(); err != nil {
+			return fmt.Errorf("claim %q: %w", c.ID, err)
+		}
+	case NamedObligation:
+		if strings.TrimSpace(p.Name) == "" {
+			return fmt.Errorf("claim %q has an empty named obligation", c.ID)
+		}
+	}
 	seen := make(map[AssumptionID]bool, len(c.Assumptions))
 	for _, assumption := range c.Assumptions {
-		if assumption.ID == "" || strings.TrimSpace(assumption.Description) == "" {
-			return fmt.Errorf("claim %q has invalid assumption", c.ID)
-		}
-		if seen[assumption.ID] {
-			return fmt.Errorf("claim %q repeats assumption %q", c.ID, assumption.ID)
+		if assumption.ID == "" || strings.TrimSpace(assumption.Description) == "" || seen[assumption.ID] {
+			return fmt.Errorf("claim %q has invalid or repeated assumption", c.ID)
 		}
 		seen[assumption.ID] = true
 	}
 	return nil
 }
 
-func CloneAssumptions(in []Assumption) []Assumption {
-	return append([]Assumption(nil), in...)
+func CloneAssumptions(in []Assumption) []Assumption { return append([]Assumption(nil), in...) }
+func CloneRepresentation(r Representation) Representation {
+	r.Affordances = append([]string(nil), r.Affordances...)
+	return r
+}
+
+// Quantified extracts structural quantifier/domain semantics when present.
+func Quantified(p Proposition) (QuantifiedStatement, bool) {
+	q, ok := p.(QuantifiedStatement)
+	return q, ok
 }

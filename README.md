@@ -1,10 +1,10 @@
 # Riemann
 
 Riemann is an experimental compiler for making transformations of mathematical
-claims mechanically inspectable. M0 is a deliberately small Go vertical slice:
-it represents the Riemann Hypothesis, normalizes it to the universal
-zero-location statement, lowers that statement to a density-one consequence,
-and rejects the invalid reverse inference.
+claims mechanically inspectable. M1 gives quantifiers and domains typed
+semantics, models two representations of the Riemann zeta function, and derives
+its zero-free half-plane from an Euler-product representation plus explicit
+trusted analytic premises.
 
 ```powershell
 go run ./cmd/riemann
@@ -12,7 +12,8 @@ go run ./cmd/riemann --json
 go test ./...
 ```
 
-The human report explains the lowering and rejection. `--json` emits the same
-claim/transformation graph in a deterministic machine-readable form. See
-[docs/m0-architecture.md](docs/m0-architecture.md) for the design and research
-findings.
+The demonstration also rejects three invalid attempts to prove RH: bounded
+zero verification, density-one information, and zero-exclusion on `Re(s)>1`.
+See [docs/m1-architecture.md](docs/m1-architecture.md) for the semantics, trust
+boundary, and M1 research findings. [docs/m0-architecture.md](docs/m0-architecture.md)
+records the earlier provisional design.

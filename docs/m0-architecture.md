@@ -1,5 +1,9 @@
 # M0: semantic claim IR and sound lowering
 
+> Historical note: M1 replaced the provisional `Requirements`, `Capabilities`,
+> and `ExceptionalSetSensitivity` mechanism described below with typed
+> quantifier/domain semantics. See [m1-architecture.md](m1-architecture.md).
+
 ## Hypothesis and scope
 
 The experiment asks whether a compiler-style intermediate representation can
