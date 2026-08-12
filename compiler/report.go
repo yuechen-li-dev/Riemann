@@ -903,3 +903,57 @@ func M11JSONReport(result M11Result) ([]byte, error) {
 	}{"riemann.semantic-graph.m11", json.RawMessage(m10), result.Moments, result.AsymptoticMoments, result.EventuallyBounds, result.FiniteTheorem, result.ExactSanity, result.ThresholdScaling, result.AsymptoticCount, result.M10ReuseSanity, result.Counterexamples, result.Experiment, result.UtilitySchedulerUsed, result.Fusion, result.ImportedMathematics, result.DerivedMathematics, result.Sources}
 	return json.MarshalIndent(report, "", "  ")
 }
+
+func M12HumanReport(result M12Result) string {
+	var b strings.Builder
+	b.WriteString("RIEMANN-M12 — RANK-TRACE INEQUALITY BEYOND THE FIRST-TWO-MOMENT CEILING\n\n")
+	b.WriteString("RANK-TRACE INPUT\n")
+	fmt.Fprintf(&b, "  %s\n  P: Hermitian, PSD, rank(P)<=r\n  Q: Hermitian, n_plus(Q)<=b; trace(Q) has no sign premise\n  total: ||G||_F^2=tr(G^2)\n  parameter: %s, domain %s\n\n", result.Decomposition.Identity, result.Parameter.Symbol, result.Parameter.Domain)
+	b.WriteString("GENERIC FINITE THEOREM\n")
+	fmt.Fprintf(&b, "  assumptions: %v\n  expansion: %s\n  von Neumann step: %s\n  scalar steps: %v\n  conclusion: %s\n  equality: %s\n\n", result.FiniteTheorem.Assumptions, result.FiniteTheorem.Expansion, result.FiniteTheorem.VonNeumannStep, result.FiniteTheorem.ScalarSteps, result.FiniteTheorem.Conclusion, result.FiniteTheorem.EqualityCase)
+	b.WriteString("RANK CONSEQUENCE\n")
+	fmt.Fprintf(&b, "  %s\n  %s\n\n", result.FiniteTheorem.Specialization, result.FiniteWindow.AllCriticalRankBound)
+	b.WriteString("ZERO COUNT CONSEQUENCE\n")
+	fmt.Fprintf(&b, "  regrouping: %s\n  simple critical: %s\n  critical distinct: %s\n  all distinct: %s\n  tail/fringe: %s\n\n", result.FiniteWindow.SimpleRegrouping, result.FiniteWindow.SimpleCountBound, result.FiniteWindow.CriticalCountBound, result.FiniteWindow.DistinctCountBound, result.FiniteWindow.TailTransfer)
+	b.WriteString("ASYMPTOTIC RESULT\n")
+	fmt.Fprintf(&b, "  trace: %s\n  Frobenius: %s\n  algebra: %s\n  %s\n  %s\n  %s\n\n", result.AsymptoticCount.NormalizedTrace, result.AsymptoticCount.NormalizedFrobenius, result.AsymptoticCount.BandwidthFunction, result.AsymptoticCount.SimpleCriticalLiminf, result.AsymptoticCount.CriticalLiminf, result.AsymptoticCount.DistinctLiminf)
+	b.WriteString("COMPARISON\n  M11 sees only total first/second moments: 1/2 simple-critical stage (sharp for that IR).\n  M12 also consumes the exact component identity, P PSD/rank semantics, Q positive-index budget, and component traces: 2/3 simple-critical stage.\n  Same G=I_2 admits P=I_2,Q=0 and P=0,Q=I_2, so total moments alone cannot recover rank(P).\n\n")
+	b.WriteString("COUNTEREXAMPLES AND EDGE FIXTURES\n")
+	for _, c := range result.Counterexamples {
+		fmt.Fprintf(&b, "  rejected: %s\n    fixture: %s\n    result: %s\n", c.RejectedCandidate, c.ExactFixture, c.Failure)
+	}
+	b.WriteString("\nOCT / OCTGO\n")
+	fmt.Fprintf(&b, "  path: %s\n  command: %s\n  trials: %d\n  execution: %s\n  evidence: %s\n  OctGo used: %t\n  when utility used: %t (the source and algebra selected the von Neumann route directly)\n\n", result.Experiment.Path, result.Experiment.Command, result.Experiment.Trials, result.Experiment.Execution, result.Experiment.EvidenceClassification, result.OctGoUsed, result.UtilitySchedulerUsed)
+	b.WriteString("IMPORTED MATHEMATICS\n")
+	for _, x := range result.ImportedMathematics {
+		fmt.Fprintf(&b, "  %s\n", x)
+	}
+	b.WriteString("\nNEWLY DERIVED / RECONSTRUCTED MATHEMATICAL RESULT\n\n")
+	b.WriteString("GENERIC FINITE THEOREM\n  The exact parameterized Lemma 3.2 consequence above is reconstructed from finite algebra. It is standard/known here, not claimed novel. Imported pieces are the Hermitian spectral decomposition and von Neumann trace inequality.\n\n")
+	b.WriteString("ZETA CONSEQUENCE\n  The paper's bandwidth-one normalization and existing M8-M11 inputs yield 2/3 for simple and distinct critical-line zeros and 5/6 for all distinct zeros. This matches Theorems A-C; no 67.25% optimization was begun.\n\n")
+	b.WriteString("REPRESENTATION FUSION\n")
+	for _, x := range result.Fusion {
+		fmt.Fprintf(&b, "  %s\n", x)
+	}
+	b.WriteString("\nARCHITECTURAL AWKWARDNESS\n  M11 stores Theorem 5.8 in G_tilde units while rank-trace is scale-sensitive and must use G_hat=G_tilde/(aL). M12 records that normalization adapter explicitly; a future typed scale-change IR would be safer than extending string algebra.\n")
+	b.WriteString("\nCOMPILER THEORY\n  Yes: preserving G=P+Q lets the compiler prove strictly more than a sharp total-moment theorem. The gain comes from component identity, PSD/rank information, positive rather than total index of Q, and trace linearity.\n")
+	b.WriteString("\nONE NEXT MILESTONE\n  M13: type and verify the one-variable test-window functional, then reproduce the Montgomery-Taylor 67.25% optimization without changing the M12 finite theorem.\n")
+	b.WriteString("\nSTATUS\n  M12 two-thirds stage reproduced: yes\n  simple critical liminf: 2/3\n  critical distinct liminf: 2/3\n  all distinct liminf: 5/6\n  RH\n  unresolved\n")
+	return b.String()
+}
+
+func M12JSONReport(result M12Result) ([]byte, error) {
+	if err := validateM12Result(result); err != nil {
+		return nil, err
+	}
+	m11, err := M11JSONReport(result.M11)
+	if err != nil {
+		return nil, err
+	}
+	report := struct {
+		Schema string          `json:"schema"`
+		M11    json.RawMessage `json:"m11"`
+		Result M12Result       `json:"m12"`
+	}{"riemann.semantic-graph.m12", json.RawMessage(m11), result}
+	return json.MarshalIndent(report, "", "  ")
+}

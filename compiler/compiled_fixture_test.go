@@ -18,6 +18,9 @@ var (
 	m11Once      sync.Once
 	m11Cached    M11Result
 	m11CachedErr error
+	m12Once      sync.Once
+	m12Cached    M12Result
+	m12CachedErr error
 )
 
 func testM6() (M6Result, error) {
@@ -43,4 +46,9 @@ func testM10() (M10Result, error) {
 func testM11() (M11Result, error) {
 	m11Once.Do(func() { m11Cached, m11CachedErr = CompileM11() })
 	return m11Cached, m11CachedErr
+}
+
+func testM12() (M12Result, error) {
+	m12Once.Do(func() { m12Cached, m12CachedErr = CompileM12() })
+	return m12Cached, m12CachedErr
 }

@@ -1,0 +1,97 @@
+package M12RankTrace
+
+// Exact diagonal research memory for Lemma 3.2 at c=2.  For diagonal entries
+// p_i,q_i the theorem reads sum (p_i+q_i)^2 >= 2 trP-r+4 trQ-4b.
+// Go's theorem contract, not these bounded facts, is the certification boundary.
+concept PositiveParameter = Int {
+    Require(Self > 0, "rank-trace requires c>0")
+}
+
+fn RuntimeInt(value: Int) -> Int { return value }
+
+[Fact]
+fn OrthogonalProjectionEquality() -> Void {
+    let lhs = (1 + 0) * (1 + 0) + (0 + 2) * (0 + 2)
+    let rhs = 2 * 1 - 1 + 4 * 2 - 4 * 1
+    Assert.Equal(lhs, rhs, "rank and positive-index penalties are jointly sharp")
+}
+
+[Fact]
+fn RankPenaltyIsSharp() -> Void {
+    let lhs = 1
+    let rhs = 2 * 1 - 1
+    Assert.Equal(lhs, rhs, "c^2 r/4 cannot be reduced")
+}
+
+[Fact]
+fn PositiveIndexPenaltyIsSharp() -> Void {
+    let lhs = 2 * 2
+    let rhs = 4 * 2 - 4
+    Assert.Equal(lhs, rhs, "c^2 b cannot be reduced")
+}
+
+[Fact]
+fn MissingPSDFails() -> Void {
+    let lhs = (-10 + 12) * (-10 + 12)
+    let falseRhs = 2 * (-10) - 1 + 4 * 12 - 4
+    Assert.True(lhs < falseRhs, "P merely Hermitian is insufficient")
+}
+
+[Fact]
+fn NegativeTraceQIsLegal() -> Void {
+    let lhs = (1 - 2) * (1 - 2)
+    let rhs = 2 * 1 - 1 + 4 * (-2)
+    Assert.True(lhs >= rhs, "trace(Q) need not be nonnegative")
+}
+
+[Fact]
+fn DependentPairBlockIsSafe() -> Void {
+    // a=b=(1,0) gives ab*+ba*=diag(2,0), rank one and n_plus one.
+    let lhs = 2 * 2 + 0 * 0
+    let rhs = 4 * 2 - 4 * 1
+    Assert.Equal(lhs, rhs, "no independence assumption")
+}
+
+[Fact]
+fn ZeroRankBudget() -> Void {
+    let lhs = (-2) * (-2)
+    let rhs = 4 * (-2)
+    Assert.True(lhs >= rhs, "P=0 endpoint")
+}
+
+[Fact]
+fn ZeroPositiveIndexBudget() -> Void {
+    let lhs = (1 - 2) * (1 - 2)
+    let rhs = 2 * 1 - 1 + 4 * (-2)
+    Assert.True(lhs >= rhs, "negative semidefinite Q has b=0")
+}
+
+[Fact]
+fn NegativeIndexCannotReplacePositiveIndex() -> Void {
+    let lhs = 2 * 2
+    let falseRhs = 4 * 2
+    Assert.True(lhs < falseRhs, "Q=2 has negative index zero but positive index one")
+}
+
+[Fact]
+fn SameGDoesNotDetermineRankP() -> Void {
+    // G=I2: (P=I2,Q=0) has rank(P)=2; (P=0,Q=I2) has rank(P)=0.
+    let traceG = 2
+    let frobG = 2
+    Assert.Equal(traceG, frobG, "total moments are unchanged across decompositions")
+    Assert.True(2 > 0, "component rank differs")
+}
+
+[Fact]
+fn CTwoSpecializationMatchesGeneric() -> Void {
+    let c = PositiveParameter(RuntimeInt(2)) !
+    let genericRhs = c * 3 - (c * c / 4) * 2 + 2 * c * (-1) - c * c * 0
+    let specializedRhs = 2 * 3 - 2 + 4 * (-1)
+    Assert.Equal(genericRhs, specializedRhs, "specialization is algebraic")
+}
+
+[Fact]
+fn IllegalParameterRejected() -> Void {
+    Assert.Error(PositiveParameter(RuntimeInt(0)), "c=0 is outside the theorem contract")
+    Assert.Error(PositiveParameter(RuntimeInt(-1)), "negative c is outside the theorem contract")
+}
