@@ -1081,3 +1081,46 @@ func M14AJSONReport(result M14AResult) ([]byte, error) {
 	}{"riemann.semantic-graph.m14a", result}
 	return json.MarshalIndent(report, "", "  ")
 }
+
+func M15HumanReport(result M15Result) string {
+	var b strings.Builder
+	b.WriteString("RIEMANN-M15 — WHOLE-LINE POSITIVE-DEFINITE COMPLETION\n\n")
+	b.WriteString("M15 DUAL RESEARCH\n")
+	fmt.Fprintf(&b, "  outcome: %s\n  support-one class: %s\n  objective audit: %s\n  current primal: c_*<1651/1250, equivalently J_*>849/1250 (strict)\n  current dual: c_*>=%d/%d, equivalently J_*<=%d/%d\n\n", result.Outcome, result.M14A.Class.ID, result.ObjectiveNotationAudit, result.Bound.MultiplicityLower.Numerator, result.Bound.MultiplicityLower.Denominator, result.Bound.SimpleUpper.Numerator, result.Bound.SimpleUpper.Denominator)
+	b.WriteString("CANDIDATE FAMILY\n")
+	fmt.Fprintf(&b, "  sigma: %s\n  support: density %s; atoms %v; legal outside (-1,1): %t\n  nonnegative measure: %t\n  exact family ceiling: %d/%d\n  proof: %s\n\n", result.Witness.OutsideMeasure, result.Family.DensitySupport, result.Family.AtomSupport, result.Family.SupportLegal, result.Family.MeasureNonnegative, result.FamilyCeiling.Numerator, result.FamilyCeiling.Denominator, result.FamilyCeilingProof)
+	b.WriteString("WHOLE-LINE REPRESENTATION AND CERTIFICATION\n")
+	fmt.Fprintf(&b, "  completion: %s\n  representation: %s\n  cleared density: %s\n  compact core: %s; %s\n  tail: %s; %s\n  omitted directions: %s\n  whole-line PD: certified\n\n", result.Witness.CompletionDistribution, result.CompletionRepresentation, result.PDCertificate.ClearedDensity, result.PDCertificate.InnerInterval, result.PDCertificate.InnerSeries, result.PDCertificate.OuterInterval, result.PDCertificate.OuterLowerBound, result.OmittedDirectionControl)
+	b.WriteString("EXPERIMENTAL SEARCH\n")
+	fmt.Fprintf(&b, "  Oct source: %s\n  best numerical dual candidate: %s\n  counterexamples: %v\n  plot: %s\n  evidence: %s\n\n", result.Experiment.SearchPath, result.Experiment.BestNumerical, result.Experiment.Counterexamples, result.Experiment.Plot, result.Experiment.Evidence)
+	b.WriteString("UPDATED CERTIFIED BRACKET\n")
+	fmt.Fprintf(&b, "  c_*: %s\n  J_*: %s\n\n", result.CertifiedCBracket, result.CertifiedJBracket)
+	b.WriteString("ANTHROPIC 0.68185\n")
+	fmt.Fprintf(&b, "  %s\n  status: still unresolved\n\n", result.AnthropicComparison)
+	b.WriteString("INDEPENDENT VERIFICATION\n")
+	fmt.Fprintf(&b, "  %s\n  witness artifact: %s\n\n", result.IndependentVerification, result.WitnessArtifact)
+	b.WriteString("IMPORTED MATHEMATICS\n")
+	for _, item := range result.ImportedMathematics {
+		fmt.Fprintf(&b, "  %s\n", item)
+	}
+	b.WriteString("\nCOMPILER-DERIVED / RESEARCH-DERIVED MATHEMATICS\n")
+	for _, item := range result.DerivedMathematics {
+		fmt.Fprintf(&b, "  %s\n", item)
+	}
+	fmt.Fprintf(&b, "\nNOVELTY STATUS\n  %s\n\n", result.PotentialNovelty)
+	b.WriteString("OCT TOOLING\n")
+	fmt.Fprintf(&b, "  Artifact/plot bug: %s\n  fix/semantics: %s\n  execution modes: %s\n  before: %s\n  after: %s\n  Oct files changed: %v\n  focused coverage: %v\n  research benefit: %s\n\n", result.OctTooling.RootCause, result.OctTooling.Semantics, result.OctTooling.ExecutionModes, result.OctTooling.Before, result.OctTooling.After, result.OctTooling.FilesChanged, result.OctTooling.Tests, result.OctTooling.ResearchBenefit)
+	fmt.Fprintf(&b, "ARCHITECTURAL AWKWARDNESS\n  %s\n\nCOMPILER THEORY\n  %s\n\nONE NEXT MILESTONE\n  %s\n\nRH\n  %s\n", result.ArchitecturalAwkwardness, result.CompilerTheory, result.NextMilestone, result.RHStatus)
+	return b.String()
+}
+
+func M15JSONReport(result M15Result) ([]byte, error) {
+	if err := validateM15Result(result); err != nil {
+		return nil, err
+	}
+	report := struct {
+		Schema string    `json:"schema"`
+		Result M15Result `json:"m15"`
+	}{"riemann.semantic-graph.m15", result}
+	return json.MarshalIndent(report, "", "  ")
+}

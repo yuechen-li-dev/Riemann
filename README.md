@@ -1,12 +1,12 @@
 # Riemann
 
 Riemann is an experimental compiler for making transformations of mathematical
-claims mechanically inspectable. M14A reconstructs the broader support-one
-Fourier extremal class and a weak-dual positive-definite completion contract.
-It certifies the exact baseline upper bound `J<=1`, imports the rigorous CGdL
-feasible bound `J>0.6792`, and isolates the missing whole-line/tail certificate
-needed for a useful global ceiling. Anthropic's remark-level `0.68185` is not
-promoted to theorem evidence. The compiler still retains M13's exact
+claims mechanically inspectable. M15 constructs a whole-line positive-definite
+boundary-atom completion for the broader support-one Fourier extremal class.
+It certifies `c_*>=9/8`, hence `J_*<=7/8`, and combines this with the rigorous
+CGdL feasible bound to give `849/1250<J_*<=7/8`. Anthropic's remark-level
+`0.68185` remains unresolved and is not promoted to theorem evidence. The
+compiler still retains M13's exact
 Montgomery–Taylor derivation
 
 ```text
@@ -32,8 +32,9 @@ matrix, decomposes its zero-side meaning into symmetry-orbit contributions,
 accounts for aggregate rank/inertia budgets, and localizes a separate
 height-dependent compression. It rejects approximate, non-strict-threshold,
 wrong-norm, multiplicity-as-rank, and finite-PSD reverse shortcuts. See
-[docs/m14a-architecture.md](docs/m14a-architecture.md) for the exact primal and
-dual problems, source map, Oct-first experiments, certified bracket, and
-precise obstruction. [docs/m13-architecture.md](docs/m13-architecture.md)
+[docs/m15-architecture.md](docs/m15-architecture.md) for the certified
+whole-line completion, exact family ceiling, Oct experiments, and plotting
+artifact repair. [docs/m14a-architecture.md](docs/m14a-architecture.md) retains
+the primal/dual reconstruction. [docs/m13-architecture.md](docs/m13-architecture.md)
 retains the exact window functional and M8-M13 provenance. Earlier milestone
 documents remain available.

@@ -1,0 +1,26 @@
+{
+  "family": {
+    "constant": {"numerator": 9, "denominator": 8},
+    "exterior_density": {"numerator": 9, "denominator": 8},
+    "boundary_atom_mass": {"numerator": 1, "denominator": 8},
+    "density_support": "|x|>1",
+    "atom_support": [-1, 1],
+    "support_legal": true,
+    "measure_nonnegative": true
+  },
+  "positive_definiteness": {
+    "id": "boundary-atom-nine-eighths-whole-line",
+    "fourier_variable": "t=2*pi*xi",
+    "fourier_density": "hat(P)(xi)=1+2(cos(t)-1)/t^2+(cos(t)-sin(t)/t)/4, with value 0 at t=0",
+    "cleared_density": "G(t)=4*t^2*hat(P)(xi)=t^2(4+cos(t))-t*sin(t)-8(1-cos(t))",
+    "inner_interval": "0<=|t|<=pi",
+    "inner_series": "G(t)=sum_{n>=3} (-1)^(n-1) 4(n-2)(n+1)t^(2n)/(2n)!",
+    "first_positive_coefficient": {"numerator": 1, "denominator": 45},
+    "term_ratio_upper": {"numerator": 25, "denominator": 56},
+    "outer_interval": "|t|>=pi",
+    "outer_lower_bound": "G(t)>=3t^2-t-16>0 because |t|>=pi>3, q(3)=8, and q'(t)>0",
+    "outer_anchor": {"numerator": 8, "denominator": 1},
+    "omitted_direction_control": "inner alternating series plus outer coercive bound covers every real t",
+    "whole_line": true
+  }
+}

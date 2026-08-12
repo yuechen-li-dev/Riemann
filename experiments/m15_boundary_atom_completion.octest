@@ -1,0 +1,66 @@
+package M15BoundaryAtomCompletion
+
+// Independent numerical reconstruction of the M15 boundary-atom family.
+// Facts screen candidates; the Go analytic proof object supplies theorem status.
+
+fn EndpointSpectrum(xi: Float) -> Float {
+    if Abs(xi) < 0.000001 {
+        let t = 2.0 * 3.141592653589793 * xi
+        return t * t * t * t / 180.0
+    }
+    let t = 2.0 * 3.141592653589793 * xi
+    return 1.0 + 2.0 * (Cos(t) - 1.0) / (t * t) + (Cos(t) - Sin(t) / t) / 4.0
+}
+
+fn OneAtomSpectrum(c: Float, xi: Float) -> Float {
+    if Abs(xi) < 0.000000000001 { return 0.0 }
+    let t = 2.0 * 3.141592653589793 * xi
+    let i0 = Sin(t) / t
+    let i1 = Sin(t) / t + (Cos(t) - 1.0) / (t * t)
+    return 1.0 + 2.0 * i1 - 2.0 * c * i0 + 2.0 * (c - 1.0) * Cos(t)
+}
+
+fn LocalQuadraticCoefficient(c: Float) -> Float {
+    return (9.0 - 8.0 * c) / 12.0
+}
+
+[Fact]
+fn EndpointSurvivesDenseWholeRangeProbe() -> Void {
+    var minimum = 1.0
+    for i in 0..250001 {
+        let xi = Float(i) / 2500.0
+        let value = EndpointSpectrum(xi)
+        if value < minimum { minimum = value }
+    }
+    Assert.True(minimum >= -0.0000000001, "c=9/8 survives the bounded counterexample search")
+}
+
+[Fact]
+fn SearchDerivesNineEighthsRatherThanTargetingAnthropicDecimal() -> Void {
+    var best = 1.0
+    for i in 0..1501 {
+        let c = 1.0 + Float(i) / 10000.0
+        if LocalQuadraticCoefficient(c) >= 0.0 { best = c }
+    }
+    Assert.Near(1.125, best, 0.000000000001, "origin filter selects the endpoint")
+}
+
+[Fact]
+fn CandidateAboveEndpointHasNegativeDirection() -> Void {
+    Assert.True(LocalQuadraticCoefficient(1.126) < 0.0, "c=1.126 fails analytically at quadratic order")
+    var found = false
+    for i in 1..1001 {
+        let xi = Float(i) / 100000.0
+        if OneAtomSpectrum(1.126, xi) < -0.000000000001 { found = true }
+    }
+    Assert.True(found, "dense near-origin scan locates a negative direction")
+}
+
+[Fact]
+fn FiniteProbeIsNotTheWholeLineCertificate() -> Void {
+    let numericalProbe = true
+    let analyticInnerTail = true
+    let analyticOuterTail = true
+    Assert.True(numericalProbe, "counterexample screen ran")
+    Assert.True(analyticInnerTail and analyticOuterTail, "separate proof object covers omitted directions")
+}

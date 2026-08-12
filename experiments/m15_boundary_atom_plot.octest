@@ -1,0 +1,24 @@
+package M15BoundaryAtomPlot
+
+fn EndpointSpectrum(xi: Float) -> Float {
+    if Abs(xi) < 0.000001 {
+        let t = 2.0 * 3.141592653589793 * xi
+        return t * t * t * t / 180.0
+    }
+    let t = 2.0 * 3.141592653589793 * xi
+    return 1.0 + 2.0 * (Cos(t) - 1.0) / (t * t) + (Cos(t) - Sin(t) / t) / 4.0
+}
+
+// Research visualization only: the exact Go certificate, not this plot,
+// proves positivity on omitted frequencies.
+[Artifact]
+fn PlotCertifiedEndpointSpectrum() -> Void {
+    var xs: Float[] = []
+    var ys: Float[] = []
+    for i in 0..5001 {
+        let xi = Float(i) / 500.0
+        xs = Append(xs, xi)
+        ys = Append(ys, EndpointSpectrum(xi))
+    }
+    let _plot = PlotLine(xs, ys, "m15/m15_boundary_atom_spectrum.png")
+}
