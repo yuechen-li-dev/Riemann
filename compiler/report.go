@@ -700,3 +700,62 @@ func M8JSONReport(result M8Result) ([]byte, error) {
 	}{"riemann.semantic-graph.m8", json.RawMessage(m7), result.CriticalTemplate, result.OffCriticalTemplate, result.ZeroSide, result.Dual, result.ToyDiagnostics, result.FinitePSDReverseProof}
 	return json.MarshalIndent(report, "", "  ")
 }
+
+func M9HumanReport(result M9Result) string {
+	var b strings.Builder
+	b.WriteString("RIEMANN-M9 — AGGREGATE SPECTRAL ACCOUNTING\n\n")
+	b.WriteString("FINITE COMPRESSION\n")
+	fmt.Fprintf(&b, "  matrix: %s\n  basis: %s\n  dimension: %d\n  information loss: function_space_restriction\n\n", result.Compression.MatrixID, result.Compression.BasisID, result.Compression.Dimension)
+	b.WriteString("ZERO-SIDE SPECTRAL BUDGET\n\n")
+	b.WriteString("G = P + Q\n\n")
+	b.WriteString("P:\n")
+	fmt.Fprintf(&b, "  source: critical-line orbit aggregate\n  PSD: %t\n  local rank <= %d\n  aggregate: %s\n  multiplicity: %s\n\n", result.CriticalBudget.PositiveSemidefinite, result.CriticalBudget.LocalRankUpperBound, result.CriticalBudget.RankUpperBound, result.CriticalBudget.MultiplicityEffect)
+	b.WriteString("Q:\n")
+	fmt.Fprintf(&b, "  source: off-critical reflection-pair aggregate\n  each block: rank <= %d, positive index <= %d, negative index <= %d\n  aggregate rank: %s\n  aggregate positive index: %s\n  aggregate negative index: %s\n  equality across blocks claimed: false\n\n", result.OffCriticalBudget.LocalRankUpperBound, result.OffCriticalBudget.LocalPositiveIndexUpperBound, result.OffCriticalBudget.LocalNegativeIndexUpperBound, result.OffCriticalBudget.AggregateRankUpperBound, result.OffCriticalBudget.AggregatePositiveIndexBound, result.OffCriticalBudget.AggregateNegativeIndexBound)
+	b.WriteString("AGGREGATE THEOREM\n")
+	fmt.Fprintf(&b, "  using: %v\n  derive: %s\n\n", result.DerivedTheorem.Theorems, result.DerivedTheorem.PositiveIndexInequality)
+	b.WriteString("CRITICAL CONTRIBUTION BOUND\n")
+	fmt.Fprintf(&b, "  %s\n  therefore: %s\n  M7 sanity case: %s\n\n", result.DerivedTheorem.CriticalRankLowerBound, result.DerivedTheorem.CriticalCountConsequence, result.DerivedTheorem.M7SanityInstance)
+	b.WriteString("REPRESENTATION FUSION\n")
+	fmt.Fprintf(&b, "  zero side supplies: %v\n  explicit-formula side supplies: %v\n  identity theorem: %s\n\n", result.Fusion.ZeroSideFacts, result.Fusion.ExplicitFormulaFacts, result.Fusion.IdentityTheorem)
+	b.WriteString("COUNTEREXAMPLES TO STRONGER CANDIDATES\n")
+	for _, c := range result.Counterexamples {
+		fmt.Fprintf(&b, "  rejected: %s\n    fixture: %s\n    reason: %s\n", c.RejectedCandidate, c.ExactFixture, c.Reason)
+	}
+	b.WriteString("\nOCT EXPERIMENT\n")
+	fmt.Fprintf(&b, "  path: %s\n  command: %s\n  setup: %s\n  trials: %d\n  result: %s\n\n", result.Experiment.Path, result.Experiment.Command, result.Experiment.Setup, result.Experiment.Trials, result.Experiment.EvidenceClassification)
+	b.WriteString("NEWLY DERIVED MATHEMATICAL RESULT\n")
+	fmt.Fprintf(&b, "  theorem: %s\n  assumptions: %v\n  proof route: positive-index subadditivity, n_plus(P)<=rank(P), and exact natural-number rearrangement\n  literature status: standard finite linear algebra corollary; not claimed novel\n  rank-trace inequality used: false\n  numerical/proportion consequence: none yet\n\n", result.DerivedTheorem.CriticalRankLowerBound, result.DerivedTheorem.Assumptions)
+	b.WriteString("CLAUDE INERTIA-STAGE COMPARISON\n")
+	fmt.Fprintf(&b, "  route: %s\n  ~1/2 reproduced: %t\n  missing inputs: %v\n  rank-trace stage begun: %t\n\n", result.ClaudeComparison.FiniteRoute, result.ClaudeComparison.Reproduced, result.ClaudeComparison.MissingInputs, result.ClaudeComparison.RankTraceUsed)
+	b.WriteString("SOUNDNESS\n")
+	fmt.Fprintf(&b, "  finite M7 PSD => absence of off-critical zeros: accepted=%t\n", result.FinitePSDReverse.Accepted)
+	b.WriteString("  approximate Oct eigenvalues satisfy exact theorem premises: false\n\n")
+	b.WriteString("REMAINING OBLIGATION\n")
+	b.WriteString("  compile a height-window zero count, far-zero threshold control, and the first/second-moment lower bound for n_plus(G); these are exactly the missing bridge to the earlier 1/2 stage.\n\n")
+	b.WriteString("STATUS\n  RH unresolved. M9 proves a reusable exact finite critical-contribution bound only.\n")
+	return b.String()
+}
+
+func M9JSONReport(result M9Result) ([]byte, error) {
+	m8, err := M8JSONReport(result.M8)
+	if err != nil {
+		return nil, err
+	}
+	report := struct {
+		Schema            string                                     `json:"schema"`
+		M8                json.RawMessage                            `json:"m8"`
+		Compression       semantic.FiniteCompression                 `json:"finite_compression"`
+		Invariants        []semantic.SpectralInvariantClaim          `json:"spectral_invariants"`
+		Contracts         []semantic.SpectralTheoremContract         `json:"spectral_theorem_contracts"`
+		CriticalBudget    semantic.CriticalAggregateBudget           `json:"critical_aggregate_budget"`
+		OffCriticalBudget semantic.OffCriticalAggregateBudget        `json:"off_critical_aggregate_budget"`
+		Fusion            semantic.RepresentationFusion              `json:"representation_fusion"`
+		DerivedTheorem    semantic.FiniteCriticalContributionTheorem `json:"newly_derived_mathematical_result"`
+		Counterexamples   []M9Counterexample                         `json:"counterexamples"`
+		Experiment        M9Experiment                               `json:"oct_experiment"`
+		ClaudeComparison  ClaudeInertiaComparison                    `json:"claude_inertia_comparison"`
+		FinitePSDReverse  ProofAttempt                               `json:"finite_psd_reverse_inference"`
+	}{"riemann.semantic-graph.m9", json.RawMessage(m8), result.Compression, result.Invariants, result.Contracts, result.CriticalBudget, result.OffCriticalBudget, result.Fusion, result.DerivedTheorem, result.Counterexamples, result.Experiment, result.ClaudeComparison, result.FinitePSDReverse}
+	return json.MarshalIndent(report, "", "  ")
+}

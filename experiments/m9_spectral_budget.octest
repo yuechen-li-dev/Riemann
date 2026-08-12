@@ -1,0 +1,66 @@
+package M9SpectralBudget
+
+// Bounded 2x2 counterexample search.  Inertia values below are established by
+// exact determinant/trace signs; this experiment is evidence about candidate
+// selection, not a theorem premise.
+fn CriticalLowerBound(nPlusG: Int, offBudget: Int) -> Int {
+    if nPlusG > offBudget {
+        return nPlusG - offBudget
+    }
+    return 0
+}
+
+[Fact]
+fn PositiveIndexBudgetForcesOneCriticalDirection() -> Void {
+    Assert.Equal(1, CriticalLowerBound(2, 1), "two positive aggregate directions minus one off-critical direction")
+}
+
+[Fact]
+fn BudgetCanMakeTheBoundVacuous() -> Void {
+    Assert.Equal(0, CriticalLowerBound(2, 2), "a full off-critical budget leaves no forced critical rank")
+}
+
+[Fact]
+fn LocalInertiaIsNotAdditive() -> Void {
+    // diag(1,-1)+diag(-1,1)=0: local n+=(1+1), aggregate n+=0.
+    let aggregatePositiveIndex = 0
+    let sumLocalPositiveIndices = 2
+    Assert.True(aggregatePositiveIndex < sumLocalPositiveIndices, "cancellation kills additive equality")
+}
+
+[Fact]
+fn FinitePositiveDefinitenessDoesNotRemoveOffCriticalBlock() -> Void {
+    // diag(0,2)+diag(1,-1)=I.  The second summand has signature (1,1).
+    let g00 = 0.0 + 1.0
+    let g11 = 2.0 - 1.0
+    Assert.Equal(1.0, g00, "first eigenvalue of G")
+    Assert.Equal(1.0, g11, "second eigenvalue of G")
+}
+
+[Fact]
+fn RepeatedCriticalDirectionCollapsesRank() -> Void {
+    // u=(1,0); u*u^T+u*u^T=diag(2,0), still rank one.
+    let determinant = 2.0 * 0.0 - 0.0 * 0.0
+    Assert.Equal(0.0, determinant, "two contributions need not give two rank directions")
+}
+
+[Fact]
+fn MultiplicityChangesWeightNotRank() -> Void {
+    // 7*u*u^T for u=(1,2) has determinant 7*28-14^2=0.
+    let determinant = 7.0 * 28.0 - 14.0 * 14.0
+    Assert.Equal(0.0, determinant, "multiplicity does not clone a direction")
+}
+
+[Fact]
+fn IndependentReflectionPairHasOnePositiveBudgetUnit() -> Void {
+    // [[0,1],[1,0]] has determinant -1, hence signature (1,1).
+    let determinant = 0.0 * 0.0 - 1.0 * 1.0
+    Assert.True(determinant < 0.0, "independent pair has one positive and one negative direction")
+}
+
+[Fact]
+fn DependentReflectionPairUsesNoMoreThanBudget() -> Void {
+    // a=(1,0), b=2a gives diag(4,0), not signature (1,1).
+    let determinant = 4.0 * 0.0
+    Assert.Equal(0.0, determinant, "dependent pair is conservatively rank deficient")
+}
