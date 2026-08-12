@@ -571,3 +571,68 @@ func M6JSONReport(result M6Result) ([]byte, error) {
 	}
 	return b.Bytes(), nil
 }
+
+func M7HumanReport(result M7Result) string {
+	var b strings.Builder
+	b.WriteString("RIEMANN-M7 — CERTIFIED ARCHIMEDEAN ENCLOSURE + RIGOROUS FINITE WEIL MATRIX\n\n")
+	b.WriteString("BASIS\n  ordered: (f2, f3)\n  f_q(x)=x^-1/2 on [q^-2,q^2], zero outside, with midpoint endpoint values\n  admissibility: certified; unchanged from M6\n\n")
+	b.WriteString("EXACT ARCHIMEDEAN DEFINITION\n  W_inf(h)=(EulerGamma+log(pi))*h(1)+integral_1^infinity [h(x)+tilde(h)(x)-2*x^-2*h(1)]*x*dx/(x^2-1)\n  u=log(x): H(u)=min(4log(min(q,r)), max(0,2log(qr)-u)) with the plateau starting at 2|log(q/r)|\n  integrand: F(u)=2*[exp(3u/2)*H(u)-h(1)]/expm1(2u)\n  cancellation-safe at zero: R=(3/4)*phi(3u/2)/phi(2u), S=(1/2)*exp(3u/2)/phi(2u), phi(z)=expm1(z)/z\n  singularity: removable at u=0; derivative kinks are isolated by certified breakpoint guards\n  tail after B=5: h(1)*log(1-exp(-2B)) (closed form, certified)\n\n")
+	for _, entry := range result.Evaluation.Matrix.Entries {
+		fmt.Fprintf(&b, "ENTRY G[%d,%d]\n", entry.Row+1, entry.Column+1)
+		for _, contribution := range entry.Contributions {
+			if contribution.SourceKind == semantic.ZeroContribution {
+				continue
+			}
+			fmt.Fprintf(&b, "  %s (sign %+d): ", contribution.SourceKind, contribution.Sign)
+			if contribution.Value.Kind == semantic.ExactValue {
+				fmt.Fprintf(&b, "exact %s", contribution.Value.Exact.Real.Expression)
+			} else if contribution.Value.Interval != nil {
+				fmt.Fprintf(&b, "certified [%.15g, %.15g] certificate=%s", contribution.Value.Interval.RealLower, contribution.Value.Interval.RealUpper, contribution.Value.Metadata.Error.ProofObjectKind)
+				if contribution.Value.Metadata.Truncation != nil {
+					fmt.Fprintf(&b, " support_exhaustive=%t", contribution.Value.Metadata.Truncation.SupportExhaustive)
+				}
+				if contribution.Value.Metadata.Quadrature != nil {
+					fmt.Fprintf(&b, " partitions=%d", contribution.Value.Metadata.Quadrature.Partitions)
+				}
+			}
+			b.WriteByte('\n')
+		}
+		fmt.Fprintf(&b, "  total: certified [%.15g, %.15g]\n  M6 approximate: %.15g; contained=%t\n  zero-side: unevaluated exact alternate representation\n\n", entry.Value.Interval.RealLower, entry.Value.Interval.RealUpper, result.Evaluation.ApproximateMatrix.Entries[entry.Row*2+entry.Column].Value.Approximate.Real, result.Evaluation.ApproximateContained[entry.Row*2+entry.Column])
+	}
+	b.WriteString("MATRIX\n  structural Hermitian: certified independently of interval overlap\n  entries: certified intervals\n\n")
+	p := result.Evaluation.PSD
+	fmt.Fprintf(&b, "FINITE PSD\n  a>0: %t\n  d>0: %t\n  determinant interval: [%.15g, %.15g]\n  ad-b^2>0: %t\n  finite matrix PSD: %s\n\n", p.APositive, p.DPositive, p.Determinant.Interval.RealLower, p.Determinant.Interval.RealUpper, p.DeterminantPositive, certifiedWord(p.Certified))
+	fmt.Fprintf(&b, "FINITE WEIL SPAN\n  positivity on span{f2,f3}: %s\n  theorem path: certified matrix PSD + Q(sum c_i f_i)=c*Gc\n\n", certifiedWord(result.Evaluation.FiniteSpanPositivityCertified))
+	b.WriteString("RH\n  unresolved\n  universal Weil positivity: unresolved\n  reason: function_space_restriction remains permanently on the universal-to-finite path; finite-span positivity cannot discharge RH\n\n")
+	b.WriteString("RESEARCH BOUNDARIES\n  approximate M6 path: retained\n  Oct experiment: none in M7; the Go theorem-backed backend is authoritative\n  Octxiliary: not needed\n  when utility: not used; cancellation-safe interval Darboux decomposition was the smallest direct rigorous method\n  zero-side decomposition, inertia, rank, and orbit machinery: not begun\n")
+	return b.String()
+}
+
+func certifiedWord(v bool) string {
+	if v {
+		return "certified"
+	}
+	return "unresolved"
+}
+
+func M7JSONReport(result M7Result) ([]byte, error) {
+	proof, err := M6JSONReport(result.M6)
+	if err != nil {
+		return nil, err
+	}
+	report := struct {
+		Schema              string                `json:"schema"`
+		ProofGraph          json.RawMessage       `json:"proof_graph"`
+		EvaluationContracts []TheoremContract     `json:"evaluation_theorem_contracts"`
+		Basis               semantic.OrderedBasis `json:"basis"`
+		Evaluation          M7Evaluation          `json:"evaluation"`
+	}{Schema: "riemann.semantic-graph.m7", ProofGraph: json.RawMessage(proof), EvaluationContracts: result.Registry.Contracts(), Basis: result.Evaluation.Matrix.Basis, Evaluation: result.Evaluation}
+	var b bytes.Buffer
+	encoder := json.NewEncoder(&b)
+	encoder.SetIndent("", "  ")
+	encoder.SetEscapeHTML(false)
+	if err := encoder.Encode(report); err != nil {
+		return nil, err
+	}
+	return b.Bytes(), nil
+}

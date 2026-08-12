@@ -46,6 +46,11 @@ type ComplexInterval struct {
 	RealUpper float64 `json:"real_upper"`
 	ImagLower float64 `json:"imag_lower"`
 	ImagUpper float64 `json:"imag_upper"`
+	// Exact decimal renderings preserve the directed big.Float endpoints used
+	// by the certifier; the float64 fields are outward-rounded display values.
+	RealLowerExact string `json:"real_lower_exact,omitempty"`
+	RealUpperExact string `json:"real_upper_exact,omitempty"`
+	Representation string `json:"representation,omitempty"`
 }
 
 type ErrorSemantics struct {
@@ -61,7 +66,20 @@ type ProofObjectKind string
 const (
 	TheoremBackedBound       ProofObjectKind = "theorem_backed_bound"
 	IndependentExactArgument ProofObjectKind = "independent_exact_argument"
+	AnalyticTailBound        ProofObjectKind = "analytic_tail_bound"
+	CertifiedQuadratureBound ProofObjectKind = "certified_quadrature_bound"
+	OutwardRoundedFiniteSum  ProofObjectKind = "outward_rounded_finite_sum"
+	OutwardRoundedArithmetic ProofObjectKind = "outward_rounded_arithmetic"
 )
+
+func (k ProofObjectKind) CertifiesInterval() bool {
+	switch k {
+	case TheoremBackedBound, AnalyticTailBound, CertifiedQuadratureBound, OutwardRoundedFiniteSum, OutwardRoundedArithmetic:
+		return true
+	default:
+		return false
+	}
+}
 
 type TruncationInfo struct {
 	Parameter         string `json:"parameter"`
@@ -74,10 +92,23 @@ type TruncationInfo struct {
 }
 
 type QuadratureInfo struct {
-	Method         string  `json:"method"`
-	Tolerance      float64 `json:"tolerance"`
-	DomainHandling string  `json:"domain_handling"`
-	ErrorRigorous  bool    `json:"error_rigorous"`
+	Method           string   `json:"method"`
+	Tolerance        float64  `json:"tolerance"`
+	DomainHandling   string   `json:"domain_handling"`
+	ErrorRigorous    bool     `json:"error_rigorous"`
+	Partitions       int      `json:"partitions,omitempty"`
+	Breakpoints      []string `json:"breakpoints,omitempty"`
+	RemainderTheorem string   `json:"remainder_theorem,omitempty"`
+}
+
+type TailBound struct {
+	Start      string          `json:"start"`
+	LowerBound string          `json:"lower_bound"`
+	UpperBound string          `json:"upper_bound"`
+	Derivation string          `json:"derivation"`
+	ProofKind  ProofObjectKind `json:"proof_object_kind"`
+	Exactness  string          `json:"exactness"`
+	Provenance string          `json:"provenance"`
 }
 
 type EvaluationMetadata struct {
@@ -88,6 +119,7 @@ type EvaluationMetadata struct {
 	TransformConvention TransformConventionID `json:"transform_convention"`
 	Truncation          *TruncationInfo       `json:"truncation,omitempty"`
 	Quadrature          *QuadratureInfo       `json:"quadrature,omitempty"`
+	Tail                *TailBound            `json:"tail_bound,omitempty"`
 	Error               ErrorSemantics        `json:"error_semantics"`
 	Provenance          []TheoremID           `json:"theorem_provenance"`
 }
@@ -137,8 +169,14 @@ func (v EntryValue) Validate() error {
 			return fmt.Errorf("invalid approximate value")
 		}
 	case CertifiedInterval:
-		if count != 1 || v.Interval == nil || v.Metadata == nil || v.Metadata.Error.ProofObjectKind != TheoremBackedBound || v.Metadata.Error.ProofObject == "" || !finiteInterval(*v.Interval) || v.Interval.RealLower > v.Interval.RealUpper || v.Interval.ImagLower > v.Interval.ImagUpper {
+		if count != 1 || v.Interval == nil || v.Metadata == nil || !v.Metadata.Error.ProofObjectKind.CertifiesInterval() || v.Metadata.Error.ProofObject == "" || v.Metadata.PrecisionBits <= 0 || !finiteInterval(*v.Interval) || v.Interval.RealLower > v.Interval.RealUpper || v.Interval.ImagLower > v.Interval.ImagUpper {
 			return fmt.Errorf("invalid certified interval")
+		}
+		if v.Metadata.Error.ProofObjectKind != TheoremBackedBound && (v.Interval.Representation == "" || v.Interval.RealLowerExact == "" || v.Interval.RealUpperExact == "") {
+			return fmt.Errorf("certified numerical interval lost representation or directed endpoints")
+		}
+		if v.Metadata.Error.ProofObjectKind == CertifiedQuadratureBound && (v.Metadata.Quadrature == nil || !v.Metadata.Quadrature.ErrorRigorous || v.Metadata.Tail == nil || v.Metadata.Tail.ProofKind != AnalyticTailBound) {
+			return fmt.Errorf("certified quadrature requires rigorous partition and analytic tail proof objects")
 		}
 	case ExactValue:
 		if count != 1 || v.Exact == nil || v.Metadata == nil || v.Metadata.Error.ProofObjectKind != IndependentExactArgument || v.Metadata.Error.ProofObject == "" {
@@ -228,7 +266,12 @@ func CloneEntryValue(v EntryValue) EntryValue {
 		}
 		if v.Metadata.Quadrature != nil {
 			y := *v.Metadata.Quadrature
+			y.Breakpoints = append([]string(nil), v.Metadata.Quadrature.Breakpoints...)
 			x.Quadrature = &y
+		}
+		if v.Metadata.Tail != nil {
+			y := *v.Metadata.Tail
+			x.Tail = &y
 		}
 		v.Metadata = &x
 	}

@@ -1,12 +1,12 @@
 # Riemann
 
 Riemann is an experimental compiler for making transformations of mathematical
-claims mechanically inspectable. M6 evaluates a certified two-function Weil
-basis through Lagarias's Mellin explicit formula. Exact definitions, exact
-rational endpoint terms, support-exhaustive but floating-point prime sums,
-heuristically quadrature-bounded archimedean terms, and approximate totals have
-separate typed evidence states. The inherited finite function-space coverage
-loss remains explicit.
+claims mechanically inspectable. M7 evaluates the existing certified
+two-function Weil basis through Lagarias's Mellin explicit formula with
+theorem-backed directed intervals. Exact rational endpoints, certified finite
+prime sums, piecewise Archimedean enclosures, and analytic tails retain separate
+proof objects. The finite matrix and finite-span positivity are certified; the
+inherited finite function-space coverage loss keeps RH unresolved.
 
 ```powershell
 go run ./cmd/riemann
@@ -18,6 +18,6 @@ go test ./...
 The demonstration lowers RH to universal Weil positivity, restricts that claim
 to a certified finite span, constructs and evaluates its structural Hermitian
 matrix, and rejects approximate PSD and finite-coverage shortcuts. See
-[docs/m6-architecture.md](docs/m6-architecture.md) for the basis, formulas,
-evidence lattice, evaluator metadata, Oct experiment, and findings. Earlier
-milestone documents remain available.
+[docs/m7-architecture.md](docs/m7-architecture.md) for the exact integral,
+certified evaluator, interval matrix theorem, evidence boundaries, and findings.
+Earlier milestone documents remain available.

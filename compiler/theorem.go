@@ -434,8 +434,9 @@ func validatePattern(p Pattern, declared map[ParamID]ParamType) error {
 		semantic.FiniteSpanFunctionalStatementKind,
 		semantic.CoordinatePositivityKind,
 		semantic.QuadraticMatrixIdentityKind,
-		semantic.MatrixPropertyStatementKind:
-		// M5 contracts are ground theorem schemas whose full typed payload lives
+		semantic.MatrixPropertyStatementKind,
+		semantic.TwoByTwoMinorCertificateKind:
+		// M5-M7 contracts are ground theorem schemas whose full typed payload lives
 		// in the graph propositions. They are validated by those proposition
 		// types and applied by the dedicated lowering passes, not instantiated
 		// through the older M1-M4 parameter matcher.

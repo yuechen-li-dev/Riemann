@@ -219,6 +219,7 @@ const (
 	CoordinatePositivityKind          PropositionKind = "coordinate_quadratic_positivity"
 	QuadraticMatrixIdentityKind       PropositionKind = "quadratic_matrix_identity"
 	MatrixPropertyStatementKind       PropositionKind = "matrix_property"
+	TwoByTwoMinorCertificateKind      PropositionKind = "two_by_two_principal_minor_certificate"
 )
 
 type QuantifiedStatement struct {
@@ -381,6 +382,7 @@ type EvidenceKind string
 const (
 	DefinitionEvidence           EvidenceKind = "definition"
 	KnownTheoremEvidence         EvidenceKind = "known_theorem"
+	CertifiedComputationEvidence EvidenceKind = "certified_computation"
 	DerivedEvidence              EvidenceKind = "derived"
 	NumericalExperimentEvidence  EvidenceKind = "numerical_experiment"
 	UnverifiedConjectureEvidence EvidenceKind = "unverified_conjecture"
@@ -523,6 +525,10 @@ func (c Claim) Validate() error {
 			return fmt.Errorf("claim %q: %w", c.ID, err)
 		}
 	case MatrixProperty:
+		if err := p.Validate(); err != nil {
+			return fmt.Errorf("claim %q: %w", c.ID, err)
+		}
+	case TwoByTwoPrincipalMinorCertificate:
 		if err := p.Validate(); err != nil {
 			return fmt.Errorf("claim %q: %w", c.ID, err)
 		}

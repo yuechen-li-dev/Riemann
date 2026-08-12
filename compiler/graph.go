@@ -568,6 +568,11 @@ func (g *Graph) certify(id semantic.ClaimID, visiting map[semantic.ClaimID]bool)
 		if evidence.Kind == semantic.DefinitionEvidence || evidence.Kind == semantic.KnownTheoremEvidence {
 			return true, nil
 		}
+		if evidence.Kind == semantic.CertifiedComputationEvidence {
+			if _, ok := claim.Proposition.(semantic.TwoByTwoPrincipalMinorCertificate); ok {
+				return true, nil
+			}
+		}
 	}
 	visiting[id] = true
 	defer delete(visiting, id)
