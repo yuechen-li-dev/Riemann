@@ -1,0 +1,180 @@
+package M18ExactTangency
+
+// Concepts name the mathematical value shapes used by the experiment. They
+// are compile-time descriptions, not dynamic dictionaries or class objects.
+concept Frequency = Float
+
+concept TangencyCandidate {
+    Pi: Float
+    C: Float
+    W: Float
+    Contact: Frequency
+}
+
+record ScanSummary {
+    Minimum: Float
+    Location: Frequency
+    Samples: Int
+}
+
+// A scan has one of two exhaustive outcomes. The payload preserves the same
+// summary in either case so callers cannot accidentally discard a witness.
+enum ScanOutcome {
+    Nonnegative(ScanSummary)
+    Counterexample(ScanSummary)
+}
+
+enum EvidenceRole {
+    ResearchEvidence
+    TheoremCertificate
+}
+
+fn Candidate() -> TangencyCandidate {
+    let pi = 3.141592653589793
+    return TangencyCandidate {
+        Pi: pi
+        C: 1.0 + pi / 4.0 - 2.0 / pi
+        W: 1.0 / pi - 4.0 /(pi * pi) + 8.0 /(pi * pi * pi)
+        Contact: pi / 2.0
+    }
+}
+
+fn Spectrum(candidate: TangencyCandidate, t: Frequency) -> Float {
+    if Abs(t) < 0.00000001 {
+        return 2.0 *(1.0 + candidate.W - candidate.C)
+    }
+    return 1.0 + 2.0 *(Cos(t) - 1.0) /(t * t)
+    + 2.0 *(1.0 - candidate.C) * Sin(t) / t
+    + 2.0 * candidate.W * Cos(t)
+}
+
+fn Derivative(candidate: TangencyCandidate, t: Frequency) -> Float {
+    return - 2.0 * Sin(t) /(t * t) - 4.0 *(Cos(t) - 1.0) /(t * t * t)
+    + 2.0 *(1.0 - candidate.C) *(Cos(t) / t - Sin(t) /(t * t))
+    - 2.0 * candidate.W * Sin(t)
+}
+
+fn SecondDerivative(candidate: TangencyCandidate, t: Frequency) -> Float {
+    return - 2.0 * Cos(t) /(t * t) + 8.0 * Sin(t) /(t * t * t)
+    + 12.0 *(Cos(t) - 1.0) /(t * t * t * t)
+    + 2.0 *(1.0 - candidate.C)
+    *(- Sin(t) / t - 2.0 * Cos(t) /(t * t) + 2.0 * Sin(t) /(t * t * t))
+    - 2.0 * candidate.W * Cos(t)
+}
+
+fn Scan(candidate: TangencyCandidate, start: Frequency, step: Float, count: Int, tolerance: Float) -> ScanOutcome {
+    var summary = ScanSummary {
+        Minimum: Spectrum(candidate, start)
+        Location: start
+        Samples: 1
+    }
+    for i in 1 .. count {
+        let t = start + Float(i) * step
+        let value = Spectrum(candidate, t)
+        if value < summary.Minimum {
+            summary = summary with {
+                Minimum: value
+                Location: t
+            }
+        }
+        summary = summary with {Samples: summary.Samples + 1}
+    }
+    if summary.Minimum < - tolerance {
+        return ScanOutcome.Counterexample(summary)
+    }
+    return ScanOutcome.Nonnegative(summary)
+}
+
+fn IsResearchOnly(role: EvidenceRole) -> Bool {
+    return match role {
+        case EvidenceRole.ResearchEvidence -> true
+        case EvidenceRole.TheoremCertificate -> false
+    }
+}
+
+fn IsNonnegative(outcome: ScanOutcome) -> Bool {
+    return match outcome {
+        case ScanOutcome.Nonnegative(summary) -> true
+        case ScanOutcome.Counterexample(summary) -> false
+    }
+}
+
+fn ScanDetails(outcome: ScanOutcome) -> ScanSummary {
+    return match outcome {
+        case ScanOutcome.Nonnegative(summary) -> summary
+        case ScanOutcome.Counterexample(summary) -> summary
+    }
+}
+
+[Fact]
+fn CandidateAndWeightReconstructIndependently() -> Void {
+    let candidate = Candidate()
+    let a = candidate.Contact
+    let derivativeSolvedW =(candidate.C - 2.0) /(a * a) + 2.0 /(a * a * a)
+    Print("M18 c=" + ToString(candidate.C) + " w=" + ToString(candidate.W))
+    Assert.Near(candidate.W, derivativeSolvedW, 0.00000000000001, "independent derivative solution")
+    Assert.True(
+    candidate.C > 1.1487783 and candidate.C < 1.1487785
+    and candidate.W > 0.1710373 and candidate.W < 0.1710376,
+    "candidate windows"
+    )
+}
+
+[Fact]
+fn ExactContactReconstructsNumerically() -> Void {
+    let candidate = Candidate()
+    let a = candidate.Contact
+    Print(
+    "M18 contact t=" + ToString(a)
+    + " F=" + ToString(Spectrum(candidate, a))
+    + " F'=" + ToString(Derivative(candidate, a))
+    )
+    Assert.Near(0.0, Spectrum(candidate, a), 0.000000000000002, "contact value")
+    Assert.Near(0.0, Derivative(candidate, a), 0.000000000000002, "contact derivative")
+}
+
+[Fact]
+fn CurvatureAndOriginArePositive() -> Void {
+    let candidate = Candidate()
+    let curvature = SecondDerivative(candidate, candidate.Contact)
+    let origin = Spectrum(candidate, 0.0)
+    Print("M18 F''=" + ToString(curvature) + " a0=" + ToString(origin))
+    Assert.True(curvature > 0.128 and curvature < 0.130, "strict quadratic contact")
+    Assert.True(origin > 0.044 and origin < 0.045, "unsaturated origin")
+}
+
+[Fact]
+fn DenseTangencyAndLongRangeAdversarialScan() -> Void {
+    let candidate = Candidate()
+    let local = Scan(candidate, 1.47, 0.000001, 200001, 0.000000000001)
+    let long = Scan(candidate, 0.0, 0.001, 2000001, 0.00000001)
+    let localSummary = ScanDetails(local)
+    let longSummary = ScanDetails(long)
+
+    Print("M18 dense minimum=" + ToString(localSummary.Minimum) + " at t=" + ToString(localSummary.Location))
+    Assert.True(IsNonnegative(local), "local scan found a counterexample")
+    Assert.True(localSummary.Location > 1.5707 and localSummary.Location < 1.5709, "tangency scan")
+    Assert.True(localSummary.Samples == 200001, "local scan coverage")
+
+    Print("M18 long[0,2000] minimum=" + ToString(longSummary.Minimum))
+    Assert.True(IsNonnegative(long), "long-range scan found a counterexample")
+    Assert.True(longSummary.Samples == 2000001, "long scan coverage")
+}
+
+[Fact]
+fn AboveCeilingPerturbationCreatesNegativePocket() -> Void {
+    let candidate = Candidate()
+    let epsilon = 0.000001
+    let perturbed = candidate with {C: candidate.C + epsilon}
+    let value = Spectrum(perturbed, perturbed.Contact)
+    Print("M18 epsilon=" + ToString(epsilon) + " perturbed contact=" + ToString(value))
+    Assert.True(value < - 0.0000012, "above-ceiling contact is negative")
+    Assert.Near(- 4.0 * epsilon / candidate.Pi, value, 0.000000000000002, "atom-independent active constraint")
+}
+
+[Fact]
+fn NumericalEvidenceRemainsOutsideTheoremRoute() -> Void {
+    let role = EvidenceRole.ResearchEvidence
+    Assert.True(IsResearchOnly(role), "Oct scans and plots are research evidence")
+    Assert.True(not IsResearchOnly(EvidenceRole.TheoremCertificate), "the Go certificate is a separate role")
+}

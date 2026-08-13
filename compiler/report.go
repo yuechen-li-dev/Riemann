@@ -1196,3 +1196,49 @@ func M17JSONReport(result M17Result) ([]byte, error) {
 	}{Schema: "riemann.m17.v1", Result: result}
 	return json.MarshalIndent(payload, "", "  ")
 }
+
+func M18HumanReport(r M18Result) string {
+	var b strings.Builder
+	b.WriteString("RIEMANN-M18 — EXACT ONE-RADIUS ATTAINMENT VIA TANGENCY\n\n")
+	fmt.Fprintf(&b, "outcome: %s\n\nsign audit: %s\n\n", r.Outcome, r.SignAudit)
+	b.WriteString("EXACT TANGENCY CANDIDATE\n")
+	fmt.Fprintf(&b, "  r=1\n  t*=pi/2\n  c=%s\n  w=%s\n  derivation: %s\n  G=0: %s\n  G'=0: %s\n\n", r.Candidate.ExactCExpression.Expression, r.Candidate.ExactWExpression.Expression, r.Candidate.Derivation, r.Contact.ValueEquation, r.Contact.DerivativeEquation)
+	b.WriteString("CONTACT MULTIPLICITY AND LOCAL POSITIVITY\n")
+	fmt.Fprintf(&b, "  %s\n  %s\n  certified convexity margin: %d/%d\n\n", r.ContactMultiplicity, r.LocalPositivity, r.WholeLine.LocalConvexityLower.Numerator, r.WholeLine.LocalConvexityLower.Denominator)
+	b.WriteString("ORIGIN BEHAVIOR\n")
+	fmt.Fprintf(&b, "  %s\n  a0=%s\n  a2=%s\n  a4=%s\n  a6=%s\n\n", r.OriginBehavior, r.OriginTaylor.Constant.Expression, r.OriginTaylor.Quadratic.Expression, r.OriginTaylor.Quartic.Expression, r.OriginTaylor.Sextic.Expression)
+	b.WriteString("WHOLE-LINE CERTIFICATE\n")
+	fmt.Fprintf(&b, "  local: %s (%s)\n  compact: %s\n  tail: %s\n  coverage: %s\n\n", r.WholeLine.LocalInterval, r.WholeLine.LocalCellKind, r.CompactVerifier, r.TailVerifier, r.WholeLineCoverage)
+	b.WriteString("EXACT ATTAINMENT\n")
+	fmt.Fprintf(&b, "  %s\n  C_1R = %s\n  c_*: %s\n  J_*: %s\n  directed decimals: %s\n\n", r.ExactAttainmentStatus, r.Optimum.ExactValue.Expression, r.CertifiedCBracket, r.CertifiedJBracket, r.DirectedDecimals)
+	b.WriteString("COMPARISONS\n")
+	fmt.Fprintf(&b, "  M17: %s\n  ANTHROPIC 0.68185: %s\n\n", r.M17Comparison, r.AnthropicComparison)
+	b.WriteString("OCT INDEPENDENT RECONSTRUCTION\n")
+	fmt.Fprintf(&b, "  source: %s\n  interpreted Facts: %s\n  compiled Facts: %s\n  fallback count: %d\n  best sampled minimum: %s\n  contact: %s\n  perturbation: %s\n  long range: %s\n  plot: %s\n  SHA-256: %s\n  execution: %s\n  boundary: %s\n\n", r.Experiment.Path, r.Experiment.InterpretedFacts, r.Experiment.CompiledFacts, r.Experiment.FallbackCount, r.Experiment.BestSampledMinimum, r.Experiment.ContactLocation, r.Experiment.PerturbedFailure, r.Experiment.LongRangeScan, r.Experiment.ArtifactPath, r.Experiment.ArtifactSHA256, r.Experiment.ExecutionIdentity, r.Experiment.EvidenceBoundary)
+	b.WriteString("ARTIFACTS AND INDEPENDENT VERIFICATION\n")
+	fmt.Fprintf(&b, "  witness: %s\n  tangency plot: %s\n  verification: %s\n\n", r.WitnessArtifact, r.TangencyPlot, r.IndependentVerification)
+	b.WriteString("LITERATURE / NOVELTY SCREEN\n")
+	fmt.Fprintf(&b, "  %s\n\n", r.LiteratureAssessment)
+	b.WriteString("IMPORTED MATHEMATICS\n")
+	for _, x := range r.ImportedMathematics {
+		fmt.Fprintf(&b, "  %s\n", x)
+	}
+	b.WriteString("\nNEWLY DERIVED MATHEMATICS\n")
+	for _, x := range r.DerivedMathematics {
+		fmt.Fprintf(&b, "  %s\n", x)
+	}
+	b.WriteString("\nARCHITECTURAL AWKWARDNESS\n")
+	fmt.Fprintf(&b, "  %s\n\nCOMPILER THEORY\n  %s\n\nCONTACT METADATA FOR A FUTURE AETHERIS AUDIT\n  t=pi/2; G=0; G'=0; G''>1/8; multiplicity=2; no geometry emitted\n\nRH\n  %s\n\nONE PROPOSED NEXT MILESTONE\n  %s\n", r.ArchitecturalAwkwardness, r.CompilerTheory, r.RHStatus, r.NextMilestone)
+	return b.String()
+}
+
+func M18JSONReport(result M18Result) ([]byte, error) {
+	if err := validateM18Result(result); err != nil {
+		return nil, err
+	}
+	payload := struct {
+		Schema string    `json:"schema"`
+		Result M18Result `json:"m18"`
+	}{Schema: "riemann.m18.v1", Result: result}
+	return json.MarshalIndent(payload, "", "  ")
+}

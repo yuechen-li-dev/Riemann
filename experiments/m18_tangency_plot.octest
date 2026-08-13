@@ -1,0 +1,50 @@
+package M18TangencyPlot
+
+concept Frequency = Float
+
+concept TangencyCandidate {
+    C: Float
+    W: Float
+    Contact: Frequency
+}
+
+record PlotSeries {
+    Offset: Float[]
+    Value: Float[]
+}
+
+fn Candidate() -> TangencyCandidate {
+    let pi = 3.141592653589793
+    return TangencyCandidate {
+        C: 1.0 + pi / 4.0 - 2.0 / pi
+        W: 1.0 / pi - 4.0 /(pi * pi) + 8.0 /(pi * pi * pi)
+        Contact: pi / 2.0
+    }
+}
+
+fn Spectrum(candidate: TangencyCandidate, t: Frequency) -> Float {
+    return 1.0 + 2.0 *(Cos(t) - 1.0) /(t * t)
+    + 2.0 *(1.0 - candidate.C) * Sin(t) / t
+    + 2.0 * candidate.W * Cos(t)
+}
+
+fn SampleContact(candidate: TangencyCandidate) -> PlotSeries {
+    var series = PlotSeries {Offset:[] Value:[]}
+    for i in 0 .. 2401 {
+        let offset = Float(i) / 10000.0 - 0.12
+        series = series with {
+            Offset: Append(series.Offset, offset)
+            Value: Append(series.Value, Spectrum(candidate, candidate.Contact + offset))
+        }
+    }
+    return series
+}
+
+// Centered high-resolution view in u=t-pi/2 coordinates. Thus u=0 is the
+// exact contact location and the renderer's zero axes display both the contact
+// frequency and F=0 without hiding either in interval width.
+[Artifact]
+fn PlotExactQuadraticContact() -> Void {
+    let series = SampleContact(Candidate())
+    let _plot = PlotLine(series.Offset, series.Value, "m18/m18_exact_tangency.png")
+}
