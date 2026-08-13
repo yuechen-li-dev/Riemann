@@ -1124,3 +1124,37 @@ func M15JSONReport(result M15Result) ([]byte, error) {
 	}{"riemann.semantic-graph.m15", result}
 	return json.MarshalIndent(report, "", "  ")
 }
+
+func M16HumanReport(result M16Result) string {
+	var b strings.Builder
+	b.WriteString("RIEMANN-M16 — TWO-RADIUS EXTERIOR-ATOM COMPLETION\n\n")
+	fmt.Fprintf(&b, "outcome: %s\n\n", result.Outcome)
+	b.WriteString("TWO-RADIUS FAMILY\n")
+	fmt.Fprintf(&b, "  sigma = (573/500) 1_{|x|>1} dx + (21/125)(delta_-1+delta_1) + (1/1000)(delta_-2+delta_2)\n  derivation: %s\n  parameters: %s\n\n", result.FamilyDerivation, result.ParameterConstraints)
+	b.WriteString("LOCAL ANALYSIS\n")
+	fmt.Fprintf(&b, "  hat(P)=a0+a2*t^2+a4*t^4+a6*t^6+...\n  a0=%d/%d, a2=%d/%d, a4=%d/%d, a6=%d/%d\n  necessary conditions: %s\n  quadratic cancellation: %s\n  reduced search: %s\n\n", result.OriginTaylor.Constant.Numerator, result.OriginTaylor.Constant.Denominator, result.OriginTaylor.Quadratic.Numerator, result.OriginTaylor.Quadratic.Denominator, result.OriginTaylor.Quartic.Numerator, result.OriginTaylor.Quartic.Denominator, result.OriginTaylor.Sextic.Numerator, result.OriginTaylor.Sextic.Denominator, result.LocalNecessaryConditions, result.QuadraticCancellation, result.ReducedParameterization)
+	b.WriteString("OCT SEARCH\n")
+	fmt.Fprintf(&b, "  strategy: %s\n  best candidate: %s\n  counterexamples: %v\n  independent check: %s\n  plot artifact: %s\n  plot sha256: %s\n  plot status: %s\n  execution: %s\n\n", result.Experiment.Strategy, result.Experiment.BestNumerical, result.Experiment.Counterexamples, result.Experiment.IndependentCheck, result.Experiment.Plot, result.Experiment.PlotSHA256, result.Experiment.PlotStatus, result.Experiment.ExecutionIdentity)
+	b.WriteString("WHOLE-LINE CERTIFICATION\n")
+	fmt.Fprintf(&b, "  local/compact: %s, exact degree-%d Taylor enclosures at step %d/%d plus Lipschitz loss %d/%d per unit distance\n  middle: not needed\n  tail: %s; %s\n  coverage: %s\n\n", result.PDCertificate.CompactInterval, result.PDCertificate.TaylorDegree, result.PDCertificate.GridStep.Numerator, result.PDCertificate.GridStep.Denominator, result.PDCertificate.LipschitzBound.Numerator, result.PDCertificate.LipschitzBound.Denominator, result.PDCertificate.TailInterval, result.PDCertificate.TailLowerBound, result.PDCertificate.OmittedDirections)
+	b.WriteString("CERTIFIED DUAL\n")
+	fmt.Fprintf(&b, "  c >= 573/500 > 9/8\n  witness artifact: %s\n\nUPDATED BRACKET\n  %s\n  %s\n\n", result.WitnessArtifact, result.CertifiedCBracket, result.CertifiedJBracket)
+	b.WriteString("ANTHROPIC 0.68185\n")
+	fmt.Fprintf(&b, "  %s\n\n", result.AnthropicComparison)
+	b.WriteString("PROVENANCE AND ARCHITECTURE\n")
+	fmt.Fprintf(&b, "  literature: %s\n  imported: %v\n  newly derived: %v\n  awkwardness: %s\n  Compiler Theory: %s\n\n", result.LiteratureAssessment, result.ImportedMathematics, result.DerivedMathematics, result.ArchitecturalAwkwardness, result.CompilerTheory)
+	b.WriteString("RH\n  unresolved\n\nONE NEXT MILESTONE\n")
+	fmt.Fprintf(&b, "  %s\n", result.NextMilestone)
+	return b.String()
+}
+
+func M16JSONReport(result M16Result) ([]byte, error) {
+	if err := validateM16Result(result); err != nil {
+		return nil, err
+	}
+	payload := struct {
+		Schema string    `json:"schema"`
+		Result M16Result `json:"m16"`
+	}{Schema: "riemann.m16.v1", Result: result}
+	return json.MarshalIndent(payload, "", "  ")
+}

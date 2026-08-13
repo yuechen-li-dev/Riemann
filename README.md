@@ -1,10 +1,12 @@
 # Riemann
 
 Riemann is an experimental compiler for making transformations of mathematical
-claims mechanically inspectable. M15 constructs a whole-line positive-definite
-boundary-atom completion for the broader support-one Fourier extremal class.
-It certifies `c_*>=9/8`, hence `J_*<=7/8`, and combines this with the rigorous
-CGdL feasible bound to give `849/1250<J_*<=7/8`. Anthropic's remark-level
+claims mechanically inspectable. M16 constructs a whole-line positive-definite
+two-radius completion for the broader support-one Fourier extremal class. It
+proves that origin saturation retains M15's `9/8` ceiling, then escapes it with
+positive origin slack. It certifies `c_*>=573/500`, hence `J_*<=427/500`, and
+combines this with the rigorous CGdL feasible bound to give
+`849/1250<J_*<=427/500`. Anthropic's remark-level
 `0.68185` remains unresolved and is not promoted to theorem evidence. The
 compiler still retains M13's exact
 Montgomery–Taylor derivation

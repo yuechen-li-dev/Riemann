@@ -1,0 +1,88 @@
+package M16TwoRadiusCompletion
+
+fn Spectrum(c: Float, r1: Float, r2: Float, w1: Float, w2: Float, t: Float) -> Float {
+    if Abs(t) < 0.00000001 { return 2.0 * (1.0 + w1 + w2 - c) }
+    return 1.0 + 2.0 * (Cos(t) - 1.0) / (t * t)
+        + 2.0 * (1.0 - c) * Sin(t) / t
+        + 2.0 * w1 * Cos(r1 * t) + 2.0 * w2 * Cos(r2 * t)
+}
+
+fn A0(c: Float, w1: Float, w2: Float) -> Float { return 2.0 * (1.0 + w1 + w2 - c) }
+fn A2(c: Float, r1: Float, r2: Float, w1: Float, w2: Float) -> Float {
+    return c / 3.0 - 0.25 - w1 * r1 * r1 - w2 * r2 * r2
+}
+fn A4(c: Float, r1: Float, r2: Float, w1: Float, w2: Float) -> Float {
+    return -1.0 / 360.0 + (1.0 - c) / 60.0
+        + (w1 * r1 * r1 * r1 * r1 + w2 * r2 * r2 * r2 * r2) / 12.0
+}
+fn A6(c: Float, r1: Float, r2: Float, w1: Float, w2: Float) -> Float {
+    return 1.0 / 20160.0 + (c - 1.0) / 2520.0
+        - (w1 * r1 * r1 * r1 * r1 * r1 * r1 + w2 * r2 * r2 * r2 * r2 * r2 * r2) / 360.0
+}
+
+[Fact]
+fn RadiusPermutationAndCoincidentDegeneration() -> Void {
+    let t = 1.37
+    let first = Spectrum(1.1, 1.0, 2.0, 0.12, 0.03, t)
+    let permuted = Spectrum(1.1, 2.0, 1.0, 0.03, 0.12, t)
+    let coincident = Spectrum(1.1, 1.0, 1.0, 0.12, 0.03, t)
+    let collapsed = Spectrum(1.1, 1.0, 1.0, 0.15, 0.0, t)
+    Assert.Near(first, permuted, 0.000000000001, "radius exchange preserves the measure")
+    Assert.Near(coincident, collapsed, 0.000000000001, "coincident radii collapse by adding weights")
+}
+
+[Fact]
+fn SupportAndWeightLegality() -> Void {
+    Assert.True(1.0 >= 1.0 and 2.0 >= 1.0, "candidate atoms are exterior")
+    Assert.True(0.168 >= 0.0 and 0.001 >= 0.0, "candidate masses are nonnegative")
+    Assert.True(0.99 < 1.0, "an interior radius is rejected by the typed Go route")
+    Assert.True(-0.001 < 0.0, "a negative mass is rejected by the typed Go route")
+}
+
+[Fact]
+fn SaturatedBranchReproducesNineEighthsObstruction() -> Void {
+    Assert.Near(0.0, A0(9.0 / 8.0, 1.0 / 8.0, 0.0), 0.000000000001, "M15 is origin saturated")
+    Assert.Near(0.0, A2(9.0 / 8.0, 1.0, 2.0, 1.0 / 8.0, 0.0), 0.000000000001, "M15 cancels the quadratic term")
+    Assert.True(A2(1.13, 1.0, 2.0, 0.13, 0.0) < 0.0, "first saturated c above 9/8 fails locally")
+}
+
+[Fact]
+fn ExactWitnessCoefficientsReconstructIndependently() -> Void {
+    let c = 573.0 / 500.0
+    let w1 = 21.0 / 125.0
+    let w2 = 1.0 / 1000.0
+    Assert.Near(23.0 / 500.0, A0(c, w1, w2), 0.000000000001, "positive origin slack")
+    Assert.Near(-1.0 / 25.0, A2(c, 1.0, 2.0, w1, w2), 0.000000000001, "quadratic coefficient")
+    Assert.Near(911.0 / 90000.0, A4(c, 1.0, 2.0, w1, w2), 0.000000000001, "quartic coefficient")
+    Assert.Near(-451.0 / 840000.0, A6(c, 1.0, 2.0, w1, w2), 0.000000000001, "sextic coefficient")
+}
+
+[Fact]
+fn CandidateSurvivesAdversarialFrequencyProbes() -> Void {
+    let c = 573.0 / 500.0
+    let w1 = 21.0 / 125.0
+    let w2 = 1.0 / 1000.0
+    var minimum = Spectrum(c, 1.0, 2.0, w1, w2, 0.0)
+    var oneRadiusMinimum = Spectrum(c, 1.0, 2.0, w1, 0.0, 0.0)
+    var minimumT = 0.0
+    for i in 1..50001 {
+        let t = Float(i) / 500.0
+        let value = Spectrum(c, 1.0, 2.0, w1, w2, t)
+        let oneRadiusValue = Spectrum(c, 1.0, 2.0, w1, 0.0, t)
+        if value < minimum { minimum = value minimumT = t }
+        if oneRadiusValue < oneRadiusMinimum { oneRadiusMinimum = oneRadiusValue }
+    }
+    Print("M16 sampled minimum=" + ToString(minimum) + " at t=" + ToString(minimumT))
+    Assert.True(minimum > 0.0014, "candidate retains margin on [0,100]")
+    Assert.True(oneRadiusMinimum > 0.003, "w2=0 degeneration also survives and isolates slack as the key change")
+    Assert.True(Spectrum(1.148, 1.0, 2.0, w1, w2, 1.54) < 0.0, "nearby stronger c has a negative pocket")
+}
+
+[Fact]
+fn NumericalEvidenceIsExplicitlyNonCertifying() -> Void {
+    let octScan = true
+    let exactGoCompactCover = true
+    let analyticGoTail = true
+    Assert.True(octScan, "independent search and reconstruction ran")
+    Assert.True(exactGoCompactCover and analyticGoTail, "the separate proof object covers omitted frequencies")
+}

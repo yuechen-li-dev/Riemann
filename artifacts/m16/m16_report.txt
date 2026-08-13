@@ -1,0 +1,55 @@
+RIEMANN-M16 — TWO-RADIUS EXTERIOR-ATOM COMPLETION
+
+outcome: Success A — certified two-radius improvement beyond 9/8
+
+TWO-RADIUS FAMILY
+  sigma = (573/500) 1_{|x|>1} dx + (21/125)(delta_-1+delta_1) + (1/1000)(delta_-2+delta_2)
+  derivation: From P=nu-c dx+sigma and nu=delta_0+|x|1_{[-1,1]}dx, cancellation of -c dx outside [-1,1] forces exterior density +c. Legal symmetric atom pairs enter sigma with nonnegative masses, giving the displayed two-radius family; no atom normalization is assumed.
+  parameters: c>0; 1<=r1<=r2; w1,w2>=0; sigma is supported in R\(-1,1). Radius permutation is canonicalized and coincident radii combine by adding weights.
+
+LOCAL ANALYSIS
+  hat(P)=a0+a2*t^2+a4*t^4+a6*t^6+...
+  a0=23/500, a2=-1/25, a4=911/90000, a6=-451/840000
+  necessary conditions: a0=2(1+w1+w2-c)>=0. If a0=0, the first subsequent nonzero coefficient must be positive. On the saturated branch w1+w2=c-1, a2=c/3-1/4-w1*r1^2-w2*r2^2<=(9-8c)/12, hence c<=9/8. More generally a2=0 and a0>=0 imply c-1<=w1+w2<=sum(wj*rj^2)=c/3-1/4, again forcing c<=9/8.
+  quadratic cancellation: No locally legal candidate with c>9/8 can cancel the quadratic coefficient. The successful witness instead has positive origin slack a0=23/500, so its negative a2=-1/25 is locally legal. Exact verification still passes after setting w2=0, proving that slack—not the second radius—is what removes M15's obstruction.
+  reduced search: Exact algebra splits the search into saturated and slack branches. The saturated branch is eliminated at 9/8. In the slack branch integer radii (1,2) make the asymptotic trigonometric polynomial and tail elementary, leaving only (c,w1,w2) for a bounded Oct scan.
+
+OCT SEARCH
+  strategy: local filters first; eliminate saturation; choose integer radii 1 and 2; scan the reduced rational neighborhood; adversarially probe t in [0,200] and a dense local mesh
+  best candidate: c=1.147, r1=1, r2=2, w1=0.168, w2=0.001, sampled minimum about 0.00018545; rationalized conservatively to certified c=573/500=1.146, sampled minimum about 0.00148322 at t about 1.5422
+  counterexamples: [every saturated c>9/8 candidate fails at the origin c=1.148 with the retained rational weights develops a negative pocket near t=1.54 coincident radii add no representational degree]
+  independent check: Oct independently reconstructs the transform, exact-coefficient formulas in binary64, legality filters, the local minimum, and the long-range scan; it is corroboration only.
+  plot artifact: artifacts/m16/m16_two_radius_spectrum.png
+  plot sha256: 942e1e969e550d391b6fe44e62e319eb7233216efc8299fb7edd508fef7ffc46
+  plot status: produced on first run and unchanged on deterministic rerun; 11,782 bytes; identity M16TwoRadiusPlot.PlotCandidateAndRegionHandoff:m16/m16_two_radius_spectrum.png
+  execution: Oct gooct-cli; 6 compiled Facts with zero fallback and build-time-interpreted artifact phase
+
+WHOLE-LINE CERTIFICATION
+  local/compact: 0<=|t|<=4, exact degree-40 Taylor enclosures at step 1/1000 plus Lipschitz loss 1229/1500 per unit distance
+  middle: not needed
+  tail: |t|>=4; hat(P)>=1-2(w1+w2)-4/t^2-2(c-1)/|t|>0 for |t|>=4
+  coverage: exact Taylor enclosures plus a Lipschitz cover on |t|<=4 and an analytic bound on |t|>=4 cover every real t
+
+CERTIFIED DUAL
+  c >= 573/500 > 9/8
+  witness artifact: compiler/artifacts/m16_two_radius_witness.json
+
+UPDATED BRACKET
+  573/500 <= c_* < 1651/1250 (the upper endpoint is strict)
+  849/1250 < J_* <= 427/500 (the lower endpoint is strict)
+
+ANTHROPIC 0.68185
+  0.68185 remains inside the certified interval (0.6792,0.854]; it is neither confirmed nor contradicted, and the unnamed Anthropic class is still not sourced as identical to EP3.1.
+
+PROVENANCE AND ARCHITECTURE
+  literature: A focused post-certification check of arXiv:1810.08843, arXiv:2310.01913, and arXiv:2502.05106 found the relevant SDP/EP extremal formulations and the 1.3208 primal scale, but no matching two-atom completion or 573/500 dual value. This is a limited novelty screen, not a priority claim.
+  imported: [EP3.1 weak dual and plus-sign data measure CGdL strict primal certificate c_*<1651/1250 Bochner-Schwartz criterion Taylor's theorem with bounded trigonometric derivatives]
+  newly derived: [correct unsaturated two-radius family exact origin expansion through t^6 9/8 ceiling for the saturated two-radius branch rational (1,2)-radius witness at c=573/500 exact compact enclosure and coercive tail certified w2=0 degeneration showing positive origin slack, not radius count, is decisive]
+  awkwardness: The compact proof is a deterministic family-specific rational enclosure over 4,001 centers. It is auditable but intentionally not generalized into interval-arithmetic or nonlinear-optimization infrastructure.
+  Compiler Theory: The broader family certifies new information beyond 9/8, but the answer to whether the additional radius itself is essential is no: the exact verifier also accepts the w2=0 degeneration. M15's obstruction generalizes only to origin-saturated nonnegative exterior-atom families. The useful new representational state is explicit positive origin slack plus a strictly positive tail trigonometric polynomial.
+
+RH
+  unresolved
+
+ONE NEXT MILESTONE
+  M17: characterize and optimize the unsaturated one-radius boundary-atom family analytically, correcting the representation boundary exposed by M16 before adding further radii.

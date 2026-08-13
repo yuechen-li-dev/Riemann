@@ -1,0 +1,25 @@
+package M16TwoRadiusPlot
+
+fn Spectrum(t: Float) -> Float {
+    let c = 573.0 / 500.0
+    let w1 = 21.0 / 125.0
+    let w2 = 1.0 / 1000.0
+    if Abs(t) < 0.00000001 { return 2.0 * (1.0 + w1 + w2 - c) }
+    return 1.0 + 2.0 * (Cos(t) - 1.0) / (t * t)
+        + 2.0 * (1.0 - c) * Sin(t) / t
+        + 2.0 * w1 * Cos(t) + 2.0 * w2 * Cos(2.0 * t)
+}
+
+// The [0,8] view exposes both the minimum near 1.54 and the exact-proof
+// handoff at t=4. The renderer supplies the zero axis. This plot is not proof.
+[Artifact]
+fn PlotCandidateAndRegionHandoff() -> Void {
+    var xs: Float[] = []
+    var ys: Float[] = []
+    for i in 0..8001 {
+        let t = Float(i) / 1000.0
+        xs = Append(xs, t)
+        ys = Append(ys, Spectrum(t))
+    }
+    let _plot = PlotLine(xs, ys, "m16/m16_two_radius_spectrum.png")
+}

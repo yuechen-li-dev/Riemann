@@ -1,0 +1,1852 @@
+{
+  "schema": "riemann.m16.v1",
+  "m16": {
+    "m15": {
+      "m14a": {
+        "m13": {
+          "test_window_family": {
+            "id": "montgomery-taylor-cosine-profile",
+            "parameter": {
+              "symbol": "lambda",
+              "domain": {
+                "lower": {
+                  "numerator": 0,
+                  "denominator": 1
+                },
+                "upper": {
+                  "numerator": 1,
+                  "denominator": 1
+                },
+                "lower_included": false,
+                "upper_included": true
+              },
+              "meaning": "normalized support/bandwidth L/log(T/2pi)"
+            },
+            "window_object_id": "phi_lambda,L",
+            "squared_profile_id": "v_lambda(s)=phi_lambda(Ls)^2",
+            "profile_argument": {
+              "kind": "multiply",
+              "left": {
+                "kind": "sqrt",
+                "left": {
+                  "kind": "rational",
+                  "rational": {
+                    "numerator": 2,
+                    "denominator": 1
+                  }
+                }
+              },
+              "right": {
+                "kind": "multiply",
+                "left": {
+                  "kind": "parameter",
+                  "parameter": "lambda"
+                },
+                "right": {
+                  "kind": "parameter",
+                  "parameter": "s"
+                }
+              }
+            },
+            "support_scale": {
+              "kind": "multiply",
+              "left": {
+                "kind": "parameter",
+                "parameter": "lambda"
+              },
+              "right": {
+                "kind": "parameter",
+                "parameter": "ell"
+              }
+            },
+            "transform_convention": "hat(f)(z)=integral_R f(u) exp(i z u) du; K=|hat(v)|^2",
+            "normalization": "L=lambda*ell; v(s)=phi(Ls)^2 on |s|\u003c=1/2; phi is sqrt(cos(sqrt(2)*u/ell)) with a fixed-width C3 endpoint ramp; G_hat=G_tilde/(aL)",
+            "admissibility": {
+              "even": true,
+              "nonnegative_profile": true,
+              "compact_support": true,
+              "nonincreasing_in_absolute_value": true,
+              "c2_after_endpoint_mollification": true,
+              "fixed_width_endpoint_ramp": true,
+              "normalized_fourier_support_at_most": {
+                "numerator": 1,
+                "denominator": 1
+              }
+            },
+            "theorem": "montgomery-taylor-window-functional",
+            "provenance": {
+              "kind": "standard_reference",
+              "citation": "Claude, More Than Two Thirds of the Zeros of the Riemann Zeta Function Lie on the Critical Line (August 10, 2026), Section 7.1, equations (7.1)-(7.4) and Theorem D",
+              "uri": "https://www-cdn.anthropic.com/564f962e60643842f5fcb4a17c9dbc8f608f1c37.pdf"
+            }
+          },
+          "scale_change": {
+            "source_object": "G_tilde_T",
+            "target_object": "G_hat_T",
+            "factor": {
+              "kind": "divide",
+              "left": {
+                "kind": "rational",
+                "rational": {
+                  "numerator": 1,
+                  "denominator": 1
+                }
+              },
+              "right": {
+                "kind": "parameter",
+                "parameter": "aL"
+              }
+            },
+            "parameter_dependencies": [
+              "a",
+              "L",
+              "lambda"
+            ],
+            "provenance": {
+              "kind": "standard_reference",
+              "citation": "Claude, More Than Two Thirds of the Zeros of the Riemann Zeta Function Lie on the Critical Line (August 10, 2026), Section 7.1, equations (7.1)-(7.4) and Theorem D",
+              "uri": "https://www-cdn.anthropic.com/564f962e60643842f5fcb4a17c9dbc8f608f1c37.pdf"
+            }
+          },
+          "flat_window_coefficients": {
+            "a_mass": {
+              "id": "a_flat",
+              "meaning": "integral of v on [-1/2,1/2]",
+              "exact_expression": {
+                "kind": "rational",
+                "rational": {
+                  "numerator": 1,
+                  "denominator": 1
+                }
+              },
+              "parameter": "lambda",
+              "normalization": "v(s)=1",
+              "source_theorem": "general-window-prime-moment-asymptotic",
+              "error_term": "endpoint mollification changes the coefficient by O(1/L); Theorem 5.8 retains o(N) after M10 Eventually conversion",
+              "provenance": {
+                "kind": "standard_reference",
+                "citation": "Claude, More Than Two Thirds of the Zeros of the Riemann Zeta Function Lie on the Critical Line (August 10, 2026), Section 7.1, equations (7.1)-(7.4) and Theorem D",
+                "uri": "https://www-cdn.anthropic.com/564f962e60643842f5fcb4a17c9dbc8f608f1c37.pdf"
+              }
+            },
+            "b_square_mass": {
+              "id": "b_flat",
+              "meaning": "integral of v(s)^2",
+              "exact_expression": {
+                "kind": "rational",
+                "rational": {
+                  "numerator": 1,
+                  "denominator": 1
+                }
+              },
+              "parameter": "lambda",
+              "normalization": "v(s)=1",
+              "source_theorem": "general-window-prime-moment-asymptotic",
+              "error_term": "endpoint mollification changes the coefficient by O(1/L); Theorem 5.8 retains o(N) after M10 Eventually conversion",
+              "provenance": {
+                "kind": "standard_reference",
+                "citation": "Claude, More Than Two Thirds of the Zeros of the Riemann Zeta Function Lie on the Critical Line (August 10, 2026), Section 7.1, equations (7.1)-(7.4) and Theorem D",
+                "uri": "https://www-cdn.anthropic.com/564f962e60643842f5fcb4a17c9dbc8f608f1c37.pdf"
+              }
+            },
+            "j_distance_moment": {
+              "id": "J_flat",
+              "meaning": "double integral |s-s'|v(s)v(s')",
+              "exact_expression": {
+                "kind": "rational",
+                "rational": {
+                  "numerator": 1,
+                  "denominator": 3
+                }
+              },
+              "parameter": "lambda",
+              "normalization": "v(s)=1",
+              "source_theorem": "general-window-prime-moment-asymptotic",
+              "error_term": "endpoint mollification changes the coefficient by O(1/L); Theorem 5.8 retains o(N) after M10 Eventually conversion",
+              "provenance": {
+                "kind": "standard_reference",
+                "citation": "Claude, More Than Two Thirds of the Zeros of the Riemann Zeta Function Lie on the Critical Line (August 10, 2026), Section 7.1, equations (7.1)-(7.4) and Theorem D",
+                "uri": "https://www-cdn.anthropic.com/564f962e60643842f5fcb4a17c9dbc8f608f1c37.pdf"
+              }
+            }
+          },
+          "montgomery_taylor_coefficients": {
+            "a_mass": {
+              "id": "a_mt",
+              "meaning": "integral of cos(sqrt(2)*lambda*s)",
+              "exact_expression": {
+                "kind": "divide",
+                "left": {
+                  "kind": "sin",
+                  "left": {
+                    "kind": "divide",
+                    "left": {
+                      "kind": "parameter",
+                      "parameter": "lambda"
+                    },
+                    "right": {
+                      "kind": "sqrt",
+                      "left": {
+                        "kind": "rational",
+                        "rational": {
+                          "numerator": 2,
+                          "denominator": 1
+                        }
+                      }
+                    }
+                  }
+                },
+                "right": {
+                  "kind": "divide",
+                  "left": {
+                    "kind": "parameter",
+                    "parameter": "lambda"
+                  },
+                  "right": {
+                    "kind": "sqrt",
+                    "left": {
+                      "kind": "rational",
+                      "rational": {
+                        "numerator": 2,
+                        "denominator": 1
+                      }
+                    }
+                  }
+                }
+              },
+              "parameter": "lambda",
+              "normalization": "phi(u)^2=v(u/L), a=integral v",
+              "source_theorem": "general-window-prime-moment-asymptotic",
+              "error_term": "endpoint mollification changes the coefficient by O(1/L); Theorem 5.8 retains o(N) after M10 Eventually conversion",
+              "provenance": {
+                "kind": "standard_reference",
+                "citation": "Claude, More Than Two Thirds of the Zeros of the Riemann Zeta Function Lie on the Critical Line (August 10, 2026), Section 7.1, equations (7.1)-(7.4) and Theorem D",
+                "uri": "https://www-cdn.anthropic.com/564f962e60643842f5fcb4a17c9dbc8f608f1c37.pdf"
+              }
+            },
+            "b_square_mass": {
+              "id": "b_mt",
+              "meaning": "integral of cos(sqrt(2)*lambda*s)^2",
+              "exact_expression": {
+                "kind": "add",
+                "left": {
+                  "kind": "rational",
+                  "rational": {
+                    "numerator": 1,
+                    "denominator": 2
+                  }
+                },
+                "right": {
+                  "kind": "divide",
+                  "left": {
+                    "kind": "sin",
+                    "left": {
+                      "kind": "multiply",
+                      "left": {
+                        "kind": "sqrt",
+                        "left": {
+                          "kind": "rational",
+                          "rational": {
+                            "numerator": 2,
+                            "denominator": 1
+                          }
+                        }
+                      },
+                      "right": {
+                        "kind": "parameter",
+                        "parameter": "lambda"
+                      }
+                    }
+                  },
+                  "right": {
+                    "kind": "multiply",
+                    "left": {
+                      "kind": "rational",
+                      "rational": {
+                        "numerator": 2,
+                        "denominator": 1
+                      }
+                    },
+                    "right": {
+                      "kind": "multiply",
+                      "left": {
+                        "kind": "sqrt",
+                        "left": {
+                          "kind": "rational",
+                          "rational": {
+                            "numerator": 2,
+                            "denominator": 1
+                          }
+                        }
+                      },
+                      "right": {
+                        "kind": "parameter",
+                        "parameter": "lambda"
+                      }
+                    }
+                  }
+                }
+              },
+              "parameter": "lambda",
+              "normalization": "b=integral v^2",
+              "source_theorem": "general-window-prime-moment-asymptotic",
+              "error_term": "endpoint mollification changes the coefficient by O(1/L); Theorem 5.8 retains o(N) after M10 Eventually conversion",
+              "provenance": {
+                "kind": "standard_reference",
+                "citation": "Claude, More Than Two Thirds of the Zeros of the Riemann Zeta Function Lie on the Critical Line (August 10, 2026), Section 7.1, equations (7.1)-(7.4) and Theorem D",
+                "uri": "https://www-cdn.anthropic.com/564f962e60643842f5fcb4a17c9dbc8f608f1c37.pdf"
+              }
+            },
+            "j_distance_moment": {
+              "id": "J_mt",
+              "meaning": "double integral |s-s'|v(s)v(s')",
+              "exact_expression": {
+                "kind": "add",
+                "left": {
+                  "kind": "divide",
+                  "left": {
+                    "kind": "power",
+                    "left": {
+                      "kind": "divide",
+                      "left": {
+                        "kind": "sin",
+                        "left": {
+                          "kind": "divide",
+                          "left": {
+                            "kind": "parameter",
+                            "parameter": "lambda"
+                          },
+                          "right": {
+                            "kind": "sqrt",
+                            "left": {
+                              "kind": "rational",
+                              "rational": {
+                                "numerator": 2,
+                                "denominator": 1
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "right": {
+                        "kind": "divide",
+                        "left": {
+                          "kind": "parameter",
+                          "parameter": "lambda"
+                        },
+                        "right": {
+                          "kind": "sqrt",
+                          "left": {
+                            "kind": "rational",
+                            "rational": {
+                              "numerator": 2,
+                              "denominator": 1
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "exponent": 2
+                  },
+                  "right": {
+                    "kind": "rational",
+                    "rational": {
+                      "numerator": 2,
+                      "denominator": 1
+                    }
+                  }
+                },
+                "right": {
+                  "kind": "divide",
+                  "left": {
+                    "kind": "subtract",
+                    "left": {
+                      "kind": "multiply",
+                      "left": {
+                        "kind": "multiply",
+                        "left": {
+                          "kind": "rational",
+                          "rational": {
+                            "numerator": 2,
+                            "denominator": 1
+                          }
+                        },
+                        "right": {
+                          "kind": "divide",
+                          "left": {
+                            "kind": "sin",
+                            "left": {
+                              "kind": "divide",
+                              "left": {
+                                "kind": "parameter",
+                                "parameter": "lambda"
+                              },
+                              "right": {
+                                "kind": "sqrt",
+                                "left": {
+                                  "kind": "rational",
+                                  "rational": {
+                                    "numerator": 2,
+                                    "denominator": 1
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "right": {
+                            "kind": "divide",
+                            "left": {
+                              "kind": "parameter",
+                              "parameter": "lambda"
+                            },
+                            "right": {
+                              "kind": "sqrt",
+                              "left": {
+                                "kind": "rational",
+                                "rational": {
+                                  "numerator": 2,
+                                  "denominator": 1
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "right": {
+                        "kind": "cos",
+                        "left": {
+                          "kind": "divide",
+                          "left": {
+                            "kind": "parameter",
+                            "parameter": "lambda"
+                          },
+                          "right": {
+                            "kind": "sqrt",
+                            "left": {
+                              "kind": "rational",
+                              "rational": {
+                                "numerator": 2,
+                                "denominator": 1
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "right": {
+                      "kind": "multiply",
+                      "left": {
+                        "kind": "rational",
+                        "rational": {
+                          "numerator": 2,
+                          "denominator": 1
+                        }
+                      },
+                      "right": {
+                        "kind": "add",
+                        "left": {
+                          "kind": "rational",
+                          "rational": {
+                            "numerator": 1,
+                            "denominator": 2
+                          }
+                        },
+                        "right": {
+                          "kind": "divide",
+                          "left": {
+                            "kind": "sin",
+                            "left": {
+                              "kind": "multiply",
+                              "left": {
+                                "kind": "sqrt",
+                                "left": {
+                                  "kind": "rational",
+                                  "rational": {
+                                    "numerator": 2,
+                                    "denominator": 1
+                                  }
+                                }
+                              },
+                              "right": {
+                                "kind": "parameter",
+                                "parameter": "lambda"
+                              }
+                            }
+                          },
+                          "right": {
+                            "kind": "multiply",
+                            "left": {
+                              "kind": "rational",
+                              "rational": {
+                                "numerator": 2,
+                                "denominator": 1
+                              }
+                            },
+                            "right": {
+                              "kind": "multiply",
+                              "left": {
+                                "kind": "sqrt",
+                                "left": {
+                                  "kind": "rational",
+                                  "rational": {
+                                    "numerator": 2,
+                                    "denominator": 1
+                                  }
+                                }
+                              },
+                              "right": {
+                                "kind": "parameter",
+                                "parameter": "lambda"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "right": {
+                    "kind": "power",
+                    "left": {
+                      "kind": "multiply",
+                      "left": {
+                        "kind": "sqrt",
+                        "left": {
+                          "kind": "rational",
+                          "rational": {
+                            "numerator": 2,
+                            "denominator": 1
+                          }
+                        }
+                      },
+                      "right": {
+                        "kind": "parameter",
+                        "parameter": "lambda"
+                      }
+                    },
+                    "exponent": 2
+                  }
+                }
+              },
+              "parameter": "lambda",
+              "normalization": "J=double integral |s-s'|v(s)v(s')",
+              "source_theorem": "general-window-prime-moment-asymptotic",
+              "error_term": "endpoint mollification changes the coefficient by O(1/L); Theorem 5.8 retains o(N) after M10 Eventually conversion",
+              "provenance": {
+                "kind": "standard_reference",
+                "citation": "Claude, More Than Two Thirds of the Zeros of the Riemann Zeta Function Lie on the Critical Line (August 10, 2026), Section 7.1, equations (7.1)-(7.4) and Theorem D",
+                "uri": "https://www-cdn.anthropic.com/564f962e60643842f5fcb4a17c9dbc8f608f1c37.pdf"
+              }
+            }
+          },
+          "flat_objective": {
+            "id": "m13.flat-window.m12-objective",
+            "parameter": {
+              "symbol": "lambda",
+              "domain": {
+                "lower": {
+                  "numerator": 0,
+                  "denominator": 1
+                },
+                "upper": {
+                  "numerator": 1,
+                  "denominator": 1
+                },
+                "lower_included": false,
+                "upper_included": true
+              },
+              "meaning": "normalized support/bandwidth L/log(T/2pi)"
+            },
+            "exact_expression": {
+              "kind": "subtract",
+              "left": {
+                "kind": "subtract",
+                "left": {
+                  "kind": "multiply",
+                  "left": {
+                    "kind": "rational",
+                    "rational": {
+                      "numerator": 4,
+                      "denominator": 1
+                    }
+                  },
+                  "right": {
+                    "kind": "rational",
+                    "rational": {
+                      "numerator": 1,
+                      "denominator": 1
+                    }
+                  }
+                },
+                "right": {
+                  "kind": "rational",
+                  "rational": {
+                    "numerator": 2,
+                    "denominator": 1
+                  }
+                }
+              },
+              "right": {
+                "kind": "divide",
+                "left": {
+                  "kind": "add",
+                  "left": {
+                    "kind": "rational",
+                    "rational": {
+                      "numerator": 1,
+                      "denominator": 1
+                    }
+                  },
+                  "right": {
+                    "kind": "multiply",
+                    "left": {
+                      "kind": "power",
+                      "left": {
+                        "kind": "parameter",
+                        "parameter": "lambda"
+                      },
+                      "exponent": 2
+                    },
+                    "right": {
+                      "kind": "rational",
+                      "rational": {
+                        "numerator": 1,
+                        "denominator": 3
+                      }
+                    }
+                  }
+                },
+                "right": {
+                  "kind": "multiply",
+                  "left": {
+                    "kind": "parameter",
+                    "parameter": "lambda"
+                  },
+                  "right": {
+                    "kind": "power",
+                    "left": {
+                      "kind": "rational",
+                      "rational": {
+                        "numerator": 1,
+                        "denominator": 1
+                      }
+                    },
+                    "exponent": 2
+                  }
+                }
+              }
+            },
+            "derived_from": [
+              "M12 c=2 rank-trace count coefficient 4*tr-2*N-||G||_F^2",
+              "M13 Theorem 5.8 general-window coefficients a,b,J after typed G_tilde-\u003eG_hat scaling"
+            ],
+            "provenance": {
+              "kind": "compiler_record",
+              "citation": "Riemann M13 typed window optimization and exact rational Taylor enclosure"
+            }
+          },
+          "derived_objective": {
+            "id": "m13.montgomery-taylor.m12-objective",
+            "parameter": {
+              "symbol": "lambda",
+              "domain": {
+                "lower": {
+                  "numerator": 0,
+                  "denominator": 1
+                },
+                "upper": {
+                  "numerator": 1,
+                  "denominator": 1
+                },
+                "lower_included": false,
+                "upper_included": true
+              },
+              "meaning": "normalized support/bandwidth L/log(T/2pi)"
+            },
+            "exact_expression": {
+              "kind": "subtract",
+              "left": {
+                "kind": "subtract",
+                "left": {
+                  "kind": "multiply",
+                  "left": {
+                    "kind": "rational",
+                    "rational": {
+                      "numerator": 4,
+                      "denominator": 1
+                    }
+                  },
+                  "right": {
+                    "kind": "rational",
+                    "rational": {
+                      "numerator": 1,
+                      "denominator": 1
+                    }
+                  }
+                },
+                "right": {
+                  "kind": "rational",
+                  "rational": {
+                    "numerator": 2,
+                    "denominator": 1
+                  }
+                }
+              },
+              "right": {
+                "kind": "divide",
+                "left": {
+                  "kind": "add",
+                  "left": {
+                    "kind": "add",
+                    "left": {
+                      "kind": "rational",
+                      "rational": {
+                        "numerator": 1,
+                        "denominator": 2
+                      }
+                    },
+                    "right": {
+                      "kind": "divide",
+                      "left": {
+                        "kind": "sin",
+                        "left": {
+                          "kind": "multiply",
+                          "left": {
+                            "kind": "sqrt",
+                            "left": {
+                              "kind": "rational",
+                              "rational": {
+                                "numerator": 2,
+                                "denominator": 1
+                              }
+                            }
+                          },
+                          "right": {
+                            "kind": "parameter",
+                            "parameter": "lambda"
+                          }
+                        }
+                      },
+                      "right": {
+                        "kind": "multiply",
+                        "left": {
+                          "kind": "rational",
+                          "rational": {
+                            "numerator": 2,
+                            "denominator": 1
+                          }
+                        },
+                        "right": {
+                          "kind": "multiply",
+                          "left": {
+                            "kind": "sqrt",
+                            "left": {
+                              "kind": "rational",
+                              "rational": {
+                                "numerator": 2,
+                                "denominator": 1
+                              }
+                            }
+                          },
+                          "right": {
+                            "kind": "parameter",
+                            "parameter": "lambda"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "right": {
+                    "kind": "multiply",
+                    "left": {
+                      "kind": "power",
+                      "left": {
+                        "kind": "parameter",
+                        "parameter": "lambda"
+                      },
+                      "exponent": 2
+                    },
+                    "right": {
+                      "kind": "add",
+                      "left": {
+                        "kind": "divide",
+                        "left": {
+                          "kind": "power",
+                          "left": {
+                            "kind": "divide",
+                            "left": {
+                              "kind": "sin",
+                              "left": {
+                                "kind": "divide",
+                                "left": {
+                                  "kind": "parameter",
+                                  "parameter": "lambda"
+                                },
+                                "right": {
+                                  "kind": "sqrt",
+                                  "left": {
+                                    "kind": "rational",
+                                    "rational": {
+                                      "numerator": 2,
+                                      "denominator": 1
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "right": {
+                              "kind": "divide",
+                              "left": {
+                                "kind": "parameter",
+                                "parameter": "lambda"
+                              },
+                              "right": {
+                                "kind": "sqrt",
+                                "left": {
+                                  "kind": "rational",
+                                  "rational": {
+                                    "numerator": 2,
+                                    "denominator": 1
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "exponent": 2
+                        },
+                        "right": {
+                          "kind": "rational",
+                          "rational": {
+                            "numerator": 2,
+                            "denominator": 1
+                          }
+                        }
+                      },
+                      "right": {
+                        "kind": "divide",
+                        "left": {
+                          "kind": "subtract",
+                          "left": {
+                            "kind": "multiply",
+                            "left": {
+                              "kind": "multiply",
+                              "left": {
+                                "kind": "rational",
+                                "rational": {
+                                  "numerator": 2,
+                                  "denominator": 1
+                                }
+                              },
+                              "right": {
+                                "kind": "divide",
+                                "left": {
+                                  "kind": "sin",
+                                  "left": {
+                                    "kind": "divide",
+                                    "left": {
+                                      "kind": "parameter",
+                                      "parameter": "lambda"
+                                    },
+                                    "right": {
+                                      "kind": "sqrt",
+                                      "left": {
+                                        "kind": "rational",
+                                        "rational": {
+                                          "numerator": 2,
+                                          "denominator": 1
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                "right": {
+                                  "kind": "divide",
+                                  "left": {
+                                    "kind": "parameter",
+                                    "parameter": "lambda"
+                                  },
+                                  "right": {
+                                    "kind": "sqrt",
+                                    "left": {
+                                      "kind": "rational",
+                                      "rational": {
+                                        "numerator": 2,
+                                        "denominator": 1
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "right": {
+                              "kind": "cos",
+                              "left": {
+                                "kind": "divide",
+                                "left": {
+                                  "kind": "parameter",
+                                  "parameter": "lambda"
+                                },
+                                "right": {
+                                  "kind": "sqrt",
+                                  "left": {
+                                    "kind": "rational",
+                                    "rational": {
+                                      "numerator": 2,
+                                      "denominator": 1
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "right": {
+                            "kind": "multiply",
+                            "left": {
+                              "kind": "rational",
+                              "rational": {
+                                "numerator": 2,
+                                "denominator": 1
+                              }
+                            },
+                            "right": {
+                              "kind": "add",
+                              "left": {
+                                "kind": "rational",
+                                "rational": {
+                                  "numerator": 1,
+                                  "denominator": 2
+                                }
+                              },
+                              "right": {
+                                "kind": "divide",
+                                "left": {
+                                  "kind": "sin",
+                                  "left": {
+                                    "kind": "multiply",
+                                    "left": {
+                                      "kind": "sqrt",
+                                      "left": {
+                                        "kind": "rational",
+                                        "rational": {
+                                          "numerator": 2,
+                                          "denominator": 1
+                                        }
+                                      }
+                                    },
+                                    "right": {
+                                      "kind": "parameter",
+                                      "parameter": "lambda"
+                                    }
+                                  }
+                                },
+                                "right": {
+                                  "kind": "multiply",
+                                  "left": {
+                                    "kind": "rational",
+                                    "rational": {
+                                      "numerator": 2,
+                                      "denominator": 1
+                                    }
+                                  },
+                                  "right": {
+                                    "kind": "multiply",
+                                    "left": {
+                                      "kind": "sqrt",
+                                      "left": {
+                                        "kind": "rational",
+                                        "rational": {
+                                          "numerator": 2,
+                                          "denominator": 1
+                                        }
+                                      }
+                                    },
+                                    "right": {
+                                      "kind": "parameter",
+                                      "parameter": "lambda"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "right": {
+                          "kind": "power",
+                          "left": {
+                            "kind": "multiply",
+                            "left": {
+                              "kind": "sqrt",
+                              "left": {
+                                "kind": "rational",
+                                "rational": {
+                                  "numerator": 2,
+                                  "denominator": 1
+                                }
+                              }
+                            },
+                            "right": {
+                              "kind": "parameter",
+                              "parameter": "lambda"
+                            }
+                          },
+                          "exponent": 2
+                        }
+                      }
+                    }
+                  }
+                },
+                "right": {
+                  "kind": "multiply",
+                  "left": {
+                    "kind": "parameter",
+                    "parameter": "lambda"
+                  },
+                  "right": {
+                    "kind": "power",
+                    "left": {
+                      "kind": "divide",
+                      "left": {
+                        "kind": "sin",
+                        "left": {
+                          "kind": "divide",
+                          "left": {
+                            "kind": "parameter",
+                            "parameter": "lambda"
+                          },
+                          "right": {
+                            "kind": "sqrt",
+                            "left": {
+                              "kind": "rational",
+                              "rational": {
+                                "numerator": 2,
+                                "denominator": 1
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "right": {
+                        "kind": "divide",
+                        "left": {
+                          "kind": "parameter",
+                          "parameter": "lambda"
+                        },
+                        "right": {
+                          "kind": "sqrt",
+                          "left": {
+                            "kind": "rational",
+                            "rational": {
+                              "numerator": 2,
+                              "denominator": 1
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "exponent": 2
+                  }
+                }
+              }
+            },
+            "derived_from": [
+              "M12 c=2 rank-trace count coefficient 4*tr-2*N-||G||_F^2",
+              "M13 Theorem 5.8 general-window coefficients a,b,J after typed G_tilde-\u003eG_hat scaling"
+            ],
+            "provenance": {
+              "kind": "compiler_record",
+              "citation": "Riemann M13 typed window optimization and exact rational Taylor enclosure"
+            }
+          },
+          "optimization": {
+            "closed_objective": {
+              "kind": "subtract",
+              "left": {
+                "kind": "subtract",
+                "left": {
+                  "kind": "rational",
+                  "rational": {
+                    "numerator": 2,
+                    "denominator": 1
+                  }
+                },
+                "right": {
+                  "kind": "divide",
+                  "left": {
+                    "kind": "parameter",
+                    "parameter": "lambda"
+                  },
+                  "right": {
+                    "kind": "rational",
+                    "rational": {
+                      "numerator": 2,
+                      "denominator": 1
+                    }
+                  }
+                }
+              },
+              "right": {
+                "kind": "multiply",
+                "left": {
+                  "kind": "divide",
+                  "left": {
+                    "kind": "rational",
+                    "rational": {
+                      "numerator": 1,
+                      "denominator": 1
+                    }
+                  },
+                  "right": {
+                    "kind": "sqrt",
+                    "left": {
+                      "kind": "rational",
+                      "rational": {
+                        "numerator": 2,
+                        "denominator": 1
+                      }
+                    }
+                  }
+                },
+                "right": {
+                  "kind": "cot",
+                  "left": {
+                    "kind": "divide",
+                    "left": {
+                      "kind": "parameter",
+                      "parameter": "lambda"
+                    },
+                    "right": {
+                      "kind": "sqrt",
+                      "left": {
+                        "kind": "rational",
+                        "rational": {
+                          "numerator": 2,
+                          "denominator": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "derivative": {
+              "kind": "multiply",
+              "left": {
+                "kind": "rational",
+                "rational": {
+                  "numerator": 1,
+                  "denominator": 2
+                }
+              },
+              "right": {
+                "kind": "power",
+                "left": {
+                  "kind": "cot",
+                  "left": {
+                    "kind": "divide",
+                    "left": {
+                      "kind": "parameter",
+                      "parameter": "lambda"
+                    },
+                    "right": {
+                      "kind": "sqrt",
+                      "left": {
+                        "kind": "rational",
+                        "rational": {
+                          "numerator": 2,
+                          "denominator": 1
+                        }
+                      }
+                    }
+                  }
+                },
+                "exponent": 2
+              }
+            },
+            "optimizer": {
+              "numerator": 1,
+              "denominator": 1
+            },
+            "optimizer_location": "included upper boundary lambda=1 (no interior stationary point)",
+            "boundary_behavior": "J(lambda)-\u003e-infinity as lambda-\u003e0+; J(1) is finite; the derivative exists on (0,1] from the left at 1",
+            "derivative_sign_proof": "J'(lambda)=cot(lambda/sqrt(2))^2/2\u003e0 because 0\u003clambda/sqrt(2)\u003c=1/sqrt(2)\u003cpi/2",
+            "global_maximum_proof": "strict increase on (0,1] and inclusion of lambda=1 make lambda=1 the unique global maximizer; the excluded lower boundary tends to -infinity",
+            "taylor_certificate": {
+              "variable_identity": "x=1/sqrt(2), so x^2=1/2",
+              "terms": 7,
+              "cosine_interval": {
+                "lower": {
+                  "numerator": 88280819,
+                  "denominator": 116121600
+                },
+                "upper": {
+                  "numerator": 3329448031,
+                  "denominator": 4379443200
+                }
+              },
+              "sinc_interval": {
+                "lower": {
+                  "numerator": 391174153,
+                  "denominator": 425779200
+                },
+                "upper": {
+                  "numerator": 366139007209,
+                  "denominator": 398529331200
+                }
+              },
+              "x_cot_x_interval": {
+                "lower": {
+                  "numerator": 302979770808,
+                  "denominator": 366139007209
+                },
+                "upper": {
+                  "numerator": 23306136217,
+                  "denominator": 28164539016
+                }
+              },
+              "objective_interval": {
+                "lower": {
+                  "numerator": 18940672307,
+                  "denominator": 28164539016
+                },
+                "upper": {
+                  "numerator": 492457480011,
+                  "denominator": 732278014418
+                }
+              },
+              "method": "alternating-series bounds: cos_lower/sinc_upper \u003c x*cot(x) \u003c cos_upper/sinc_lower"
+            },
+            "certified_simple_lower_bound": {
+              "numerator": 6725,
+              "denominator": 10000
+            },
+            "certified_distinct_lower_bound": {
+              "numerator": 83625,
+              "denominator": 100000
+            },
+            "exact_simple_value": "3/2-(1/sqrt(2))*cot(1/sqrt(2))",
+            "exact_distinct_value": "5/4-(1/(2*sqrt(2)))*cot(1/sqrt(2))",
+            "display_simple_percentage": "67.25%",
+            "display_distinct_percentage": "83.625%"
+          },
+          "asymptotic_count": {
+            "m12_instantiation": "unchanged M12 c=2 theorem: simple rank \u003e=4*tr(G_hat)-2*N(I')-||G_hat||_F^2",
+            "trace_asymptotic": "tr(G_hat)=N(T,2T)*(1+o(1))",
+            "frobenius_asymptotic": "||G_hat||_F^2=(1/c*_lambda+o(1))*N, c*_lambda=sqrt(2)*tan(theta)/(1+theta*tan(theta)), theta=lambda/sqrt(2)",
+            "eventually_composition": "M10 fringe/tail and M11 o/O terms are reused; for every epsilon\u003e0 the finite M12 bound holds beyond T0(lambda,epsilon), then epsilon tends to zero",
+            "simple_critical_liminf": "liminf N0_simple(T,2T)/N(T,2T)\u003e=3/2-(1/sqrt(2))*cot(1/sqrt(2))\u003e269/400",
+            "critical_distinct_liminf": "liminf N0_distinct(T,2T)/N(T,2T)\u003e=3/2-(1/sqrt(2))*cot(1/sqrt(2))\u003e269/400",
+            "all_distinct_liminf": "liminf N_distinct(T,2T)/N(T,2T)\u003e=5/4-(1/(2*sqrt(2)))*cot(1/sqrt(2))\u003e669/800",
+            "rh_status": "unresolved"
+          },
+          "oct_experiment": {
+            "path": "experiments/m13_window_optimization.octest",
+            "check_command": "Oct CLI has no standalone check command; oct test performs parse/type-check before execution",
+            "run_command": "go run ./cmd/oct test C:/Users/yuech/source/repos/Riemann/experiments/m13_window_optimization.octest --execution interpreted (from C:/Users/yuech/source/repos/oct)",
+            "parameter_range": "lambda in [0.0001,1], constrained by the theorem to 0\u003clambda\u003c=1",
+            "sample_count": 10000,
+            "candidate_optimizer": "lambda=1.0000 (included endpoint)",
+            "candidate_objective": "0.6725007037",
+            "nearby_values": [
+              "J(0.9998)=0.672363713439",
+              "J(0.9999)=0.672432218366",
+              "J(1.0000)=0.672500703679"
+            ],
+            "precision": "Oct Float (binary64), step 0.0001; research guidance only",
+            "plot_path": "experiments/m13_window_objective.png (zoom lambda in [0.5,1])",
+            "execution": "7 passed, 0 failed, 0 skipped; interpreted; 4.0 s wall time",
+            "evidence_classification": "non-certifying numerical scan and plot; exact derivative and rational alternating-series enclosure are theorem evidence"
+          },
+          "counterexamples": [
+            {
+              "rejected_candidate": "Frobenius square scaled linearly by 1/(aL)",
+              "failure": "typed scale fixture gives 5/9 from source value 5 and factor 1/3, not 5/3"
+            },
+            {
+              "rejected_candidate": "optimize flat H(lambda) outside lambda\u003c=1",
+              "failure": "support theorem rejects lambda\u003e1; within (0,1] flat H is maximized at 1 and remains 2/3"
+            },
+            {
+              "rejected_candidate": "omit b or the denominator b+lambda^2 J",
+              "failure": "changes the derived normalized Frobenius coefficient and fails the flat-window 4/3 regression"
+            },
+            {
+              "rejected_candidate": "use phi rather than v=phi^2 in a,b,J",
+              "failure": "violates equation (7.1) normalization and no longer agrees with the typed G_tilde-\u003eG_hat scale"
+            },
+            {
+              "rejected_candidate": "round numerical optimizer upward into theorem semantics",
+              "failure": "display percentage is floored from the rigorous lower enclosure; the Float scan is research evidence only"
+            }
+          ],
+          "representation_fusion": [
+            "M8: zero-orbit decomposition",
+            "M9: rank and positive-index budgets",
+            "M10: height window, fringe, tail and Eventually transfer",
+            "M11: first/second prime-side moments",
+            "M12: unchanged c=2 rank-trace theorem",
+            "M13: admissible Montgomery-Taylor window and certified scalar optimization"
+          ],
+          "imported_from_literature": [
+            "paper Section 7.1 general-window moment theorem and endpoint mollification",
+            "Montgomery-Taylor Cauchy-Schwarz extremal profile v(s)=cos(sqrt(2)*lambda*s)",
+            "support ceiling lambda\u003c=1 from the available prime-side theorem",
+            "CCLM17 Corollary 14 optimality identification (documented, not reimplemented)"
+          ],
+          "compiler_derived": [
+            "typed a,b,J coefficient expressions and typed normalization scale",
+            "compiler construction of the M12 objective 4-2-(b+lambda^2 J)/(lambda a^2)",
+            "flat-window base regression J_flat(1)=2/3",
+            "exact derivative J'(lambda)=cot(lambda/sqrt(2))^2/2 and boundary global-optimum proof",
+            "rational alternating-series enclosure proving the reported 67.25% and 83.625% lower bounds"
+          ],
+          "sources": [
+            {
+              "kind": "standard_reference",
+              "citation": "Claude, More Than Two Thirds of the Zeros of the Riemann Zeta Function Lie on the Critical Line (August 10, 2026), Section 7.1, equations (7.1)-(7.4) and Theorem D",
+              "uri": "https://www-cdn.anthropic.com/564f962e60643842f5fcb4a17c9dbc8f608f1c37.pdf"
+            },
+            {
+              "kind": "standard_reference",
+              "citation": "H. L. Montgomery, Distribution of the Zeros of the Riemann Zeta Function, Proc. ICM Vancouver 1974, Vol. 1 (1975), 379-381"
+            },
+            {
+              "kind": "standard_reference",
+              "citation": "E. Carneiro, V. Chandee, F. Littmann, M. B. Milinovich, Hilbert spaces and the pair correlation of zeros of the Riemann zeta-function, Crelle 725 (2017), Corollary 14",
+              "uri": "https://doi.org/10.1515/crelle-2014-0078"
+            },
+            {
+              "kind": "standard_reference",
+              "citation": "E. C. Titchmarsh, The Theory of the Riemann Zeta-Function, 2nd ed. (1986), Theorem 9.2; local zero-count bound N(t+1)-N(t)=O(log(t+3))",
+              "uri": "https://doi.org/10.1093/oso/9780198533696.001.0001"
+            }
+          ],
+          "when_utility_used": false,
+          "octgo_used": false
+        },
+        "support_one_class": {
+          "id": "zeta-support-one-cohn-elkies-ep3.1",
+          "data_radius": {
+            "numerator": 1,
+            "denominator": 1
+          },
+          "tail_semantics": "nonpositive_fourier_tail",
+          "transform_convention": "hat g(alpha)=integral_R g(x) exp(-2*pi*i*x*alpha) dx",
+          "even": true,
+          "continuous": true,
+          "function_l1": true,
+          "transform_l1": true,
+          "function_nonnegative": true,
+          "normalization": "g(0)=1 (homogeneous normalization)",
+          "objective_id": "support-one-multiplicity-ratio",
+          "provenance": [
+            {
+              "kind": "standard_reference",
+              "citation": "A. Chirre, F. Goncalves, D. de Laat, Pair correlation estimates for the zeros of the zeta function via semidefinite programming, Adv. Math. 361 (2020), 106926, Sections 3-4 and Theorem 1",
+              "uri": "https://arxiv.org/abs/1810.08843"
+            },
+            {
+              "kind": "standard_reference",
+              "citation": "A. Ramos, Fourier Optimization and Pair Correlation Problems, PhD thesis (2026), EP3.1, equations (3.10)-(3.12), Proposition 3.14",
+              "uri": "https://iris.sissa.it/retrieve/10bb6625-4425-47a4-ab11-d3a72a4267d6/thesis_last_corrections_antonioramos.pdf"
+            }
+          ]
+        },
+        "objective": {
+          "id": "support-one-multiplicity-ratio",
+          "multiplicity_ratio": "c(g)=[hat g(0)+integral_{-1}^{1}|alpha| hat g(alpha)dalpha]/g(0)",
+          "simple_proportion": "J(g)=2-c(g)",
+          "homogeneous": true,
+          "data_measure": "nu=delta_0+|alpha| 1_{[-1,1]}(alpha)dalpha",
+          "pipeline_contract": "M8-M12 fixed rank-trace machinery maps c(g) to simple-critical lower bound 2-c(g)",
+          "provenance": [
+            {
+              "kind": "standard_reference",
+              "citation": "A. Chirre, F. Goncalves, D. de Laat, Pair correlation estimates for the zeros of the zeta function via semidefinite programming, Adv. Math. 361 (2020), 106926, Sections 3-4 and Theorem 1",
+              "uri": "https://arxiv.org/abs/1810.08843"
+            },
+            {
+              "kind": "standard_reference",
+              "citation": "A. Ramos, Fourier Optimization and Pair Correlation Problems, PhD thesis (2026), EP3.1, equations (3.10)-(3.12), Proposition 3.14",
+              "uri": "https://iris.sissa.it/retrieve/10bb6625-4425-47a4-ab11-d3a72a4267d6/thesis_last_corrections_antonioramos.pdf"
+            },
+            {
+              "kind": "standard_reference",
+              "citation": "Claude, More Than Two Thirds of the Zeros of the Riemann Zeta Function Lie on the Critical Line (August 10, 2026), Remark 1.1",
+              "uri": "https://www-cdn.anthropic.com/564f962e60643842f5fcb4a17c9dbc8f608f1c37.pdf"
+            }
+          ]
+        },
+        "m13_membership": {
+          "candidate_id": "montgomery-taylor-cosine-profile",
+          "even": true,
+          "continuous": true,
+          "function_l1": true,
+          "transform_l1": true,
+          "function_nonnegative": true,
+          "tail_semantics": "exact_fourier_support",
+          "tail_starts_at": {
+            "numerator": 1,
+            "denominator": 1
+          },
+          "value_at_zero": {
+            "numerator": 1,
+            "denominator": 1
+          },
+          "normalization": "g(0)=1 (homogeneous normalization)",
+          "proof": "M13/CCLM optimizer is nonnegative and bandlimited to [-1,1]; exact support implies the broader nonpositive-tail condition, after homogeneous normalization"
+        },
+        "known_primal_bounds": [
+          {
+            "id": "Montgomery-Taylor/CCLM",
+            "class_membership": "certified exact-support subclass member",
+            "multiplicity_upper": {
+              "numerator": 37388405725,
+              "denominator": 28164539016
+            },
+            "simple_lower": {
+              "numerator": 18940672307,
+              "denominator": 28164539016
+            },
+            "strict": true,
+            "evidence": "compiler exact rational Taylor enclosure",
+            "provenance": {
+              "kind": "standard_reference",
+              "citation": "E. Carneiro, V. Chandee, F. Littmann, M. B. Milinovich, Hilbert spaces and the pair correlation of zeros of the Riemann zeta-function, Crelle 725 (2017), Corollary 14",
+              "uri": "https://doi.org/10.1515/crelle-2014-0078"
+            }
+          },
+          {
+            "id": "CGdL degree-40 feasible certificate",
+            "class_membership": "authoritative EP3.1/ALP feasible result; explicit normalization equivalence recorded, coefficient artifact not imported",
+            "multiplicity_upper": {
+              "numerator": 1651,
+              "denominator": 1250
+            },
+            "simple_lower": {
+              "numerator": 849,
+              "denominator": 1250
+            },
+            "strict": true,
+            "evidence": "published Arb/interval-verified feasible upper c\u003c1.3208, hence J\u003e0.6792; imported theorem evidence",
+            "provenance": {
+              "kind": "standard_reference",
+              "citation": "A. Chirre, F. Goncalves, D. de Laat, Pair correlation estimates for the zeros of the zeta function via semidefinite programming, Adv. Math. 361 (2020), 106926, Sections 3-4 and Theorem 1",
+              "uri": "https://arxiv.org/abs/1810.08843"
+            }
+          }
+        ],
+        "dual_formulation": "maximize c over nonnegative tempered measures sigma supported on R\\(-1,1) such that P=nu-c*Lebesgue+sigma is a positive-definite tempered distribution",
+        "weak_duality": "if P is positive definite, then \u003cP,hat g\u003e\u003e=0; since hat g\u003c=0 on supp(sigma), Phi_nu(g)-c*g(0)\u003e=-\u003csigma,hat g\u003e\u003e=0",
+        "baseline_dual_witness": {
+          "id": "sine-process-baseline-completion",
+          "multiplicity_lower": {
+            "numerator": 1,
+            "denominator": 1
+          },
+          "outside_nonnegative_measure": "sigma=1_{|x|\u003e1} dx",
+          "completion_distribution": "delta_0+|x|1_{[-1,1]}dx-dx+sigma = delta_0-(1-|x|)_+ dx",
+          "fourier_image": "1-(sin(pi*xi)/(pi*xi))^2 \u003e= 0 on R",
+          "positivity_evidence": "global_analytic_positive_definiteness",
+          "exact_support_scope": true,
+          "whole_line_control": true,
+          "tail_control": true,
+          "provenance": {
+            "kind": "compiler_record",
+            "citation": "Riemann M14A weak-dual positive-definite completion derivation"
+          }
+        },
+        "baseline_certified_bound": {
+          "multiplicity_lower": {
+            "numerator": 1,
+            "denominator": 1
+          },
+          "simple_upper": {
+            "numerator": 1,
+            "denominator": 1
+          },
+          "witness_id": "sine-process-baseline-completion"
+        },
+        "numerical_dual_candidate": {
+          "family": "sigma=c*1_{|x|\u003e1}dx+(c-1)(delta_{-1}+delta_1)",
+          "derived_local_limit": "Fourier density has quadratic coefficient (9-8c)/12, so this restricted family requires c\u003c=9/8",
+          "best_grid_candidate": "c=9/8 (simple ceiling 7/8 in this diagnostic family)",
+          "whole_line_certified": false,
+          "infinite_class_certified": false,
+          "failure": "frequency-grid nonnegativity is not global positivity, and the restricted measure ansatz cannot bound the full dual class"
+        },
+        "certified_bracket": "1 \u003c= c_* \u003c 1.3208, equivalently 0.6792 \u003c J_* \u003c= 1; the upper endpoint on J is only the exact baseline dual and is not the claimed 0.68185 ceiling",
+        "anthropic_comparison": "Remark 1.1's approximately 0.68185 is consistent with, but not implied by, the wide certified bracket; no released extremal law or witness identifies it",
+        "claimed_ceiling_certified": false,
+        "precise_obstruction": [
+          "Anthropic does not define its configuration-law class beyond bandwidth-one data and configurationwise validity, so equality with the maximal EP3.1 class is an informed reconstruction rather than a cited theorem",
+          "a useful ceiling requires a positive-definite completion with c near 1.31815; no concrete outside measure or Fourier-positive distribution is supplied by the audited sources",
+          "CGdL's SDP is primal-feasible and proves c_* is at most 1.3208; reversing that inequality requires an infinite-dimensional dual witness",
+          "finite basis or frequency-grid duals do not cover omitted directions; the missing promotion theorem is whole-line positive definiteness plus tail/completeness control"
+        ],
+        "failed_witnesses": [
+          "binary64/grid positivity: rejected because a missed frequency is a legal counterexample",
+          "finite polynomial/SDP truncation: rejected as a class ceiling without an omitted-basis bound",
+          "one-atom completion: local expansion restricts it to c\u003c=9/8 and it is far too weak even if globally certified",
+          "calling exact Fourier support the broader class: rejected because EP3.1 permits a nonpositive Fourier tail"
+        ],
+        "oct_experiment": {
+          "path": "experiments/m14a_dual_completion.octest; experiments/m14a_dual_completion_compiled.octest; experiments/m14a_plot_artifact.octest",
+          "check_command": "Oct has no standalone check command; oct test/artifact parse and type-check before execution",
+          "run_command": "from the Oct repository: go run ./cmd/oct test C:/Users/yuech/source/repos/Riemann/experiments/m14a_dual_completion.octest --json; go run ./cmd/oct test C:/Users/yuech/source/repos/Riemann/experiments/m14a_dual_completion_compiled.octest --execution compiled --json; go run ./cmd/oct artifact C:/Users/yuech/source/repos/Riemann/experiments/m14a_plot_artifact.octest --output-root C:/Users/yuech/source/repos/Riemann --json",
+          "parameterization": "one-atom positive-definite completion; c scan and adversarial frequency scan, exact support radius fixed at one",
+          "candidate_values": [
+            "baseline c=1: analytic positive-definite witness",
+            "restricted numerical candidate c=9/8",
+            "c\u003e9/8: killed by negative local quadratic coefficient"
+          ],
+          "convergence": "bounded scans refine toward 9/8 inside the diagnostic family; no inference to the infinite dual",
+          "counterexamples": [
+            "support radius \u003e1 rejected",
+            "grid-only positivity rejected",
+            "tail-free finite witness rejected",
+            "c=1.126 violates the local necessary condition"
+          ],
+          "execution": "interpreted research suite 6/6 in 4.811 s; independent compiled checker 3/3 in 0.633 s with zero fallback; [Artifact] plot probe 1/1 in 0.395 s but reported zero attributed outputs; compiled PlotLine remains unsupported",
+          "evidence_classification": "Oct numerical research evidence; the artifact lane is a plotting workaround, not theorem evidence; only the analytic c=1 completion enters theorem state"
+        },
+        "imported_mathematics": [
+          "CGdL definition of ALP, functional Z, zeta mapping, and interval-certified feasible c\u003c1.3208",
+          "Ramos EP3.1 class A_1, measure nu=delta_0+|alpha|dalpha, and normalization map to ALP",
+          "CCLM/M13 exact-support Montgomery-Taylor member",
+          "Bochner-Schwartz positive-definite distribution pairing principle (weak-dual direction only)"
+        ],
+        "derived_mathematics": [
+          "typed distinction between exact Fourier support and a nonpositive tail outside the data interval",
+          "dual positive-definite completion sufficient condition and weak-duality inequality",
+          "analytic baseline completion P=delta_0-(1-|x|)_+ with nonnegative Fourier transform",
+          "one-atom diagnostic local obstruction c\u003c=9/8",
+          "precise identification of global positive-definiteness and tail/completeness as the missing certificate"
+        ],
+        "sources": [
+          {
+            "kind": "standard_reference",
+            "citation": "Claude, More Than Two Thirds of the Zeros of the Riemann Zeta Function Lie on the Critical Line (August 10, 2026), Remark 1.1",
+            "uri": "https://www-cdn.anthropic.com/564f962e60643842f5fcb4a17c9dbc8f608f1c37.pdf"
+          },
+          {
+            "kind": "standard_reference",
+            "citation": "A. Chirre, F. Goncalves, D. de Laat, Pair correlation estimates for the zeros of the zeta function via semidefinite programming, Adv. Math. 361 (2020), 106926, Sections 3-4 and Theorem 1",
+            "uri": "https://arxiv.org/abs/1810.08843"
+          },
+          {
+            "kind": "standard_reference",
+            "citation": "A. Ramos, Fourier Optimization and Pair Correlation Problems, PhD thesis (2026), EP3.1, equations (3.10)-(3.12), Proposition 3.14",
+            "uri": "https://iris.sissa.it/retrieve/10bb6625-4425-47a4-ab11-d3a72a4267d6/thesis_last_corrections_antonioramos.pdf"
+          },
+          {
+            "kind": "standard_reference",
+            "citation": "E. Carneiro, V. Chandee, F. Littmann, M. B. Milinovich, Hilbert spaces and the pair correlation of zeros of the Riemann zeta-function, Crelle 725 (2017), Corollary 14",
+            "uri": "https://doi.org/10.1515/crelle-2014-0078"
+          }
+        ],
+        "when_utility_used": false,
+        "rh_status": "unresolved"
+      },
+      "outcome": "Success A — first nontrivial certified dual improvement",
+      "objective_notation_audit": "The authoritative EP3.1/M14A objective used here has + integral_{-1}^{1}|alpha| hat g(alpha)dalpha, equivalently nu=delta_0+|alpha|1_{[-1,1]}dalpha. The minus sign displayed once in the M15 request conflicts with its stated dual, CGdL mapping, target scale, and repository contract; no minus-objective theorem is claimed.",
+      "candidate_family": {
+        "constant": {
+          "numerator": 9,
+          "denominator": 8
+        },
+        "exterior_density": {
+          "numerator": 9,
+          "denominator": 8
+        },
+        "boundary_atom_mass": {
+          "numerator": 1,
+          "denominator": 8
+        },
+        "density_support": "|x|\u003e1",
+        "atom_support": [
+          -1,
+          1
+        ],
+        "support_legal": true,
+        "measure_nonnegative": true
+      },
+      "whole_line_pd_certificate": {
+        "id": "boundary-atom-nine-eighths-whole-line",
+        "fourier_variable": "t=2*pi*xi",
+        "fourier_density": "hat(P)(xi)=1+2(cos(t)-1)/t^2+(cos(t)-sin(t)/t)/4, with value 0 at t=0",
+        "cleared_density": "G(t)=4*t^2*hat(P)(xi)=t^2(4+cos(t))-t*sin(t)-8(1-cos(t))",
+        "inner_interval": "0\u003c=|t|\u003c=pi",
+        "inner_series": "G(t)=sum_{n\u003e=3} (-1)^(n-1) 4(n-2)(n+1)t^(2n)/(2n)!",
+        "first_positive_coefficient": {
+          "numerator": 1,
+          "denominator": 45
+        },
+        "term_ratio_upper": {
+          "numerator": 25,
+          "denominator": 56
+        },
+        "outer_interval": "|t|\u003e=pi",
+        "outer_lower_bound": "G(t)\u003e=3t^2-t-16\u003e0 because |t|\u003e=pi\u003e3, q(3)=8, and q'(t)\u003e0",
+        "outer_anchor": {
+          "numerator": 8,
+          "denominator": 1
+        },
+        "omitted_direction_control": "inner alternating series plus outer coercive bound covers every real t",
+        "whole_line": true
+      },
+      "certified_dual_witness": {
+        "id": "boundary-atom-nine-eighths",
+        "multiplicity_lower": {
+          "numerator": 9,
+          "denominator": 8
+        },
+        "outside_nonnegative_measure": "sigma=(9/8) 1_{|x|\u003e1} dx+(1/8)(delta_{-1}+delta_1)",
+        "completion_distribution": "P=delta_0+(|x|-9/8)1_{[-1,1]}dx+(1/8)(delta_{-1}+delta_1)",
+        "fourier_image": "hat(P)(xi)=1+2(cos(t)-1)/t^2+(cos(t)-sin(t)/t)/4, with value 0 at t=0",
+        "positivity_evidence": "global_analytic_positive_definiteness",
+        "exact_support_scope": true,
+        "whole_line_control": true,
+        "tail_control": true,
+        "provenance": {
+          "kind": "compiler_record",
+          "citation": "Riemann M15 boundary-atom whole-line alternating-series certificate"
+        }
+      },
+      "certified_bound": {
+        "multiplicity_lower": {
+          "numerator": 9,
+          "denominator": 8
+        },
+        "simple_upper": {
+          "numerator": 7,
+          "denominator": 8
+        },
+        "witness_id": "boundary-atom-nine-eighths"
+      },
+      "family_ceiling": {
+        "numerator": 9,
+        "denominator": 8
+      },
+      "family_ceiling_proof": "hat(P_c)(t/(2*pi))=((9-8c)/12)t^2+O(t^4); nonnegativity near zero forces c\u003c=9/8. The endpoint is globally nonnegative, so 9/8 is the exact optimum of this family.",
+      "completion_representation": "For t=2*pi*xi, 4t^2 hat(P)(xi)=G(t)=t^2(4+cos t)-t sin t-8(1-cos t). Since hat(P)\u003e=0 on R, Bochner-Schwartz gives positive definiteness of P.",
+      "omitted_direction_control": "inner alternating series plus outer coercive bound covers every real t",
+      "certified_c_bracket": "9/8 \u003c= c_* \u003c 1651/1250 (the upper endpoint is strict)",
+      "certified_j_bracket": "849/1250 \u003c J_* \u003c= 7/8 (the lower endpoint is strict)",
+      "anthropic_comparison": "0.68185 lies inside the certified interval (0.6792,0.875]; the remark remains neither confirmed nor contradicted for EP3.1, and its class identity remains unsourced.",
+      "potential_novelty": "Potentially new as a purpose-specific explicit EP3.1 dual bound; a focused post-certification search found no exact 9/8 completion in the audited sources. This is not a priority or exhaustive novelty claim.",
+      "independent_verification": "Go consumes and exactly checks the rational proof object; Oct independently reconstructs the Fourier density, scans the endpoint, and finds negative directions immediately above 9/8. The Oct scan is corroboration, not theorem evidence.",
+      "witness_artifact": "compiler/artifacts/m15_boundary_atom_witness.json",
+      "oct_experiment": {
+        "search_path": "experiments/m15_boundary_atom_completion.octest",
+        "artifact_path": "experiments/m15_boundary_atom_plot.octest",
+        "commands": [
+          "go run ./cmd/oct test C:/Users/yuech/source/repos/Riemann/experiments/m15_boundary_atom_completion.octest --execution interpreted --json",
+          "go run ./cmd/oct test C:/Users/yuech/source/repos/Riemann/experiments/m15_boundary_atom_completion.octest --execution compiled --json",
+          "go run ./cmd/oct artifact C:/Users/yuech/source/repos/Riemann/experiments/m15_boundary_atom_plot.octest --output-root C:/Users/yuech/source/repos/Riemann/artifacts --execution compiled --json"
+        ],
+        "best_numerical_dual_candidate": "c=9/8=1.125 in the boundary-atom family",
+        "counterexamples": [
+          "every c\u003e9/8 fails the exact origin quadratic condition",
+          "c=1.126 has a negative near-origin numerical direction"
+        ],
+        "plot": "artifacts/m15/m15_boundary_atom_spectrum.png",
+        "execution_identity": "Oct gooct-cli; build-time-interpreted artifact phase",
+        "evidence": "numerical research visualization and independent formula reconstruction; not certificate provenance"
+      },
+      "oct_tooling": {
+        "root_cause": "convenience PlotLine called plotrender directly, bypassing ArtifactWriteCapability.StageArtifactOutput; the PNG was an ambient side effect unknown to the publisher",
+        "artifact_semantics": "during [Artifact], PlotLine accepts a relative logical path, stages it below --output-root, rejects absolute/traversing paths, publishes atomically, and reports package/function/kind/execution/path/identity/size/hash metadata",
+        "execution_modes": "interpreted and --execution compiled both use the explicitly reported build-time interpreter artifact phase; compiled is a compatibility delegation, not native plot lowering",
+        "before": "1 artifact test passed; Outputs: 0 produced, 0 unchanged; requested output root empty",
+        "after": "1 artifact test passed; Outputs: 1 produced, 0 unchanged; PNG and deterministic metadata under requested output root",
+        "files_changed": [
+          "internal/interpret/artifact_phase.go",
+          "internal/interpret/interpret.go",
+          "internal/interpret/plot.go",
+          "internal/tester/artifact.go",
+          "cmd/oct/artifact_plot_command_test.go"
+        ],
+        "tests": [
+          "plot count and output-root placement",
+          "deterministic attribution and two-test noncollision",
+          "ordinary Fact excluded",
+          "failure remains failure and does not publish",
+          "absolute path rejection",
+          "interpreted/compiled-request consistency"
+        ],
+        "research_benefit": "the repaired lane retained the endpoint spectrum used to inspect cancellation near the origin and large-frequency positivity without ad hoc file hunting"
+      },
+      "imported_mathematics": [
+        "EP3.1 admissible class and plus-sign data measure nu",
+        "CGdL strict primal certificate c_*\u003c1.3208 (J_*\u003e0.6792)",
+        "Bochner-Schwartz positive-definite distribution criterion",
+        "classical c=1 triangle/sinc-squared completion"
+      ],
+      "compiler_research_derived_mathematics": [
+        "typed boundary-atom completion family",
+        "exact local family ceiling c\u003c=9/8",
+        "endpoint Fourier identity G(t)",
+        "whole-line inner alternating-series and outer coercive proof",
+        "certified c_*\u003e=9/8 and J_*\u003c=7/8"
+      ],
+      "architectural_awkwardness": "The useful certificate is an elementary two-region inequality, not a generic SDP. Encoding this family-specific proof object is smaller and more auditable than introducing a general distribution solver.",
+      "compiler_theory": "Omitted-direction control can be a finite semantic object when the candidate exposes the right analytic decomposition: a decreasing alternating series covers the compact core and a coercive inequality covers the tail. Numerical search selects the representation; it does not discharge the theorem.",
+      "one_next_milestone": "M16: add a two-radius symmetric exterior-atom family and seek an exact whole-line decomposition that exceeds c=9/8, retaining origin and coercive-tail filters.",
+      "rh_status": "unresolved"
+    },
+    "outcome": "Success A — certified two-radius improvement beyond 9/8",
+    "family_derivation": "From P=nu-c dx+sigma and nu=delta_0+|x|1_{[-1,1]}dx, cancellation of -c dx outside [-1,1] forces exterior density +c. Legal symmetric atom pairs enter sigma with nonnegative masses, giving the displayed two-radius family; no atom normalization is assumed.",
+    "parameter_constraints": "c\u003e0; 1\u003c=r1\u003c=r2; w1,w2\u003e=0; sigma is supported in R\\(-1,1). Radius permutation is canonicalized and coincident radii combine by adding weights.",
+    "candidate_family": {
+      "constant": {
+        "numerator": 573,
+        "denominator": 500
+      },
+      "exterior_density": {
+        "numerator": 573,
+        "denominator": 500
+      },
+      "atoms": [
+        {
+          "radius": {
+            "numerator": 1,
+            "denominator": 1
+          },
+          "weight": {
+            "numerator": 21,
+            "denominator": 125
+          }
+        },
+        {
+          "radius": {
+            "numerator": 2,
+            "denominator": 1
+          },
+          "weight": {
+            "numerator": 1,
+            "denominator": 1000
+          }
+        }
+      ],
+      "density_support": "|x|\u003e1",
+      "support_legal": true,
+      "measure_nonnegative": true
+    },
+    "origin_taylor": {
+      "constant_term": {
+        "numerator": 23,
+        "denominator": 500
+      },
+      "t_squared_coefficient": {
+        "numerator": -1,
+        "denominator": 25
+      },
+      "t_fourth_coefficient": {
+        "numerator": 911,
+        "denominator": 90000
+      },
+      "t_sixth_coefficient": {
+        "numerator": -451,
+        "denominator": 840000
+      }
+    },
+    "local_necessary_conditions": "a0=2(1+w1+w2-c)\u003e=0. If a0=0, the first subsequent nonzero coefficient must be positive. On the saturated branch w1+w2=c-1, a2=c/3-1/4-w1*r1^2-w2*r2^2\u003c=(9-8c)/12, hence c\u003c=9/8. More generally a2=0 and a0\u003e=0 imply c-1\u003c=w1+w2\u003c=sum(wj*rj^2)=c/3-1/4, again forcing c\u003c=9/8.",
+    "quadratic_cancellation": "No locally legal candidate with c\u003e9/8 can cancel the quadratic coefficient. The successful witness instead has positive origin slack a0=23/500, so its negative a2=-1/25 is locally legal. Exact verification still passes after setting w2=0, proving that slack—not the second radius—is what removes M15's obstruction.",
+    "reduced_parameterization": "Exact algebra splits the search into saturated and slack branches. The saturated branch is eliminated at 9/8. In the slack branch integer radii (1,2) make the asymptotic trigonometric polynomial and tail elementary, leaving only (c,w1,w2) for a bounded Oct scan.",
+    "whole_line_pd_certificate": {
+      "id": "two-radius-573-over-500-whole-line",
+      "fourier_variable": "t=2*pi*xi",
+      "fourier_density": "hat(P)(t/(2*pi))=1+2(cos(t)-1)/t^2+2(1-c)sin(t)/t+2*w1*cos(r1*t)+2*w2*cos(r2*t)",
+      "compact_interval": "0\u003c=|t|\u003c=4",
+      "grid_step": {
+        "numerator": 1,
+        "denominator": 1000
+      },
+      "taylor_degree": 40,
+      "lipschitz_bound": {
+        "numerator": 1229,
+        "denominator": 1500
+      },
+      "tail_interval": "|t|\u003e=4",
+      "tail_lower_bound": "hat(P)\u003e=1-2(w1+w2)-4/t^2-2(c-1)/|t|\u003e0 for |t|\u003e=4",
+      "tail_anchor": {
+        "numerator": 339,
+        "denominator": 1000
+      },
+      "omitted_direction_control": "exact Taylor enclosures plus a Lipschitz cover on |t|\u003c=4 and an analytic bound on |t|\u003e=4 cover every real t",
+      "whole_line": true
+    },
+    "certified_dual_witness": {
+      "id": "two-radius-573-over-500",
+      "multiplicity_lower": {
+        "numerator": 573,
+        "denominator": 500
+      },
+      "outside_nonnegative_measure": "sigma=(573/500)1_{|x|\u003e1}dx+(21/125)(delta_-1+delta_1)+(1/1000)(delta_-2+delta_2)",
+      "completion_distribution": "P=delta_0+(|x|-573/500)1_{[-1,1]}dx+(21/125)(delta_-1+delta_1)+(1/1000)(delta_-2+delta_2)",
+      "fourier_image": "hat(P)(t/(2*pi))=1+2(cos(t)-1)/t^2+2(1-c)sin(t)/t+2*w1*cos(r1*t)+2*w2*cos(r2*t)",
+      "positivity_evidence": "global_analytic_positive_definiteness",
+      "exact_support_scope": true,
+      "whole_line_control": true,
+      "tail_control": true,
+      "provenance": {
+        "kind": "compiler_record",
+        "citation": "Riemann M16 exact Taylor-enclosure and coercive-tail certificate"
+      }
+    },
+    "certified_bound": {
+      "multiplicity_lower": {
+        "numerator": 573,
+        "denominator": 500
+      },
+      "simple_upper": {
+        "numerator": 427,
+        "denominator": 500
+      },
+      "witness_id": "two-radius-573-over-500"
+    },
+    "certified_c_bracket": "573/500 \u003c= c_* \u003c 1651/1250 (the upper endpoint is strict)",
+    "certified_j_bracket": "849/1250 \u003c J_* \u003c= 427/500 (the lower endpoint is strict)",
+    "anthropic_comparison": "0.68185 remains inside the certified interval (0.6792,0.854]; it is neither confirmed nor contradicted, and the unnamed Anthropic class is still not sourced as identical to EP3.1.",
+    "witness_artifact": "compiler/artifacts/m16_two_radius_witness.json",
+    "oct_experiment": {
+      "search_path": "experiments/m16_two_radius_completion.octest",
+      "artifact_path": "experiments/m16_two_radius_plot.octest",
+      "commands": [
+        "go run ./cmd/oct test .../experiments/m16_two_radius_completion.octest --execution interpreted --json",
+        "go run ./cmd/oct test .../experiments/m16_two_radius_completion.octest --execution compiled --json",
+        "go run ./cmd/oct artifact .../experiments/m16_two_radius_plot.octest --output-root .../artifacts --execution compiled --json"
+      ],
+      "strategy": "local filters first; eliminate saturation; choose integer radii 1 and 2; scan the reduced rational neighborhood; adversarially probe t in [0,200] and a dense local mesh",
+      "best_numerical_candidate": "c=1.147, r1=1, r2=2, w1=0.168, w2=0.001, sampled minimum about 0.00018545; rationalized conservatively to certified c=573/500=1.146, sampled minimum about 0.00148322 at t about 1.5422",
+      "counterexamples": [
+        "every saturated c\u003e9/8 candidate fails at the origin",
+        "c=1.148 with the retained rational weights develops a negative pocket near t=1.54",
+        "coincident radii add no representational degree"
+      ],
+      "independent_check": "Oct independently reconstructs the transform, exact-coefficient formulas in binary64, legality filters, the local minimum, and the long-range scan; it is corroboration only.",
+      "plot": "artifacts/m16/m16_two_radius_spectrum.png",
+      "plot_sha256": "942e1e969e550d391b6fe44e62e319eb7233216efc8299fb7edd508fef7ffc46",
+      "plot_status": "produced on first run and unchanged on deterministic rerun; 11,782 bytes; identity M16TwoRadiusPlot.PlotCandidateAndRegionHandoff:m16/m16_two_radius_spectrum.png",
+      "execution_identity": "Oct gooct-cli; 6 compiled Facts with zero fallback and build-time-interpreted artifact phase"
+    },
+    "literature_assessment": "A focused post-certification check of arXiv:1810.08843, arXiv:2310.01913, and arXiv:2502.05106 found the relevant SDP/EP extremal formulations and the 1.3208 primal scale, but no matching two-atom completion or 573/500 dual value. This is a limited novelty screen, not a priority claim.",
+    "imported_mathematics": [
+      "EP3.1 weak dual and plus-sign data measure",
+      "CGdL strict primal certificate c_*\u003c1651/1250",
+      "Bochner-Schwartz criterion",
+      "Taylor's theorem with bounded trigonometric derivatives"
+    ],
+    "compiler_research_derived_mathematics": [
+      "correct unsaturated two-radius family",
+      "exact origin expansion through t^6",
+      "9/8 ceiling for the saturated two-radius branch",
+      "rational (1,2)-radius witness at c=573/500",
+      "exact compact enclosure and coercive tail",
+      "certified w2=0 degeneration showing positive origin slack, not radius count, is decisive"
+    ],
+    "architectural_awkwardness": "The compact proof is a deterministic family-specific rational enclosure over 4,001 centers. It is auditable but intentionally not generalized into interval-arithmetic or nonlinear-optimization infrastructure.",
+    "compiler_theory": "The broader family certifies new information beyond 9/8, but the answer to whether the additional radius itself is essential is no: the exact verifier also accepts the w2=0 degeneration. M15's obstruction generalizes only to origin-saturated nonnegative exterior-atom families. The useful new representational state is explicit positive origin slack plus a strictly positive tail trigonometric polynomial.",
+    "one_next_milestone": "M17: characterize and optimize the unsaturated one-radius boundary-atom family analytically, correcting the representation boundary exposed by M16 before adding further radii.",
+    "rh_status": "unresolved"
+  }
+}
