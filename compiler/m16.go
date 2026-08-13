@@ -61,10 +61,18 @@ type M16Result struct {
 }
 
 func CompileM16() (M16Result, error) {
+	return compileM16(true)
+}
+
+func compileM16(verifyWholeLine bool) (M16Result, error) {
 	m15, err := CompileM15()
 	if err != nil {
 		return M16Result{}, err
 	}
+	return compileM16FromM15(m15, verifyWholeLine)
+}
+
+func compileM16FromM15(m15 M15Result, verifyWholeLine bool) (M16Result, error) {
 	var artifact M16WitnessArtifact
 	if err := json.Unmarshal(m16WitnessJSON, &artifact); err != nil {
 		return M16Result{}, fmt.Errorf("decode M16 witness artifact: %w", err)
@@ -76,8 +84,10 @@ func CompileM16() (M16Result, error) {
 	if derivedTaylor != artifact.OriginTaylor {
 		return M16Result{}, fmt.Errorf("M16 artifact Taylor coefficients do not match exact derivation: got %+v", derivedTaylor)
 	}
-	if err := semantic.VerifyTwoRadiusCertificate(artifact.Family, artifact.PositiveDefiniteness); err != nil {
-		return M16Result{}, fmt.Errorf("verify M16 witness artifact: %w", err)
+	if verifyWholeLine {
+		if err := semantic.VerifyTwoRadiusCertificate(artifact.Family, artifact.PositiveDefiniteness); err != nil {
+			return M16Result{}, fmt.Errorf("verify M16 witness artifact: %w", err)
+		}
 	}
 	witness := semantic.DualCompletionWitness{
 		ID: "two-radius-573-over-500", MultiplicityLower: artifact.Family.Constant,

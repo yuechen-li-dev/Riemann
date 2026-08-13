@@ -35,6 +35,19 @@ func addPair(t *testing.T, relation Relation) (*Graph, semantic.ClaimID, semanti
 	return g, from, to
 }
 
+func TestGraphCloneIsIndependentMutableProofState(t *testing.T) {
+	original, _, _ := addPair(t, Approximation)
+	clone := original.Clone()
+	mustAddClaim(t, clone, authoredClaim("clone-only", semantic.KnownTheoremEvidence))
+	if _, ok := original.Claim("clone-only"); ok {
+		t.Fatal("adding to cloned graph mutated the original")
+	}
+	clone.transformations[0].Losses[0].Reason = "changed"
+	if original.transformations[0].Losses[0].Reason != "test" {
+		t.Fatal("cloned transformation slices alias the original")
+	}
+}
+
 func TestDirectionEvidenceAssumptionsAndApproximationRemainSound(t *testing.T) {
 	g, a, b := addPair(t, Equivalent)
 	if !g.CheckDischarge(a, b).Accepted || !g.CheckDischarge(b, a).Accepted {

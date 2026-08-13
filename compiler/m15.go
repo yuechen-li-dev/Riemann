@@ -72,6 +72,10 @@ func CompileM15() (M15Result, error) {
 	if err != nil {
 		return M15Result{}, err
 	}
+	return compileM15FromM14A(m14a)
+}
+
+func compileM15FromM14A(m14a M14AResult) (M15Result, error) {
 	var artifact M15WitnessArtifact
 	if err := json.Unmarshal(m15WitnessJSON, &artifact); err != nil {
 		return M15Result{}, fmt.Errorf("decode M15 witness artifact: %w", err)

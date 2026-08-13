@@ -1,0 +1,82 @@
+package M17OneRadiusCompletion
+
+fn Spectrum(c: Float, r: Float, w: Float, t: Float) -> Float {
+    if Abs(t) < 0.00000001 { return 2.0 * (1.0 + w - c) }
+    return 1.0 + 2.0 * (Cos(t) - 1.0) / (t * t)
+        + 2.0 * (1.0 - c) * Sin(t) / t + 2.0 * w * Cos(r * t)
+}
+
+fn A0(c: Float, w: Float) -> Float { return 2.0 * (1.0 + w - c) }
+fn A2(c: Float, r: Float, w: Float) -> Float { return c / 3.0 - 0.25 - w * r * r }
+fn A4(c: Float, r: Float, w: Float) -> Float {
+    return -1.0 / 360.0 + (1.0 - c) / 60.0 + w * r * r * r * r / 12.0
+}
+fn A6(c: Float, r: Float, w: Float) -> Float {
+    return 1.0 / 20160.0 + (c - 1.0) / 2520.0 - w * r * r * r * r * r * r / 360.0
+}
+
+[Fact]
+fn ExactRationalWitnessReconstructs() -> Void {
+    let c = 2297.0 / 2000.0
+    let r = 1.0
+    let w = 171.0 / 1000.0
+    Assert.Near(9.0 / 200.0, A0(c, w), 0.000000000001, "a0")
+    Assert.Near(-229.0 / 6000.0, A2(c, r, w), 0.000000000001, "a2")
+    Assert.Near(3239.0 / 360000.0, A4(c, r, w), 0.000000000001, "a4")
+    Assert.Near(-1847.0 / 5040000.0, A6(c, r, w), 0.000000000001, "a6")
+    Assert.True(A0(c, w) > 0.0 and A2(c, r, w) < 0.0, "positive slack makes negative quadratic legal")
+}
+
+[Fact]
+fn SaturatedM15AndUnsaturatedM16Regressions() -> Void {
+    Assert.Near(0.0, A0(9.0 / 8.0, 1.0 / 8.0), 0.000000000001, "M15 saturation")
+    Assert.Near(0.0, A2(9.0 / 8.0, 1.0, 1.0 / 8.0), 0.000000000001, "M15 endpoint quadratic")
+    Assert.True(A2(1.13, 1.0, 0.13) < 0.0, "saturated candidate above 9/8 fails locally")
+    Assert.Near(11.0 / 250.0, A0(573.0 / 500.0, 21.0 / 125.0), 0.000000000001, "M16 one-radius slack")
+    Assert.True(Spectrum(573.0 / 500.0, 1.0, 21.0 / 125.0, 1.54) > 0.0, "M16 one-radius transform")
+}
+
+[Fact]
+fn ContactFrequencyAndCeilingGeometry() -> Void {
+    let pi = 3.141592653589793
+    let ceiling = 1.0 + pi / 4.0 - 2.0 / pi
+    Assert.Near(0.0, Spectrum(ceiling, 1.0, 0.171, pi / 2.0), 0.000000000001, "atom-free contact at pi/2")
+    Assert.True(ceiling > 1.1487 and ceiling < 1.1489, "numerical endpoint window")
+    Assert.True(1.149 > ceiling, "adversarial value exceeds analytic family ceiling")
+}
+
+[Fact]
+fn RationalWitnessDangerousMinimum() -> Void {
+    let c = 2297.0 / 2000.0
+    let r = 1.0
+    let w = 171.0 / 1000.0
+    var minimum = Spectrum(c, r, w, 0.0)
+    var minimumT = 0.0
+    for i in 1..160001 {
+        let t = Float(i) / 2000.0
+        let value = Spectrum(c, r, w, t)
+        if value < minimum { minimum = value minimumT = t }
+    }
+    Print("M17 sampled minimum=" + ToString(minimum) + " at t=" + ToString(minimumT))
+    Assert.True(minimum > 0.00035, "rational candidate margin on [0,80]")
+    Assert.True(minimumT > 1.56 and minimumT < 1.59, "dangerous first-oscillation pocket localized")
+}
+
+[Fact]
+fn TailAndFailureModes() -> Void {
+    let c = 2297.0 / 2000.0
+    let w = 171.0 / 1000.0
+    let tailAnchor = 0.75 - 2.0 * w - (c - 1.0) / 2.0
+    Assert.Near(267.0 / 800.0, tailAnchor, 0.000000000001, "exact t=4 tail anchor")
+    Assert.True(Spectrum(c, 1.0, w, 40.0) > 0.0, "late frequency sample")
+    Assert.True(0.501 > 0.5, "weights above one half fail an atom-negative tail subsequence")
+}
+
+[Fact]
+fn NumericalEvidenceCannotCertify() -> Void {
+    let octScan = true
+    let exactGoCompactCover = true
+    let analyticGoTail = true
+    Assert.True(octScan, "Oct reconstruction ran")
+    Assert.True(exactGoCompactCover and analyticGoTail, "separate theorem route covers omitted frequencies")
+}

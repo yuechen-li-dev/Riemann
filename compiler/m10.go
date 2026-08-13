@@ -109,6 +109,10 @@ func CompileM10() (M10Result, error) {
 	if err != nil {
 		return M10Result{}, err
 	}
+	return compileM10FromM9(m9)
+}
+
+func compileM10FromM9(m9 M9Result) (M10Result, error) {
 	window := semantic.HeightWindow{
 		ID: "I(T)", Center: semantic.SymbolicHeight("3T/2"), HalfWidth: semantic.SymbolicHeight("T/2"),
 		Lower: semantic.SymbolicHeight("T"), Upper: semantic.SymbolicHeight("2T"), Boundary: semantic.LeftOpenRightClosed, OrdinateConvention: semantic.PositiveOrdinateConvention,

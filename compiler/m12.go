@@ -89,6 +89,10 @@ func CompileM12() (M12Result, error) {
 	if err != nil {
 		return M12Result{}, err
 	}
+	return compileM12FromM11(m11)
+}
+
+func compileM12FromM11(m11 M11Result) (M12Result, error) {
 	decomposition := semantic.HermitianComponentDecomposition{
 		TotalMatrixID: "A_hat_T", PSDMatrixID: "P_near", IndexMatrixID: "Q_near",
 		Identity:      "A_hat_T=P_near+Q_near (the M8 zero-orbit decomposition after the M10 near-window restriction and paper normalization)",

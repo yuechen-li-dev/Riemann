@@ -1158,3 +1158,41 @@ func M16JSONReport(result M16Result) ([]byte, error) {
 	}{Schema: "riemann.m16.v1", Result: result}
 	return json.MarshalIndent(payload, "", "  ")
 }
+
+func M17HumanReport(result M17Result) string {
+	var b strings.Builder
+	b.WriteString("RIEMANN-M17 — UNSATURATED ONE-RADIUS BOUNDARY-ATOM FAMILY\n\n")
+	fmt.Fprintf(&b, "outcome: %s\n\nsign audit: %s\n\n", result.Outcome, result.SignAudit)
+	b.WriteString("ONE-RADIUS FAMILY\n")
+	fmt.Fprintf(&b, "  sigma = c 1_{|x|>1} dx + w(delta_-r+delta_r)\n  constraints: c>0, r>=1, w>=0\n  typed candidate: c=%d/%d, r=%d/%d, w=%d/%d\n  transform: %s\n\n", result.Family.Constant.Numerator, result.Family.Constant.Denominator, result.Family.Radius.Numerator, result.Family.Radius.Denominator, result.Family.Weight.Numerator, result.Family.Weight.Denominator, result.ExactTransform)
+	b.WriteString("SUBFAMILY RELATION\n")
+	fmt.Fprintf(&b, "  %s\n  saturated regression: %s\n  M16 one-radius regression: %s\n\n", result.SubfamilyRelation, result.M15Regression, result.M16Regression)
+	b.WriteString("ANALYTIC REDUCTION\n")
+	fmt.Fprintf(&b, "  local coefficients: %s\n  parameter elimination: %s\n  radius result: %s\n\n", result.LocalAnalysis, result.ParameterReduction, result.RadiusConclusion)
+	b.WriteString("OCT SEARCH\n")
+	fmt.Fprintf(&b, "  reduction: %s\n  strategy: %s\n  when utility: %s\n  best numerical candidate: %s\n  dangerous minimum: %s\n  counterexamples: %v\n  independent check: %s\n  plot: %s\n  SHA-256: %s\n  status: %s\n  execution: %s\n\n", result.Experiment.AnalyticReduction, result.Experiment.Strategy, result.Experiment.WhenUtility, result.Experiment.BestNumerical, result.Experiment.DangerousMinimum, result.Experiment.Counterexamples, result.Experiment.IndependentCheck, result.Experiment.Plot, result.Experiment.PlotSHA256, result.Experiment.PlotStatus, result.Experiment.ExecutionIdentity)
+	b.WriteString("WHOLE-LINE CERTIFICATE\n")
+	fmt.Fprintf(&b, "  compact: %s, exact degree-%d Taylor enclosures, grid %d/%d, Lipschitz %d/%d\n  tail: %s; anchor %d/%d\n  bound: %s\n  coverage: %s\n\n", result.PDCertificate.CompactInterval, result.PDCertificate.TaylorDegree, result.PDCertificate.GridStep.Numerator, result.PDCertificate.GridStep.Denominator, result.PDCertificate.LipschitzBound.Numerator, result.PDCertificate.LipschitzBound.Denominator, result.PDCertificate.TailInterval, result.PDCertificate.TailAnchor.Numerator, result.PDCertificate.TailAnchor.Denominator, result.PDCertificate.TailLowerBound, result.PDCertificate.OmittedDirections)
+	b.WriteString("BEST CERTIFIED DUAL\n")
+	fmt.Fprintf(&b, "  c >= 2297/2000 > 573/500 > 9/8\n  one-radius ceiling: %s\n  witness: %s\n  ceiling certificate: %s\n\n", result.FamilyCeilingBracket, result.WitnessArtifact, result.CeilingArtifact)
+	b.WriteString("UPDATED EP3.1 BRACKET\n")
+	fmt.Fprintf(&b, "  c_*: %s\n  J_*: %s\n  versus 9/8: %s\n\n", result.CertifiedCBracket, result.CertifiedJBracket, result.NineEighthsComparison)
+	b.WriteString("ANTHROPIC 0.68185\n")
+	fmt.Fprintf(&b, "  %s\n\n", result.AnthropicComparison)
+	b.WriteString("PROVENANCE, LITERATURE, AND ARCHITECTURE\n")
+	fmt.Fprintf(&b, "  literature: %s\n  imported mathematics: %v\n  newly derived mathematics: %v\n  awkwardness: %s\n  Compiler Theory: %s\n\n", result.LiteratureAssessment, result.ImportedMathematics, result.DerivedMathematics, result.ArchitecturalAwkwardness, result.CompilerTheory)
+	b.WriteString("RH\n  unresolved\n\nONE PROPOSED NEXT MILESTONE\n")
+	fmt.Fprintf(&b, "  %s\n", result.NextMilestone)
+	return b.String()
+}
+
+func M17JSONReport(result M17Result) ([]byte, error) {
+	if err := validateM17Result(result); err != nil {
+		return nil, err
+	}
+	payload := struct {
+		Schema string    `json:"schema"`
+		Result M17Result `json:"m17"`
+	}{Schema: "riemann.m17.v1", Result: result}
+	return json.MarshalIndent(payload, "", "  ")
+}

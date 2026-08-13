@@ -9,7 +9,7 @@ import (
 )
 
 func TestM14AReconstructsBroaderClassAndM13Membership(t *testing.T) {
-	r, err := CompileM14A()
+	r, err := testM14A()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -22,7 +22,7 @@ func TestM14AReconstructsBroaderClassAndM13Membership(t *testing.T) {
 }
 
 func TestM14AObjectiveAndKnownPrimalsUseCorrectDirection(t *testing.T) {
-	r, err := CompileM14A()
+	r, err := testM14A()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -38,7 +38,7 @@ func TestM14AObjectiveAndKnownPrimalsUseCorrectDirection(t *testing.T) {
 }
 
 func TestM14AOnlyBaselineDualIsCertified(t *testing.T) {
-	r, err := CompileM14A()
+	r, err := testM14A()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -54,7 +54,7 @@ func TestM14AOnlyBaselineDualIsCertified(t *testing.T) {
 }
 
 func TestM14ATailAndGridObstructionAreExplicit(t *testing.T) {
-	r, err := CompileM14A()
+	r, err := testM14A()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -67,7 +67,7 @@ func TestM14ATailAndGridObstructionAreExplicit(t *testing.T) {
 }
 
 func TestM14AReportsAreDeterministicAndDoNotClaimRH(t *testing.T) {
-	r, err := CompileM14A()
+	r, err := testM14A()
 	if err != nil {
 		t.Fatal(err)
 	}

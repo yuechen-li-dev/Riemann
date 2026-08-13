@@ -49,6 +49,10 @@ func CompileM8() (M8Result, error) {
 	if err != nil {
 		return M8Result{}, err
 	}
+	return compileM8FromM7(m7)
+}
+
+func compileM8FromM7(m7 M7Result) (M8Result, error) {
 	basis := m7.Evaluation.Matrix.Basis
 	critical, err := semantic.NewZeroOrbit("critical-orbit-template", semantic.PointOnCriticalLine("rho_c"), semantic.CriticalLineOrbit, 1, []semantic.TheoremID{ConjugationInvariantTheoremID, ComposeInvarianceTheoremID}, dlmfZerosReference)
 	if err != nil {

@@ -1,0 +1,24 @@
+package M17OneRadiusPlot
+
+fn Spectrum(t: Float) -> Float {
+    let c = 2297.0 / 2000.0
+    let r = 1.0
+    let w = 171.0 / 1000.0
+    if Abs(t) < 0.00000001 { return 2.0 * (1.0 + w - c) }
+    return 1.0 + 2.0 * (Cos(t) - 1.0) / (t * t)
+        + 2.0 * (1.0 - c) * Sin(t) / t + 2.0 * w * Cos(r * t)
+}
+
+// Candidate parameters are fixed above. The [0,8] proof view shows the zero
+// axis, the shallow minimum near pi/2, and the labeled-axis handoff t=4.
+[Artifact]
+fn PlotCandidateMinimumAndTailHandoff() -> Void {
+    var xs: Float[] = []
+    var ys: Float[] = []
+    for i in 0..8001 {
+        let t = Float(i) / 1000.0
+        xs = Append(xs, t)
+        ys = Append(ys, Spectrum(t))
+    }
+    let _plot = PlotLine(xs, ys, "m17/m17_one_radius_spectrum.png")
+}

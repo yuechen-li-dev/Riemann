@@ -64,6 +64,26 @@ type Graph struct {
 
 func NewGraph() *Graph { return &Graph{claims: make(map[semantic.ClaimID]semantic.Claim)} }
 
+// Clone returns independent mutable proof state for a downstream milestone.
+func (g *Graph) Clone() *Graph {
+	if g == nil {
+		return nil
+	}
+	out := NewGraph()
+	for _, id := range g.claimOrder {
+		out.claims[id] = cloneClaim(g.claims[id])
+		out.claimOrder = append(out.claimOrder, id)
+	}
+	for _, tr := range g.transformations {
+		tr.Premises = append([]semantic.ClaimID(nil), tr.Premises...)
+		tr.Obligations = append([]semantic.ClaimID(nil), tr.Obligations...)
+		tr.Losses = append([]InformationLoss(nil), tr.Losses...)
+		tr.Bindings = append([]Binding(nil), tr.Bindings...)
+		out.transformations = append(out.transformations, tr)
+	}
+	return out
+}
+
 func (g *Graph) AddClaim(claim semantic.Claim) error {
 	if err := claim.Validate(); err != nil {
 		return err

@@ -62,6 +62,10 @@ func CompileM9() (M9Result, error) {
 	if err != nil {
 		return M9Result{}, err
 	}
+	return compileM9FromM8(m8)
+}
+
+func compileM9FromM8(m8 M8Result) (M9Result, error) {
 	dimension := len(m8.ZeroSide.Basis.Members)
 	compression := semantic.FiniteCompression{MatrixID: m8.Dual.SemanticMatrixID, BasisID: m8.ZeroSide.Basis.ID, Dimension: dimension, FunctionSpaceRestriction: true}
 	if err := compression.Validate(); err != nil {

@@ -72,6 +72,10 @@ func CompileM14A() (M14AResult, error) {
 	if err != nil {
 		return M14AResult{}, err
 	}
+	return compileM14AFromM13(m13)
+}
+
+func compileM14AFromM13(m13 M13Result) (M14AResult, error) {
 	class := semantic.SupportOneExtremalClass{
 		ID: "zeta-support-one-cohn-elkies-ep3.1", DataRadius: semantic.ExactRational{Numerator: 1, Denominator: 1}, TailSemantics: semantic.NonpositiveTail,
 		TransformConvention: "hat g(alpha)=integral_R g(x) exp(-2*pi*i*x*alpha) dx", Even: true, Continuous: true, FunctionL1: true, TransformL1: true, FunctionNonnegative: true,

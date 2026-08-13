@@ -4,20 +4,10 @@ import (
 	"bytes"
 	"math"
 	"strings"
-	"sync"
 	"testing"
 
 	"github.com/yuechen-li-dev/Riemann/semantic"
 )
-
-var m7Once sync.Once
-var m7Cached M7Result
-var m7CachedErr error
-
-func testM7() (M7Result, error) {
-	m7Once.Do(func() { m7Cached, m7CachedErr = CompileM7() })
-	return m7Cached, m7CachedErr
-}
 
 func TestM7CertifiedEntriesEncloseM6AndRetainComponents(t *testing.T) {
 	r, err := testM7()

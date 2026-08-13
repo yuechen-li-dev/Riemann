@@ -1,0 +1,45 @@
+{
+  "family": {
+    "c": {"numerator": 2297, "denominator": 2000},
+    "r": {"numerator": 1, "denominator": 1},
+    "w": {"numerator": 171, "denominator": 1000},
+    "exterior_density": {"numerator": 2297, "denominator": 2000},
+    "density_support": "|x|>1",
+    "support_legal": true,
+    "measure_nonnegative": true,
+    "exact_transform": "hat(P)(t/(2*pi))=1+2(cos(t)-1)/t^2+2(1-c)sin(t)/t+2*w*cos(r*t)",
+    "taylor_coefficients": {
+      "constant_term": {"numerator": 9, "denominator": 200},
+      "t_squared_coefficient": {"numerator": -229, "denominator": 6000},
+      "t_fourth_coefficient": {"numerator": 3239, "denominator": 360000},
+      "t_sixth_coefficient": {"numerator": -1847, "denominator": 5040000}
+    },
+    "theorem_provenance": {
+      "kind": "compiler_record",
+      "citation": "Riemann M17 unsaturated one-radius family derivation"
+    }
+  },
+  "positive_definiteness": {
+    "id": "one-radius-2297-over-2000-whole-line",
+    "fourier_variable": "t=2*pi*xi",
+    "fourier_density": "hat(P)(t/(2*pi))=1+2(cos(t)-1)/t^2+2(1-c)sin(t)/t+2*w*cos(r*t)",
+    "compact_interval": "0<=|t|<=4",
+    "grid_step": {"numerator": 1, "denominator": 5000},
+    "taylor_degree": 40,
+    "lipschitz_bound": {"numerator": 4943, "denominator": 6000},
+    "tail_interval": "|t|>=4",
+    "tail_lower_bound": "hat(P)>=1-2*w-4/t^2-2*(c-1)/|t|>0 for |t|>=4",
+    "tail_anchor": {"numerator": 267, "denominator": 800},
+    "omitted_direction_control": "exact Taylor enclosures plus a Lipschitz cover on |t|<=4 and a radius-uniform analytic bound on |t|>=4 cover every real t",
+    "whole_line": true
+  },
+  "family_ceiling": {
+    "exact_upper_expression": "1+pi/4-2/pi",
+    "rational_upper": {"numerator": 1149, "denominator": 1000},
+    "contact_frequency": "t=pi/(2*r)",
+    "parameter_domain_theorem": "r>=1, w>=0; global positivity also forces w<=1/2 by the atom-negative tail subsequence",
+    "proof_route": "at t=pi/(2*r), cos(r*t)=0 and sin(t)>0, so c<=h(t)=1+t/(2*sin(t))-tan(t/2)/t; the positive even-power series of h-1 makes h strictly increasing on (0,pi/2]; Archimedes bounds 333/106<pi<355/113 give h(pi/2)<1149/1000",
+    "strict_for_r_above_one": true
+  },
+  "provenance": "analytic envelope -> reduced Go and Oct search -> rational candidate -> exact Go compact enclosure and analytic tail"
+}

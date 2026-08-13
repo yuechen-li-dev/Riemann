@@ -53,6 +53,14 @@ type M7Result struct {
 func CompileM7() (M7Result, error) { return CompileM7WithOptions(M7Options{}) }
 
 func CompileM7WithOptions(options M7Options) (M7Result, error) {
+	m6, err := CompileM6()
+	if err != nil {
+		return M7Result{}, err
+	}
+	return compileM7FromM6(m6, options)
+}
+
+func compileM7FromM6(m6 M6Result, options M7Options) (M7Result, error) {
 	if options.PrecisionBits == 0 {
 		options.PrecisionBits = 192
 	}
@@ -67,10 +75,6 @@ func CompileM7WithOptions(options M7Options) (M7Result, error) {
 	}
 	if options.OmitTail {
 		return M7Result{}, fmt.Errorf("certification rejected: analytic infinite-tail proof object is required")
-	}
-	m6, err := CompileM6()
-	if err != nil {
-		return M7Result{}, err
 	}
 	ctx := newM7Context(options.PrecisionBits)
 	matrix := semantic.CloneHermitianMatrix(m6.Evaluation.Matrix)

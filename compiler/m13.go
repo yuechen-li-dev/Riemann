@@ -175,6 +175,10 @@ func CompileM13() (M13Result, error) {
 	if err != nil {
 		return M13Result{}, err
 	}
+	return compileM13FromM12(m12)
+}
+
+func compileM13FromM12(m12 M12Result) (M13Result, error) {
 	domain := semantic.ScalarDomain{Lower: semantic.ExactRational{Numerator: 0, Denominator: 1}, Upper: semantic.ExactRational{Numerator: 1, Denominator: 1}, LowerIncluded: false, UpperIncluded: true}
 	parameter := semantic.WindowParameter{Symbol: "lambda", Domain: domain, Meaning: "normalized support/bandwidth L/log(T/2pi)"}
 	lambda := semantic.ScalarParam("lambda")

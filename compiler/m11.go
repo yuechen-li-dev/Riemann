@@ -96,6 +96,10 @@ func CompileM11() (M11Result, error) {
 	if err != nil {
 		return M11Result{}, err
 	}
+	return compileM11FromM10(m10)
+}
+
+func compileM11FromM10(m10 M10Result) (M11Result, error) {
 
 	moments := []semantic.SpectralMomentClaim{
 		{ID: "m11.trace.G_tilde", MatrixID: "G_tilde_T", Kind: semantic.Trace, Relation: semantic.EqualBound, Expression: "tr(G_tilde_T)=a*L*N(T,2T)+O(L*sqrt(X))=L*N(T,2T)*(1+O(E_T))", Evidence: semantic.AsymptoticMomentEvidence, Assumptions: []string{"0<lambda<=1", "L=lambda*log(T/2pi)", "X=exp(L)", "a=L^(-1)*integral(phi^2)", "1<=w<=L/8", "T>=T0(lambda)"}, Theorems: []semantic.TheoremID{M11PrimeMomentTheoremID}, Provenance: anthropicM11Reference},

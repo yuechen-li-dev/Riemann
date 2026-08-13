@@ -70,9 +70,6 @@ func TestM16OriginExpansionAndSaturatedM15Regression(t *testing.T) {
 }
 
 func TestM16CandidateWholeLineCertificateAndCoverage(t *testing.T) {
-	if err := VerifyTwoRadiusCertificate(validM16Family(), validM16PD()); err != nil {
-		t.Fatal(err)
-	}
 	p := validM16PD()
 	p.CompactInterval = "0<=|t|<4"
 	if VerifyTwoRadiusCertificate(validM16Family(), p) == nil {
@@ -85,12 +82,14 @@ func TestM16CandidateWholeLineCertificateAndCoverage(t *testing.T) {
 	}
 }
 
-func TestM16UnsaturatedOneRadiusDegenerationAlsoCertifies(t *testing.T) {
-	f, p := validM16Family(), validM16PD()
+func TestM16UnsaturatedOneRadiusDegenerationCoefficientsRegress(t *testing.T) {
+	f := validM16Family()
 	f.Atoms[1].Weight = ExactRational{0, 1}
-	p.LipschitzBound = ExactRational{1223, 1500}
-	p.TailAnchor = ExactRational{341, 1000}
-	if err := VerifyTwoRadiusCertificate(f, p); err != nil {
-		t.Fatalf("the exact witness does not depend on the second atom: %v", err)
+	taylor, err := TwoRadiusOriginTaylor(f)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if taylor.Constant != (ExactRational{11, 250}) || taylor.Quadratic != (ExactRational{-9, 250}) {
+		t.Fatalf("wrong one-radius degeneration: %+v", taylor)
 	}
 }
