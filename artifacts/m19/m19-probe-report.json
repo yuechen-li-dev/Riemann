@@ -1,0 +1,334 @@
+{
+  "generatedUtc": "1970-01-01T00:00:00+00:00",
+  "aetherisVersion": "2.0.0.0",
+  "cases": [
+    {
+      "caseName": "safe",
+      "sourcePath": "experiments/m19/firmament/m18-safe.firmament",
+      "parseResult": "accepted",
+      "validationResult": [
+        "firmament-v2-parse-succeeded",
+        "firmament-v2-parser-invoked"
+      ],
+      "loweringRoute": "FirmamentV2Parser -\u003E PanelIr/ParametricSurfaceIr -\u003E sampled non-rational BSpline -\u003E thin BRep -\u003E STEP AP242",
+      "classification": "ApproximateVisualization",
+      "atContact": {
+        "t": 1.5707963267948966,
+        "scaledZMm": 0.025464790894706855,
+        "fApprox": 0.0012732395447353428
+      },
+      "finiteDifference": {
+        "derivativePerNormalizedU": -0.008916264322526846,
+        "secondPerNormalizedUSquared": 0.7784161856760895
+      },
+      "panel": {
+        "StableId": "panel:spectral_surface",
+        "materialization": "ApproximatedNonRationalBSpline",
+        "Approximation": {
+          "RequestedTolerance": 0.1,
+          "MaximumSampledPositionResidual": 0.0005211246317964047,
+          "MaximumNormalDeviationDegrees": 0,
+          "ControlCountU": 17,
+          "ControlCountV": 17,
+          "SamplingPolicy": "adaptive uniform tensor grid; residuals at cell centers",
+          "SourceIdentity": "spectral_surface"
+        },
+        "boundaryIds": [
+          "panel:spectral_surface:edge:south",
+          "panel:spectral_surface:edge:east",
+          "panel:spectral_surface:edge:north",
+          "panel:spectral_surface:edge:west"
+        ]
+      },
+      "brepResult": {
+        "route": "thin panel emitted",
+        "FaceCount": 6,
+        "EdgeCount": 12,
+        "VertexCount": 8,
+        "zeroFaceCount": 6
+      },
+      "stepResult": {
+        "path": "artifacts/m19/m18-safe-spectral.step",
+        "deterministic": true,
+        "sha256": "CFA77DB2C70EC79EA97E30CAD2979C958173F6F11CC8D09FB511986F02F03716",
+        "reimported": true,
+        "reimportDiagnostics": [],
+        "reimportSurfaceKinds": [
+          "BSplineSurfaceWithKnots"
+        ]
+      },
+      "traceResult": "Panel path has no Feature-AIR/Construction-AIR trace; PanelIr is the retained semantic surface layer"
+    },
+    {
+      "caseName": "tangent",
+      "sourcePath": "experiments/m19/firmament/m18-tangent.firmament",
+      "parseResult": "accepted",
+      "validationResult": [
+        "firmament-v2-parse-succeeded",
+        "firmament-v2-parser-invoked"
+      ],
+      "loweringRoute": "FirmamentV2Parser -\u003E PanelIr/ParametricSurfaceIr -\u003E sampled non-rational BSpline -\u003E thin BRep -\u003E STEP AP242",
+      "classification": "ApproximateVisualization",
+      "atContact": {
+        "t": 1.5707963267948966,
+        "scaledZMm": 6.52514751065429E-15,
+        "fApprox": 3.262573755327145E-16
+      },
+      "finiteDifference": {
+        "derivativePerNormalizedU": -1.5119453405194536E-10,
+        "secondPerNormalizedUSquared": 0.7798706125417114
+      },
+      "panel": {
+        "StableId": "panel:spectral_surface",
+        "materialization": "ApproximatedNonRationalBSpline",
+        "Approximation": {
+          "RequestedTolerance": 0.1,
+          "MaximumSampledPositionResidual": 0.0005214732723805848,
+          "MaximumNormalDeviationDegrees": 0,
+          "ControlCountU": 17,
+          "ControlCountV": 17,
+          "SamplingPolicy": "adaptive uniform tensor grid; residuals at cell centers",
+          "SourceIdentity": "spectral_surface"
+        },
+        "boundaryIds": [
+          "panel:spectral_surface:edge:south",
+          "panel:spectral_surface:edge:east",
+          "panel:spectral_surface:edge:north",
+          "panel:spectral_surface:edge:west"
+        ]
+      },
+      "brepResult": {
+        "route": "thin panel emitted",
+        "FaceCount": 6,
+        "EdgeCount": 12,
+        "VertexCount": 8,
+        "zeroFaceCount": 6
+      },
+      "stepResult": {
+        "path": "artifacts/m19/m18-tangent-spectral.step",
+        "deterministic": true,
+        "sha256": "C2062F53C8AAFAC5295721C18240EDA5DB761781267A685C572C41D3FF6C02C6",
+        "reimported": true,
+        "reimportDiagnostics": [],
+        "reimportSurfaceKinds": [
+          "BSplineSurfaceWithKnots"
+        ]
+      },
+      "traceResult": "Panel path has no Feature-AIR/Construction-AIR trace; PanelIr is the retained semantic surface layer"
+    },
+    {
+      "caseName": "failing",
+      "sourcePath": "experiments/m19/firmament/m18-failing.firmament",
+      "parseResult": "accepted",
+      "validationResult": [
+        "firmament-v2-parse-succeeded",
+        "firmament-v2-parser-invoked"
+      ],
+      "loweringRoute": "FirmamentV2Parser -\u003E PanelIr/ParametricSurfaceIr -\u003E sampled non-rational BSpline -\u003E thin BRep -\u003E STEP AP242",
+      "classification": "ApproximateVisualization",
+      "atContact": {
+        "t": 1.5707963267948966,
+        "scaledZMm": -0.025464790894693803,
+        "fApprox": -0.00127323954473469
+      },
+      "finiteDifference": {
+        "derivativePerNormalizedU": 0.008916264020338016,
+        "secondPerNormalizedUSquared": 0.7813360722308537
+      },
+      "panel": {
+        "StableId": "panel:spectral_surface",
+        "materialization": "ApproximatedNonRationalBSpline",
+        "Approximation": {
+          "RequestedTolerance": 0.1,
+          "MaximumSampledPositionResidual": 0.0005218219129650425,
+          "MaximumNormalDeviationDegrees": 0,
+          "ControlCountU": 17,
+          "ControlCountV": 17,
+          "SamplingPolicy": "adaptive uniform tensor grid; residuals at cell centers",
+          "SourceIdentity": "spectral_surface"
+        },
+        "boundaryIds": [
+          "panel:spectral_surface:edge:south",
+          "panel:spectral_surface:edge:east",
+          "panel:spectral_surface:edge:north",
+          "panel:spectral_surface:edge:west"
+        ]
+      },
+      "brepResult": {
+        "route": "thin panel emitted",
+        "FaceCount": 6,
+        "EdgeCount": 12,
+        "VertexCount": 8,
+        "zeroFaceCount": 6
+      },
+      "stepResult": {
+        "path": "artifacts/m19/m18-failing-spectral.step",
+        "deterministic": true,
+        "sha256": "1EE14C7C995D5EF1644AFC906D49E8FB59AD4E44DA99F41C4A2A701B23B21A30",
+        "reimported": true,
+        "reimportDiagnostics": [],
+        "reimportSurfaceKinds": [
+          "BSplineSurfaceWithKnots"
+        ]
+      },
+      "traceResult": "Panel path has no Feature-AIR/Construction-AIR trace; PanelIr is the retained semantic surface layer"
+    }
+  ],
+  "conceptStruct": {
+    "sourcePath": "experiments/m19/firmament/contact-metadata-concept.firmament",
+    "parsed": true,
+    "Diagnostics": [
+      "firmament-concept-ir-resolved",
+      "firmament-concept-struct-erased-before-feature-air",
+      "firmament-v2-parse-succeeded",
+      "firmament-v2-parser-invoked",
+      "firmament-v2-phase3-edge-finish-parsed",
+      "firmament-v2-unified-canonical-symbols-bound"
+    ],
+    "erasureStatus": "ErasedBeforeFeatureAir",
+    "concepts": [
+      "ContactMetadata"
+    ],
+    "structs": [
+      {
+        "Name": "M18Certificate",
+        "ErasureStatus": "CompileTimeOnlyErased",
+        "members": [
+          "CandidateC",
+          "CandidateWeight",
+          "CertificateStatus",
+          "ContactFrequency",
+          "ExactCandidate",
+          "ExpectedMultiplicity"
+        ]
+      }
+    ],
+    "exposed": [
+      {
+        "Name": "ContactFrequency",
+        "type": "Float",
+        "phase": "ConceptIr",
+        "category": "CompileTimeValue"
+      },
+      {
+        "Name": "ExpectedMultiplicity",
+        "type": "Int",
+        "phase": "ConceptIr",
+        "category": "CompileTimeValue"
+      },
+      {
+        "Name": "CandidateC",
+        "type": "Float",
+        "phase": "ConceptIr",
+        "category": "CompileTimeValue"
+      },
+      {
+        "Name": "CandidateWeight",
+        "type": "Float",
+        "phase": "ConceptIr",
+        "category": "CompileTimeValue"
+      },
+      {
+        "Name": "CertificateStatus",
+        "type": "String",
+        "phase": "ConceptIr",
+        "category": "CompileTimeValue"
+      },
+      {
+        "Name": "ExactCandidate",
+        "type": "Bool",
+        "phase": "ConceptIr",
+        "category": "CompileTimeValue"
+      }
+    ]
+  },
+  "assembly": {
+    "sourcePath": "experiments/m19/firmament/m18-research-assembly.firmament",
+    "parsed": true,
+    "parseDiagnostics": [],
+    "compiled": true,
+    "compileDiagnostics": [
+      {
+        "Code": "assembly-placement-underconstrained",
+        "Message": "Instance \u0027M18ResearchObjects.ZeroReference\u0027 retains translations [X,Y,Z] and rotations [X,Y,Z].",
+        "Severity": 0
+      }
+    ],
+    "instances": [
+      {
+        "StableId": "assembly-instance:M18ResearchObjects",
+        "path": "M18ResearchObjects",
+        "kind": "Assembly",
+        "semantics": []
+      },
+      {
+        "StableId": "assembly-instance:M18ResearchObjects.SpectralObject",
+        "path": "M18ResearchObjects.SpectralObject",
+        "kind": "Panel",
+        "semantics": [
+          "ContactFrame"
+        ]
+      },
+      {
+        "StableId": "assembly-instance:M18ResearchObjects.ZeroReference",
+        "path": "M18ResearchObjects.ZeroReference",
+        "kind": "Panel",
+        "semantics": [
+          "ReferenceFrame"
+        ]
+      },
+      {
+        "StableId": "assembly-instance:M18ResearchObjects.ContactMarker",
+        "path": "M18ResearchObjects.ContactMarker",
+        "kind": "Part",
+        "semantics": [
+          "Marker"
+        ]
+      }
+    ],
+    "mates": [
+      {
+        "Name": "AlignZero",
+        "ValidationStatus": "valid"
+      }
+    ],
+    "placements": [
+      {
+        "InstanceStableId": "assembly-instance:M18ResearchObjects",
+        "status": "Anchored",
+        "FreeTranslations": [],
+        "FreeRotations": [],
+        "authority": "MateDerived"
+      },
+      {
+        "InstanceStableId": "assembly-instance:M18ResearchObjects.SpectralObject",
+        "status": "Anchored",
+        "FreeTranslations": [],
+        "FreeRotations": [],
+        "authority": "MateDerived"
+      },
+      {
+        "InstanceStableId": "assembly-instance:M18ResearchObjects.ZeroReference",
+        "status": "Underconstrained",
+        "FreeTranslations": [
+          "X",
+          "Y",
+          "Z"
+        ],
+        "FreeRotations": [
+          "X",
+          "Y",
+          "Z"
+        ],
+        "authority": "MateDerived"
+      },
+      {
+        "InstanceStableId": "assembly-instance:M18ResearchObjects.ContactMarker",
+        "status": "Resolved",
+        "FreeTranslations": [],
+        "FreeRotations": [],
+        "authority": "LegacyExplicit"
+      }
+    ]
+  }
+}

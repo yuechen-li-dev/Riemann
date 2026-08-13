@@ -1,0 +1,34 @@
+// Semantic-composition experiment only. The three nodes have generic product-tree
+// identity, but Assembly semantics can expose only spatial/dimensional bindings.
+Interface ZeroContact {
+    Role Spectral requires PlaneCapable;
+    Role Zero requires PlaneCapable;
+    Lower PlaneCoincident Spectral.ZeroPlane Zero.ZeroPlane;
+}
+
+Assembly M18ResearchObjects {
+    <Assembly M18ResearchObjects>
+        <Panel SpectralObject = M18SpectralPanel>
+            Semantic ContactFrame {
+                Plane ZeroPlane = [0,0,0] normal [0,0,1];
+                Point CandidateContact = [31.41592653589793,0,0];
+            }
+        </Panel>
+        <Panel ZeroReference = ZeroBoundaryPanel>
+            Semantic ReferenceFrame {
+                Plane ZeroPlane = [0,0,0] normal [0,0,1];
+            }
+        </Panel>
+        <Part ContactMarker = ContactMarkerPart>
+            Placement LegacyExplicit = [1,0,0,0, 0,1,0,0, 0,0,1,0, 31.41592653589793,0,0,1];
+            Semantic Marker {
+                Point Contact = [31.41592653589793,0,0];
+            }
+        </Part>
+    </Assembly>
+    Anchor: M18ResearchObjects.SpectralObject.ContactFrame;
+    Mate AlignZero: ZeroContact {
+        Spectral: M18ResearchObjects.SpectralObject.ContactFrame;
+        Zero: M18ResearchObjects.ZeroReference.ReferenceFrame;
+    }
+}

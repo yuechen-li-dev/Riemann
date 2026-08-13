@@ -53,6 +53,12 @@ artifact repair. [docs/m18-architecture.md](docs/m18-architecture.md) records
 the exact tangency theorem, equality-aware whole-line proof, and Oct artifact.
 [docs/m17-architecture.md](docs/m17-architecture.md) records the preceding
 unsaturated one-radius bracket and its slow proof boundary.
+[docs/m19-aetheris-mathematics-audit.md](docs/m19-aetheris-mathematics-audit.md)
+audits Aetheris Preview 2 as a possible mathematical geometry runtime; its
+Firmament syntax findings are recorded in the companion
+[parser-backed inventory](docs/m19-firmament-syntax-audit.md) and
+[language snapshot](docs/m19-firmament-language-snapshot.md). M19 introduces
+no production integration and makes no theorem claim from approximate geometry.
 [docs/m14a-architecture.md](docs/m14a-architecture.md) retains
 the primal/dual reconstruction. [docs/m13-architecture.md](docs/m13-architecture.md)
 retains the exact window functional and M8-M13 provenance. Earlier milestone

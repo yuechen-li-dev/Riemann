@@ -1,0 +1,40 @@
+// Parser experiment: generic mathematical metadata can inhabit Concept IR only
+// while wrapped in the current CAD-shaped Concept Struct materialization route.
+Concept ContactMetadata {
+    ContactFrequency: Float
+    ExpectedMultiplicity: Int
+    CandidateC: Float
+    CandidateWeight: Float
+    CertificateStatus: String
+    ExactCandidate: Bool
+}
+
+Concept Struct M18Certificate : ContactMetadata {
+    ContactFrequency: Float = 1.5707963267948966
+    ExpectedMultiplicity: Int = 2
+    CandidateC: Float = 1.1487783910298668
+    CandidateWeight: Float = 0.17103742708003555
+    CertificateStatus: String = "RiemannExact_AetherisApproximateVisualization"
+    ExactCandidate: Bool = true
+}
+
+Struct ContactMetadataCarrier : ContactMetadata {
+    Units: mm
+    Box Carrier { Size: [1mm, 1mm, 1mm] }
+    Modify Carrier {
+        EdgeFinish ParserRouteWitness {
+            Face: +Z
+            Target: Boundary
+            Kind: Chamfer
+            Distance: 0.1mm
+        }
+    }
+    Expose {
+        ContactFrequency: M18Certificate.ContactFrequency
+        ExpectedMultiplicity: M18Certificate.ExpectedMultiplicity
+        CandidateC: M18Certificate.CandidateC
+        CandidateWeight: M18Certificate.CandidateWeight
+        CertificateStatus: M18Certificate.CertificateStatus
+        ExactCandidate: M18Certificate.ExactCandidate
+    }
+}

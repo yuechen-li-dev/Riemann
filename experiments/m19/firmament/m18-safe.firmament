@@ -1,0 +1,27 @@
+// M19 ApproximateVisualization: c = C_1R - 0.001, w fixed at the M18 tangent weight.
+// The decimal constants and the downstream non-rational B-spline are not theorem evidence.
+Model M18Safe {
+  Units: mm;
+  Panel spectral_surface {
+    Surface: ParametricSurface {
+      DomainU: [1.3, 1.85]; DomainV: [-0.05, 0.05];
+      X: 20mm * u;
+      Y: 20mm * v;
+      Z: 20mm * (1 + 2 * (cos(u) - 1) / u^2 + 2 * (1 - 1.147778391029867) * sin(u) / u + 2 * 0.17103742708003555 * cos(u));
+    }
+    Orientation: Front;
+    Thickness: 0.2mm;
+    Material: "ApproximateVisualization";
+  }
+  Panel zero_boundary {
+    Surface: ParametricSurface {
+      DomainU: [1.3, 1.85]; DomainV: [-0.05, 0.05];
+      X: 20mm * u;
+      Y: 20mm * v;
+      Z: 0mm;
+    }
+    Orientation: Front;
+    Thickness: 0.1mm;
+    Material: "ReferenceOnly";
+  }
+}
