@@ -1,0 +1,88 @@
+{
+  "schema": "riemann.m21.contact-adapted-ray.v1",
+  "baseline_c": "1+pi/4-2/pi",
+  "baseline_w": "1/pi-4/pi^2+8/pi^3",
+  "r2": {"numerator": 4, "denominator": 1},
+  "certified_m": {"numerator": 19, "denominator": 5000},
+  "derived_c": {
+    "expression": "1+pi/4-2/pi+(pi/2)*m",
+    "laurent_terms": [
+      {"pi_power": -1, "coefficient": {"numerator": -2, "denominator": 1}},
+      {"pi_power": 0, "coefficient": {"numerator": 1, "denominator": 1}},
+      {"pi_power": 1, "coefficient": {"numerator": 2519, "denominator": 10000}}
+    ]
+  },
+  "derived_w1": {
+    "expression": "1/pi-4/pi^2+8/pi^3+(2/pi)*m",
+    "laurent_terms": [
+      {"pi_power": -3, "coefficient": {"numerator": 8, "denominator": 1}},
+      {"pi_power": -2, "coefficient": {"numerator": -4, "denominator": 1}},
+      {"pi_power": -1, "coefficient": {"numerator": 2519, "denominator": 2500}}
+    ]
+  },
+  "w2": {"numerator": 19, "denominator": 5000},
+  "contact_algebra": {
+    "decomposition": "F_m(t)=F_0(t)+m*(-pi*sin(t)/t+(4/pi)*cos(t)+2*cos(4*t))",
+    "H": "H(t)=-pi*sin(t)/t+(4/pi)*cos(t)+2*cos(4*t)",
+    "H_at_pi_over_2": "-2+2=0",
+    "H_prime_at_pi_over_2": "4/pi-4/pi=0",
+    "H_second_at_pi_over_2": {
+      "expression": "-30-16/pi^2",
+      "laurent_terms": [
+        {"pi_power": -2, "coefficient": {"numerator": -16, "denominator": 1}},
+        {"pi_power": 0, "coefficient": {"numerator": -30, "denominator": 1}}
+      ]
+    },
+    "F_m_second_at_pi_over_2": {
+      "expression": "F0''(pi/2)-m*(30+16/pi^2)",
+      "laurent_terms": [
+        {"pi_power": -4, "coefficient": {"numerator": -128, "denominator": 1}},
+        {"pi_power": -3, "coefficient": {"numerator": 64, "denominator": 1}},
+        {"pi_power": -2, "coefficient": {"numerator": -10038, "denominator": 625}},
+        {"pi_power": 0, "coefficient": {"numerator": 443, "denominator": 500}}
+      ]
+    },
+    "second_derivative_lower": {"numerator": 1, "denominator": 200},
+    "verified": true
+  },
+  "whole_line": {
+    "id": "m21-contact-adapted-ray-19-over-5000",
+    "contact_piece": {
+      "left": {"numerator": 151, "denominator": 100},
+      "right": {"numerator": 17, "denominator": 10},
+      "grid_step": {"numerator": 1, "denominator": 10000},
+      "taylor_degree": 100,
+      "kind": "nonnegative_with_certified_contact"
+    },
+    "contact_curvature_grid_step": {"numerator": 1, "denominator": 10000},
+    "contact_third_abs_upper": {"numerator": 11, "denominator": 10},
+    "contact_convexity_lower": {"numerator": 1, "denominator": 10000},
+    "strict_compact_pieces": [
+      {"left": {"numerator": 0, "denominator": 1}, "right": {"numerator": 13, "denominator": 10}, "grid_step": {"numerator": 1, "denominator": 10000}, "taylor_degree": 100, "kind": "strict_positive"},
+      {"left": {"numerator": 13, "denominator": 10}, "right": {"numerator": 151, "denominator": 100}, "grid_step": {"numerator": 1, "denominator": 200000}, "taylor_degree": 100, "kind": "strict_positive"},
+      {"left": {"numerator": 17, "denominator": 10}, "right": {"numerator": 4, "denominator": 1}, "grid_step": {"numerator": 1, "denominator": 5000}, "taylor_degree": 100, "kind": "strict_positive"}
+    ],
+    "lipschitz_upper": {"numerator": 9, "denominator": 10},
+    "tail_start": {"numerator": 4, "denominator": 1},
+    "tail_lower": {"numerator": 3, "denominator": 10},
+    "coverage": "evenness; strict Taylor/Lipschitz cells on [0,13/10], [13/10,151/100], and [17/10,4]; certified convex contact cell [151/100,17/10]; analytic atomic tail [4,infinity)",
+    "whole_line": true
+  },
+  "numerical_candidate": {
+    "t1": 1.36474957003247,
+    "m": 0.00387226734364153,
+    "c": 1.15486093434963,
+    "second_derivative": 0.00604771325262886,
+    "evidence": "Oct Float envelope root and long-range scan; not theorem evidence"
+  },
+  "certified_optimum_bracket": {
+    "lower_witness": {"numerator": 19, "denominator": 5000},
+    "upper_bound": {"numerator": 3873, "denominator": 1000000},
+    "upper_witness_frequency": {"numerator": 5459, "denominator": 4000},
+    "derivation": "lower endpoint is the whole-line witness; upper endpoint has certified F_m(5459/4000)<0"
+  },
+  "original_contact": {"t": "pi/2", "F": "0", "F_prime": "0", "F_second": ">1/200", "multiplicity": "2"},
+  "new_active_frequency": {"status": "numerical candidate", "t1": "1.36474957003247", "F": "approximately 0", "F_prime": "approximately 0", "F_second": "approximately 0.00604771325", "multiplicity": "2 (numerical)"},
+  "theorem_consequence": {"c_lower": "1+pi/4-2/pi+19*pi/10000", "J_upper": "1-pi/4+2/pi-19*pi/10000", "primal_guard": "c<1651/1250", "RH": "unresolved"},
+  "provenance": "M18 exact witness plus M20 contact-preserving perturbation; exact equality-aware compact Taylor certificate and analytic atomic tail; numerical candidate stored separately"
+}

@@ -1,0 +1,175 @@
+package M21ContactAdaptedRay
+
+record Minimum {
+    Value: Float
+    Location: Float
+}
+
+record EnvelopeMinimum {
+    Mass: Float
+    Location: Float
+    Curvature: Float
+}
+
+fn PiValue() -> Float { return 3.141592653589793 }
+fn Contact() -> Float { return PiValue() / 2.0 }
+fn BaselineC() -> Float { return 1.0 + PiValue() / 4.0 - 2.0 / PiValue() }
+fn BaselineW() -> Float { return 1.0 / PiValue() - 4.0 / (PiValue() * PiValue()) + 8.0 / (PiValue() * PiValue() * PiValue()) }
+
+fn Sinc(t: Float) -> Float {
+    if Abs(t) < 0.00000001 { return 1.0 }
+    return Sin(t) / t
+}
+
+fn F0(t: Float) -> Float {
+    if Abs(t) < 0.00000001 { return 2.0 * (1.0 + BaselineW() - BaselineC()) }
+    return 1.0 + 2.0 * (Cos(t) - 1.0) / (t * t)
+        + 2.0 * (1.0 - BaselineC()) * Sin(t) / t
+        + 2.0 * BaselineW() * Cos(t)
+}
+
+fn F0Prime(t: Float) -> Float {
+    return -2.0 * Sin(t) / (t * t) - 4.0 * (Cos(t) - 1.0) / (t * t * t)
+        + 2.0 * (1.0 - BaselineC()) * (Cos(t) / t - Sin(t) / (t * t))
+        - 2.0 * BaselineW() * Sin(t)
+}
+
+fn F0Second(t: Float) -> Float {
+    return -2.0 * Cos(t) / (t * t) + 8.0 * Sin(t) / (t * t * t)
+        + 12.0 * (Cos(t) - 1.0) / (t * t * t * t)
+        + 2.0 * (1.0 - BaselineC()) * (-Sin(t) / t - 2.0 * Cos(t) / (t * t)
+        + 2.0 * Sin(t) / (t * t * t)) - 2.0 * BaselineW() * Cos(t)
+}
+
+fn H(t: Float) -> Float {
+    return -PiValue() * Sinc(t) + 4.0 * Cos(t) / PiValue() + 2.0 * Cos(4.0 * t)
+}
+
+fn HPrime(t: Float) -> Float {
+    return -PiValue() * (t * Cos(t) - Sin(t)) / (t * t)
+        - 4.0 * Sin(t) / PiValue() - 8.0 * Sin(4.0 * t)
+}
+
+fn HSecond(t: Float) -> Float {
+    return PiValue() * Sin(t) / t + 2.0 * PiValue() * Cos(t) / (t * t)
+        - 2.0 * PiValue() * Sin(t) / (t * t * t)
+        - 4.0 * Cos(t) / PiValue() - 32.0 * Cos(4.0 * t)
+}
+
+fn Ray(mass: Float, t: Float) -> Float { return F0(t) + mass * H(t) }
+fn RaySecond(mass: Float, t: Float) -> Float { return F0Second(t) + mass * HSecond(t) }
+fn Envelope(t: Float) -> Float { return F0(t) / (-H(t)) }
+fn Q(t: Float) -> Float { return F0(t) * HPrime(t) - F0Prime(t) * H(t) }
+
+fn RefineStationary(left: Float, right: Float) -> Float {
+    var lo = left
+    var hi = right
+    for _i in 0..100 {
+        let mid = (lo + hi) / 2.0
+        if Q(lo) * Q(mid) <= 0.0 { hi = mid } else { lo = mid }
+    }
+    return (lo + hi) / 2.0
+}
+
+fn Candidate() -> EnvelopeMinimum {
+    let t = RefineStationary(1.30, 1.45)
+    let mass = Envelope(t)
+    return EnvelopeMinimum { Mass: mass Location: t Curvature: RaySecond(mass, t) }
+}
+
+fn ScanRay(mass: Float, limit: Float, count: Int) -> Minimum {
+    var out = Minimum { Value: Ray(mass, 0.0) Location: 0.0 }
+    for i in 1..count {
+        let t = limit * Float(i) / Float(count)
+        let value = Ray(mass, t)
+        if value < out.Value { out = Minimum { Value: value Location: t } }
+    }
+    return out
+}
+
+[Fact]
+fn ExactFormulaAndFixedContactRegression() -> Void {
+    let a = Contact()
+    Assert.Near(0.0, F0(a), 0.000000000000003, "M18 contact value")
+    Assert.Near(0.0, F0Prime(a), 0.000000000000003, "M18 contact derivative")
+    Assert.Near(0.0, H(a), 0.000000000000003, "ray response contact value")
+    Assert.Near(0.0, HPrime(a), 0.000000000000003, "ray response contact derivative")
+    Assert.Near(-(30.0 + 16.0 / (PiValue() * PiValue())), HSecond(a), 0.00000000000002, "ray curvature slope")
+}
+
+[Fact]
+fn EnvelopeFindsSecondaryDoubleContact() -> Void {
+    let candidate = Candidate()
+    Print("M21 t1=" + ToString(candidate.Location) + " m=" + ToString(candidate.Mass)
+        + " c=" + ToString(BaselineC() + PiValue() * candidate.Mass / 2.0)
+        + " curvature=" + ToString(candidate.Curvature))
+    Assert.True(candidate.Location > 1.30 and candidate.Location < 1.45, "secondary contact bracket")
+    Assert.True(candidate.Mass > 0.003 and candidate.Mass < 0.005, "positive bounded ray mass")
+    Assert.Near(0.0, Ray(candidate.Mass, candidate.Location), 0.00000000000001, "active value")
+    Assert.Near(0.0, Q(candidate.Location), 0.000000001, "stationary envelope")
+    Assert.True(candidate.Curvature > 0.0, "new contact is a strict quadratic tangency")
+}
+
+[Fact]
+fn AboveAndBelowCandidateBifurcateAtActiveFrequency() -> Void {
+    let candidate = Candidate()
+    Assert.True(Ray(candidate.Mass - 0.000001, candidate.Location) > 0.0, "below ceiling is positive at t1")
+    Assert.True(Ray(candidate.Mass + 0.000001, candidate.Location) < 0.0, "above ceiling fails at t1")
+}
+
+[Fact]
+fn LongRangeAdversarialScanFindsNoLaterSampledFailure() -> Void {
+    let candidate = Candidate()
+    let below = ScanRay(candidate.Mass - 0.0000001, 2000.0, 200001)
+    Print("M21 long scan below optimum min=" + ToString(below.Value) + " at=" + ToString(below.Location))
+    Assert.True(below.Value > -0.000000001, "no sampled late-frequency failure")
+}
+
+[Fact]
+fn OriginalContactCurvatureRemainsStrictAtCandidate() -> Void {
+    let candidate = Candidate()
+    let curvature = RaySecond(candidate.Mass, Contact())
+    let flatteningMass = F0Second(Contact()) / (30.0 + 16.0 / (PiValue() * PiValue()))
+    Print("M21 original curvature=" + ToString(curvature) + " flattening mass=" + ToString(flatteningMass))
+    Assert.True(curvature > 0.0, "original contact remains quadratic")
+    Assert.True(candidate.Mass < flatteningMass, "secondary contact precedes local flattening")
+}
+
+[Artifact]
+fn PlotRayPressure() -> Void {
+    let candidate = Candidate()
+    var xs: Float[] = []
+    var ys: Float[] = []
+    for i in 0..10001 {
+        let t = 1.2 + 0.5 * Float(i) / 10000.0
+        xs = Append(xs, t)
+        ys = Append(ys, Ray(candidate.Mass, t))
+    }
+    let _plot = PlotLine(xs, ys, "m21/m21_contact_adapted_ray_pressure.png")
+}
+
+[Artifact]
+fn PlotBaselinePressure() -> Void {
+    var xs: Float[] = []
+    var ys: Float[] = []
+    for i in 0..10001 {
+        let t = 1.2 + 0.5 * Float(i) / 10000.0
+        xs = Append(xs, t)
+        ys = Append(ys, F0(t))
+    }
+    let _plot = PlotLine(xs, ys, "m21/m21_m18_baseline_contact_zoom.png")
+}
+
+[Artifact]
+fn PlotEnvelope() -> Void {
+    var xs: Float[] = []
+    var ys: Float[] = []
+    for i in 0..6001 {
+        let t = 1.2 + 0.35 * Float(i) / 6000.0
+        if H(t) < -0.00000001 and Abs(t - Contact()) > 0.0001 {
+            xs = Append(xs, t)
+            ys = Append(ys, Envelope(t))
+        }
+    }
+    let _plot = PlotLine(xs, ys, "m21/m21_contact_adapted_ray_envelope.png")
+}

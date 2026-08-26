@@ -1270,3 +1270,43 @@ func M20HumanReport(r M20Result) string {
 	fmt.Fprintf(&b, "PROVENANCE AND ARCHITECTURE\n  imported: %v\n  newly derived: %v\n  awkwardness: %s\n  Compiler Theory: %s\n\nRH\n  %s\n\nONE PROPOSED NEXT MILESTONE\n  %s\n", r.ImportedMathematics, r.DerivedMathematics, r.ArchitecturalAwkwardness, r.CompilerTheory, r.RHStatus, r.NextMilestone)
 	return b.String()
 }
+
+func M21HumanReport(r M21Result) string {
+	var b strings.Builder
+	b.WriteString("M21 CONTACT-ADAPTED RAY\n\n")
+	fmt.Fprintf(&b, "outcome: %s\n\nbaseline:\n  c0=%s\n  w0=%s\n\nray:\n  r2=4\n  w2=m\n  c=%s\n  w1=%s\n", r.Outcome, r.Ray.Base.ExactCExpression.Expression, r.Ray.Base.ExactWExpression.Expression, r.Ray.C.Expression, r.Ray.Weight1.Expression)
+	b.WriteString("\nFIXED CONTACT\n")
+	fmt.Fprintf(&b, "  t0=pi/2\n  H(t0)=%s\n  H'(t0)=%s\n  H''(t0)=%s\n  F_m''(t0)=%s > %d/%d for the certified witness\n", r.Algebra.ResponseAtContact, r.Algebra.ResponsePrimeAtContact, r.Algebra.ResponseSecond.Expression, r.Algebra.RaySecond.Expression, r.Algebra.SecondDerivativeLower.Numerator, r.Algebra.SecondDerivativeLower.Denominator)
+	b.WriteString("\nRAY RESPONSE\n")
+	fmt.Fprintf(&b, "  %s\n", r.Algebra.Decomposition)
+	for _, x := range r.ResponseSignStructure {
+		fmt.Fprintf(&b, "  - %s\n", x)
+	}
+	b.WriteString("\nENVELOPE\n")
+	fmt.Fprintf(&b, "  %s\n  %s\n  numerical t1=%.14g\n  numerical m*=%.15g\n  numerical c=%.15g\n  numerical F''(t1)=%.14g\n", r.Envelope, r.EnvelopeTangencyTheorem, r.NumericalCandidate.Frequency, r.NumericalCandidate.Mass, r.NumericalCandidate.C, r.NumericalCandidate.Curvature)
+	b.WriteString("\nCERTIFIED WITNESS\n")
+	fmt.Fprintf(&b, "  m=%d/%d\n  c=%s\n  J upper=%s\n  %s\n", r.CertifiedWitness.Numerator, r.CertifiedWitness.Denominator, r.CertifiedC.Expression, r.CertifiedJ.Expression, r.DirectedDecimals)
+	b.WriteString("\nWHOLE-LINE PROOF\n")
+	fmt.Fprintf(&b, "  original contact: %d/%d<=t<=%d/%d, %s, convexity > %d/%d\n", r.WholeLine.ContactPiece.Left.Numerator, r.WholeLine.ContactPiece.Left.Denominator, r.WholeLine.ContactPiece.Right.Numerator, r.WholeLine.ContactPiece.Right.Denominator, r.WholeLine.ContactPiece.Kind, r.WholeLine.ContactConvexityLower.Numerator, r.WholeLine.ContactConvexityLower.Denominator)
+	for _, p := range r.WholeLine.StrictPieces {
+		fmt.Fprintf(&b, "  compact: [%d/%d,%d/%d], step %d/%d, degree %d (%s)\n", p.Left.Numerator, p.Left.Denominator, p.Right.Numerator, p.Right.Denominator, p.GridStep.Numerator, p.GridStep.Denominator, p.TaylorDegree, p.Kind)
+	}
+	fmt.Fprintf(&b, "  tail: |t|>=%d, lower > %d/%d\n  coverage: %s\n", r.WholeLine.TailStart.Numerator/r.WholeLine.TailStart.Denominator, r.WholeLine.TailLower.Numerator, r.WholeLine.TailLower.Denominator, r.WholeLine.Coverage)
+	b.WriteString("\nUPDATED EP3.1 BOUND\n")
+	fmt.Fprintf(&b, "  %s\n\nRAY CEILING\n  %s\n", r.CertifiedBounds, r.RayCeilingStatus)
+	b.WriteString("\nCONTEXT\n")
+	fmt.Fprintf(&b, "  M20: %s\n  CGdL primal: %s\n  Anthropic 0.68185: %s\n  multi-contact: %s\n", r.M20Comparison, r.PrimalComparison, r.AnthropicComparison, r.MultiContactInterpretation)
+	b.WriteString("\nOCT PRESSURE / ENVELOPE EVIDENCE\n")
+	fmt.Fprintf(&b, "  source: %s\n  interpreted: %s\n  compiled: %s; fallback: %d\n  long range: %s\n  artifacts: %v\n  SHA-256: %v\n  execution: %s\n  boundary: %s\n", r.Experiment.Path, r.Experiment.Interpreted, r.Experiment.Compiled, r.Experiment.FallbackCount, r.Experiment.LongRange, r.Experiment.Artifacts, r.Experiment.ArtifactSHA256, r.Experiment.ExecutionIdentity, r.Experiment.EvidenceBoundary)
+	fmt.Fprintf(&b, "\nWITNESS ARTIFACT\n  %s\n\nLITERATURE / NOVELTY SCREEN\n  %s\n", r.WitnessArtifact, r.LiteratureAssessment)
+	b.WriteString("\nIMPORTED MATHEMATICS\n")
+	for _, x := range r.ImportedMathematics {
+		fmt.Fprintf(&b, "  %s\n", x)
+	}
+	b.WriteString("\nNEWLY DERIVED MATHEMATICS\n")
+	for _, x := range r.DerivedMathematics {
+		fmt.Fprintf(&b, "  %s\n", x)
+	}
+	fmt.Fprintf(&b, "\nARCHITECTURAL AWKWARDNESS\n  %s\n\nCOMPILER THEORY\n  %s\n\nRH\n  %s\n\nONE PROPOSED NEXT MILESTONE\n  %s\n", r.ArchitecturalAwkwardness, r.CompilerTheory, r.RHStatus, r.NextMilestone)
+	return b.String()
+}
