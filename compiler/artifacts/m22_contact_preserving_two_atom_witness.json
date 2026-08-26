@@ -1,0 +1,37 @@
+{
+  "schema": "riemann.m22.contact-preserving-two-atom.v1",
+  "family": {
+    "m": {"numerator": 17, "denominator": 2500},
+    "r": {"numerator": 7, "denominator": 2},
+    "c_formula": "c0+(pi/2)*m*cos(pi*r/2)",
+    "w1_formula": "w0+m*((2/pi)*cos(pi*r/2)-r*sin(pi*r/2))",
+    "w2": {"numerator": 17, "denominator": 2500},
+    "transform": "F_{m,r}(t)=1+2(cos(t)-1)/t^2+2(1-c)sin(t)/t+2*w1*cos(t)+2*m*cos(r*t)",
+    "contact_preservation": "F(pi/2)=F'(pi/2)=0 after solving the fixed nonsingular 2-by-2 system for (c,w1)"
+  },
+  "whole_line": {
+    "id": "m22-r7-over-2-m17-over-2500-degree100",
+    "original_contact_piece": {"left":{"numerator":154,"denominator":100},"right":{"numerator":160,"denominator":100},"grid_step":{"numerator":1,"denominator":10000},"taylor_degree":100,"kind":"nonnegative_with_certified_contact"},
+    "contact_curvature_grid_step": {"numerator":1,"denominator":10000},
+    "contact_third_abs_upper": {"numerator":6,"denominator":5},
+    "contact_convexity_lower": {"numerator":1,"denominator":1000},
+    "strict_compact_pieces": [
+      {"left":{"numerator":0,"denominator":1},"right":{"numerator":7,"denominator":5},"grid_step":{"numerator":1,"denominator":5000},"taylor_degree":100,"kind":"strict_positive"},
+      {"left":{"numerator":7,"denominator":5},"right":{"numerator":154,"denominator":100},"grid_step":{"numerator":1,"denominator":100000},"taylor_degree":100,"kind":"strict_positive"},
+      {"left":{"numerator":160,"denominator":100},"right":{"numerator":17,"denominator":10},"grid_step":{"numerator":1,"denominator":100000},"taylor_degree":100,"kind":"strict_positive"},
+      {"left":{"numerator":17,"denominator":10},"right":{"numerator":19,"denominator":10},"grid_step":{"numerator":1,"denominator":10000},"taylor_degree":100,"kind":"strict_positive"},
+      {"left":{"numerator":19,"denominator":10},"right":{"numerator":4,"denominator":1},"grid_step":{"numerator":1,"denominator":5000},"taylor_degree":100,"kind":"strict_positive"}
+    ],
+    "lipschitz_upper": {"numerator":19,"denominator":20},
+    "tail_start": {"numerator":4,"denominator":1},
+    "tail_lower": {"numerator":1,"denominator":4},
+    "coverage": "evenness; strict rational Taylor cells on [0,154/100] and [160/100,4]; certified convex original-contact cell [154/100,160/100]; radius-uniform analytic tail [4,infinity)",
+    "whole_line": true
+  },
+  "c_exact": "1+pi/4-2/pi+17*pi*sqrt(2)/10000",
+  "J_exact": "1-pi/4+2/pi-17*pi*sqrt(2)/10000",
+  "verified": true,
+  "numerical_radius_candidate": {"r":3.507853493599018,"m":0.006995089360323918,"c":1.1566432357279466,"w1":0.19136037852198656,"t1":1.7953133218061055,"curvature":0.008052746837405865,"evidence":"bounded Float envelope search on r in [3,5]; research evidence only"},
+  "contact_motion": {"partial_r_c":0,"partial_r_w1":-0.024330173279039788,"partial_r_F_at_t1":-0.0021976523655522265,"partial_r_F_prime_at_t1":0.024602646035605864,"dt1_dr":-0.7429813813620316,"conclusion":"decreasing r lifts the old M21 t1 contact; adjusting m by dm/dr=-m*(partial_r H)/H preserves its value, and the derivative equation moves the double contact smoothly"},
+  "provenance": "M18 exact witness and M21 subfamily; M22 derives the variable-radius contact surface, certifies sqrt(2) by Pell convergents, and replays degree-100 rational Taylor cells plus a radius-uniform tail"
+}

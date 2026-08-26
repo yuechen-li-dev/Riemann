@@ -1310,3 +1310,45 @@ func M21HumanReport(r M21Result) string {
 	fmt.Fprintf(&b, "\nARCHITECTURAL AWKWARDNESS\n  %s\n\nCOMPILER THEORY\n  %s\n\nRH\n  %s\n\nONE PROPOSED NEXT MILESTONE\n  %s\n", r.ArchitecturalAwkwardness, r.CompilerTheory, r.RHStatus, r.NextMilestone)
 	return b.String()
 }
+
+func M22HumanReport(r M22Result) string {
+	var b strings.Builder
+	b.WriteString("M22 CONTACT-PRESERVING TWO-ATOM FAMILY\n\n")
+	fmt.Fprintf(&b, "outcome: %s\n\nEXACT FAMILY\n  %s\n", r.Outcome, r.ExactFamily)
+	for _, x := range r.ContactFormulas {
+		fmt.Fprintf(&b, "  %s\n", x)
+	}
+	fmt.Fprintf(&b, "\nM21 REGRESSION\n  %s\n\nSPECIAL RADII / LEGALITY\n", r.M21Regression)
+	for _, x := range r.SpecialRadii {
+		fmt.Fprintf(&b, "  %s\n", x)
+	}
+	fmt.Fprintf(&b, "  legal: %s\n  singular branches: %s\n", r.LegalRegion, r.SingularBranches)
+	b.WriteString("\nCONSTRAINT COUNT\n")
+	for _, x := range r.ConstraintCount {
+		fmt.Fprintf(&b, "  %s\n", x)
+	}
+	fmt.Fprintf(&b, "\nFIRST-ORDER CONTACT MOTION\n  dc/dr=%g, dw1/dr=%g\n  dF(t1)/dr=%g, dF'(t1)/dr=%g, dt1/dr=%g\n  %s\n  %s\n", r.Sensitivity.DeltaCPerRadiusAtFixedMass, r.Sensitivity.DeltaWeight1PerRadiusAtFixedMass, r.Sensitivity.DeltaFAtOldContact, r.Sensitivity.DeltaFPrimeAtOldContact, r.Sensitivity.ShiftedContactDerivative, r.Sensitivity.Conclusion, r.SecondContactMotion)
+	b.WriteString("\nACTIVE-CONTACT SYSTEM\n")
+	for _, x := range r.ActiveContactSystem {
+		fmt.Fprintf(&b, "  %s\n", x)
+	}
+	fmt.Fprintf(&b, "\nNESTED ENVELOPE\n  %s\n  %s\n", r.Envelope, r.RadiusEnvelope)
+	fmt.Fprintf(&b, "\nNUMERICAL RADIUS CANDIDATE\n  r=%.15g, m=%.15g, w1=%.15g, c=%.15g\n  t1=%.15g, F''(t1)=%.15g\n", r.NumericalCandidate.Radius, r.NumericalCandidate.Mass, r.NumericalCandidate.Weight1, r.NumericalCandidate.C, r.NumericalCandidate.ContactFrequency, r.NumericalCandidate.Curvature)
+	for _, x := range r.ContactTrack {
+		fmt.Fprintf(&b, "  %s\n", x)
+	}
+	fmt.Fprintf(&b, "  %s\n  certified family bracket: %s\n\nCERTIFIED WITNESS\n  r=%d/%d, m=%d/%d\n  c=%s\n  J upper=%s\n  %s\n", r.ThirdConstraint, r.CertifiedFamilyBracket, r.Family.Radius.Numerator, r.Family.Radius.Denominator, r.Family.Mass.Numerator, r.Family.Mass.Denominator, r.CertifiedC, r.CertifiedJ, r.DirectedDecimals)
+	fmt.Fprintf(&b, "\nWHOLE-LINE PROOF\n  original contact: %s\n  released contact: %s\n  compact: %s\n  tail: %s\n", r.OriginalContact, r.NewContact, r.CompactProof, r.TailProof)
+	fmt.Fprintf(&b, "\nUPDATED EP3.1 BOUND\n  %s\n\nCONTEXT\n  M21: %s\n  CGdL primal: %s\n  Anthropic 0.68185: %s\n  active set: %s\n", r.CertifiedBounds, r.M21Comparison, r.PrimalComparison, r.AnthropicComparison, r.MultiContactInterpretation)
+	fmt.Fprintf(&b, "\nOCT / SEARCH EVIDENCE\n  source: %s\n  Go search: %s\n  interpreted: %s\n  compiled: %s; fallback: %d\n  artifacts: %v\n  SHA-256: %v\n  execution: %s\n  boundary: %s\n", r.Experiment.Path, r.Experiment.SearchTool, r.Experiment.Interpreted, r.Experiment.Compiled, r.Experiment.FallbackCount, r.Experiment.Artifacts, r.Experiment.ArtifactSHA256, r.Experiment.ExecutionIdentity, r.Experiment.EvidenceBoundary)
+	fmt.Fprintf(&b, "\nLITERATURE / NOVELTY SCREEN\n  %s\n\nIMPORTED MATHEMATICS\n", r.LiteratureAssessment)
+	for _, x := range r.ImportedMathematics {
+		fmt.Fprintf(&b, "  %s\n", x)
+	}
+	b.WriteString("\nNEWLY DERIVED MATHEMATICS\n")
+	for _, x := range r.DerivedMathematics {
+		fmt.Fprintf(&b, "  %s\n", x)
+	}
+	fmt.Fprintf(&b, "\nARCHITECTURAL AWKWARDNESS\n  %s\n\nCOMPILER THEORY\n  %s\n\nRH\n  %s\n\nONE PROPOSED NEXT MILESTONE\n  %s\n", r.ArchitecturalAwkwardness, r.CompilerTheory, r.RHStatus, r.NextMilestone)
+	return b.String()
+}

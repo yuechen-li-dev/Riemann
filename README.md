@@ -1,16 +1,16 @@
 # Riemann
 
 Riemann is an experimental compiler for making transformations of mathematical
-claims mechanically inspectable. M21 certifies the M20-selected `r2=4`
-contact-adapted atomic ray at `m=19/5000`, proving
-`c_*>=1+pi/4-2/pi+19*pi/10000` and
-`J_*<=1-pi/4+2/pi-19*pi/10000`. It also certifies
-`19/5000<=m_*<3873/1000000`; Oct locates the numerical second strict contact
-near `t=1.3647495700`, while the exact ray ceiling remains unresolved. M18 closes the unsaturated one-radius
+claims mechanically inspectable. M22 releases exactly the second radius in
+M21's two-atom family and certifies the simple witness `r=7/2`, `m=17/2500`,
+proving `c_*>=1+pi/4-2/pi+17*pi*sqrt(2)/10000` and
+`J_*<=1-pi/4+2/pi-17*pi*sqrt(2)/10000`. A bounded nested-envelope search finds
+the numerical two-contact candidate near `r=3.50785349`, `t1=1.79531332`, and
+`c=1.15664324`. M18 closes the unsaturated one-radius
 completion for the broader support-one Fourier extremal class. It derives the
 exact tangency weight `1/pi-4/pi^2+8/pi^3`, certifies the resulting transform
 on the whole real line, and composes that witness with M17's upper envelope:
-`C_1R=1+pi/4-2/pi`. Thus
+`C_1R=1+pi/4-2/pi`. At M18 this gave
 `1+pi/4-2/pi<=c_*<1651/1250` and
 `849/1250<J_*<=1-pi/4+2/pi`. Anthropic's remark-level
 `0.68185` remains unresolved and is not promoted to theorem evidence. The
@@ -39,10 +39,14 @@ go test -tags=slow ./compiler -run M18Slow -count=1
 
 # Replay the M21 rational Taylor cover for the contact-adapted ray.
 go test -tags=slow ./semantic -run M21Slow -count=1
+
+# Replay the M22 algebraic/rational Taylor cover for r=7/2.
+go test -tags=slow ./semantic -run M22Slow -count=1
 ```
 
 The normal unit and race suites validate the M18 proof object's exact
-parameters and bound propagation plus M20's perturbation and M21's exact ray,
+parameters and bound propagation plus M20's perturbation, M21's exact ray, and
+M22's variable-radius contact surface,
 evidence-separation, primal-guard, and deterministic-artifact invariants. The `slow` suite
 additionally replays the inherited
 M17 rational cover and M18's equality-aware endpoint cover. M20 then uses the
@@ -50,8 +54,9 @@ exact endpoint as a regression oracle, derives its contact first variation, and
 selects a one-parameter phase-aligned exterior perturbation without changing
 the theorem stack. M21 preserves that fixed contact, certifies a positive
 rational mass, and keeps numerical candidates separate from certified
-witnesses and ceiling brackets. Report serialization never reruns that
-proof. Compiler test fixtures also build the M6–M15 chain once and pass each
+witnesses and ceiling brackets. M22 then releases only the radius, certifies an
+algebraic half-integer witness, and retains the two-atom support class. Report
+serialization never reruns those proofs. Compiler test fixtures also build the M6–M15 chain once and pass each
 stage to the next; M7 receives an independent graph clone because it extends
 the proof graph.
 
@@ -76,6 +81,9 @@ no production integration and makes no theorem claim from approximate geometry.
 [M21's contact-adapted ray report](docs/m21-contact-adapted-ray.md) records the
 exact response, scalar envelope, second numerical contact, rational whole-line
 witness, certified ceiling rejection, and Oct artifacts.
+[M22's variable-radius two-atom report](docs/m22-contact-preserving-two-atom.md)
+derives the exact contact surface, first-order release, nested radius envelope,
+simple algebraic witness, whole-line proof, and deterministic Oct artifacts.
 [M20's representation-selection report](docs/next-representation-selection.md)
 derives the contact sensitivity, compares four minimal extensions, and selects
 one exact one-parameter family for M21 without changing the certified bound.

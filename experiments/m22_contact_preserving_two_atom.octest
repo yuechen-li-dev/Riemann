@@ -1,0 +1,164 @@
+package M22ContactPreservingTwoAtom
+
+record RadiusMinimum {
+    Radius: Float
+    Mass: Float
+    Contact: Float
+    C: Float
+}
+
+fn PiValue() -> Float { return 3.141592653589793 }
+fn A() -> Float { return PiValue() / 2.0 }
+fn C0() -> Float { return 1.0 + PiValue() / 4.0 - 2.0 / PiValue() }
+fn W0() -> Float { return 1.0 / PiValue() - 4.0 / (PiValue() * PiValue()) + 8.0 / (PiValue() * PiValue() * PiValue()) }
+
+fn Sinc(t: Float) -> Float {
+    if Abs(t) < 0.00000001 { return 1.0 }
+    return Sin(t) / t
+}
+
+fn F0(t: Float) -> Float {
+    if Abs(t) < 0.00000001 { return 2.0 * (1.0 + W0() - C0()) }
+    return 1.0 + 2.0 * (Cos(t) - 1.0) / (t * t)
+        + 2.0 * (1.0 - C0()) * Sin(t) / t + 2.0 * W0() * Cos(t)
+}
+
+fn H(radius: Float, t: Float) -> Float {
+    let phase = A() * radius
+    let cp = Cos(phase)
+    let sp = Sin(phase)
+    return -PiValue() * cp * Sinc(t)
+        + 2.0 * (2.0 * cp / PiValue() - radius * sp) * Cos(t)
+        + 2.0 * Cos(radius * t)
+}
+
+fn CValue(radius: Float, mass: Float) -> Float {
+    return C0() + A() * mass * Cos(A() * radius)
+}
+
+fn W1Value(radius: Float, mass: Float) -> Float {
+    return W0() + mass * (2.0 * Cos(A() * radius) / PiValue() - radius * Sin(A() * radius))
+}
+
+fn Family(radius: Float, mass: Float, t: Float) -> Float {
+    return F0(t) + mass * H(radius, t)
+}
+
+fn Envelope(radius: Float, t: Float) -> Float {
+    return F0(t) / (-H(radius, t))
+}
+
+fn BestForRadius(radius: Float) -> RadiusMinimum {
+    var left = 0.75
+    var right = 2.60
+    for _i in 0..90 {
+        let x1 = left + (right - left) / 3.0
+        let x2 = right - (right - left) / 3.0
+        if Envelope(radius, x1) < Envelope(radius, x2) { right = x2 } else { left = x1 }
+    }
+    let contact = (left + right) / 2.0
+    let mass = Envelope(radius, contact)
+    return RadiusMinimum { Radius: radius Mass: mass Contact: contact C: CValue(radius, mass) }
+}
+
+fn Candidate() -> RadiusMinimum {
+    var left = 3.45
+    var right = 3.56
+    for _i in 0..70 {
+        let r1 = left + (right - left) / 3.0
+        let r2 = right - (right - left) / 3.0
+        if BestForRadius(r1).C > BestForRadius(r2).C { right = r2 } else { left = r1 }
+    }
+    return BestForRadius((left + right) / 2.0)
+}
+
+[Fact]
+fn ContactSurfaceAndM21Regression() -> Void {
+    let mass = 0.0038
+    let t0 = A()
+    Assert.Near(0.0, Family(4.0, mass, t0), 0.000000000000003, "M21 value contact")
+    Assert.Near(C0() + A() * mass, CValue(4.0, mass), 0.000000000000003, "M21 c regression")
+    Assert.Near(W0() + 2.0 * mass / PiValue(), W1Value(4.0, mass), 0.000000000000003, "M21 w1 regression")
+}
+
+[Fact]
+fn ReleasedRadiusImprovesNumericalEnvelope() -> Void {
+    let candidate = Candidate()
+    Print("M22 radius=" + ToString(candidate.Radius) + " mass=" + ToString(candidate.Mass)
+        + " t1=" + ToString(candidate.Contact) + " c=" + ToString(candidate.C))
+    Assert.True(candidate.Radius > 3.49 and candidate.Radius < 3.53, "bounded radius")
+    Assert.True(candidate.C > 1.1566, "released radius improves M21 numerical ceiling")
+    Assert.Near(0.0, Family(candidate.Radius, candidate.Mass, candidate.Contact), 0.00000000000002, "active value")
+}
+
+[Fact]
+fn SimpleCertifiedParametersHaveStrictReleasedMargin() -> Void {
+    let radius = 3.5
+    let mass = 0.0068
+    let local = BestForRadius(radius)
+    Assert.True(Family(radius, mass, local.Contact) > 0.0001, "new contact is strict below envelope")
+    Assert.True(CValue(radius, mass) > 1.1563, "simple witness improves M21")
+    Assert.True(W1Value(radius, mass) > 0.0, "weight legality")
+}
+
+[Fact]
+fn ContactMovesSmoothlyAcrossLocalWindow() -> Void {
+    let left = BestForRadius(3.75)
+    let middle = BestForRadius(3.5)
+    let right = BestForRadius(4.0)
+    Assert.True(middle.Contact > left.Contact and left.Contact > right.Contact, "contact moves away from pi/2 as radius decreases")
+}
+
+[Fact]
+fn NoSampledRemoteNearContact() -> Void {
+    let candidate = Candidate()
+    var remote = 1000000.0
+    var previous = Family(candidate.Radius, candidate.Mass, 2.0)
+    var current = Family(candidate.Radius, candidate.Mass, 2.001)
+    for i in 2002..80001 {
+        let t = Float(i) / 1000.0
+        let next = Family(candidate.Radius, candidate.Mass, t)
+        if current <= previous and current <= next and current < remote { remote = current }
+        previous = current
+        current = next
+    }
+    Print("M22 remote sampled minimum=" + ToString(remote))
+    Assert.True(remote > 0.1, "no third sampled near-active constraint")
+}
+
+[Artifact]
+fn PlotRadiusResponse() -> Void {
+    var xs: Float[] = []
+    var ys: Float[] = []
+    for i in 0..451 {
+        let radius = 3.25 + 1.0 * Float(i) / 450.0
+        xs = Append(xs, radius)
+        ys = Append(ys, BestForRadius(radius).C)
+    }
+    let _plot = PlotLine(xs, ys, "m22/m22_radius_response.png")
+}
+
+[Artifact]
+fn PlotContactMotion() -> Void {
+    var xs: Float[] = []
+    var ys: Float[] = []
+    for i in 0..451 {
+        let radius = 3.25 + 1.0 * Float(i) / 450.0
+        xs = Append(xs, radius)
+        ys = Append(ys, BestForRadius(radius).Contact)
+    }
+    let _plot = PlotLine(xs, ys, "m22/m22_contact_motion.png")
+}
+
+[Artifact]
+fn PlotBestSpectrum() -> Void {
+    let candidate = Candidate()
+    var xs: Float[] = []
+    var ys: Float[] = []
+    for i in 0..20001 {
+        let t = 4.0 * Float(i) / 20000.0
+        xs = Append(xs, t)
+        ys = Append(ys, Family(candidate.Radius, candidate.Mass, t))
+    }
+    let _plot = PlotLine(xs, ys, "m22/m22_best_spectrum.png")
+}
