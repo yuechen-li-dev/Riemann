@@ -112,6 +112,12 @@ var m21CachedErr error
 var m22Once sync.Once
 var m22Cached M22Result
 var m22CachedErr error
+var m23Once sync.Once
+var m23Cached M23Result
+var m23CachedErr error
+var m24Once sync.Once
+var m24Cached M24Result
+var m24CachedErr error
 
 func testM18() (M18Result, error) {
 	m18Once.Do(func() {
@@ -159,4 +165,28 @@ func testM22() (M22Result, error) {
 		m22Cached, m22CachedErr = compileM22FromM21(m21, false)
 	})
 	return m22Cached, m22CachedErr
+}
+
+func testM23() (M23Result, error) {
+	m23Once.Do(func() {
+		m22, err := testM22()
+		if err != nil {
+			m23CachedErr = err
+			return
+		}
+		m23Cached, m23CachedErr = compileM23FromM22(m22, false)
+	})
+	return m23Cached, m23CachedErr
+}
+
+func testM24() (M24Result, error) {
+	m24Once.Do(func() {
+		m23, err := testM23()
+		if err != nil {
+			m24CachedErr = err
+			return
+		}
+		m24Cached, m24CachedErr = compileM24FromM23(m23)
+	})
+	return m24Cached, m24CachedErr
 }

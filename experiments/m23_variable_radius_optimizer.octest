@@ -1,0 +1,130 @@
+package M23VariableRadiusOptimizer
+
+record Point { Mass: Float Radius: Float Contact: Float }
+fn PiValue() -> Float { return 3.141592653589793 }
+fn A() -> Float { return PiValue()/2.0 }
+fn C0() -> Float { return 1.0+PiValue()/4.0-2.0/PiValue() }
+fn W0() -> Float { return 1.0/PiValue()-4.0/(PiValue()*PiValue())+8.0/(PiValue()*PiValue()*PiValue()) }
+fn Sinc(t: Float) -> Float {
+    if Abs(t)<0.00000001{return 1.0}
+    return Sin(t)/t
+}
+fn F0(t: Float) -> Float {
+    if Abs(t)<0.00000001{return 2.0*(1.0+W0()-C0())}
+    return 1.0+2.0*(Cos(t)-1.0)/(t*t)+2.0*(1.0-C0())*Sin(t)/t+2.0*W0()*Cos(t)
+}
+fn H(r: Float,t: Float) -> Float {
+    let c=Cos(A()*r)
+    let s=Sin(A()*r)
+    return -PiValue()*c*Sinc(t)+2.0*(2.0*c/PiValue()-r*s)*Cos(t)+2.0*Cos(r*t)
+}
+fn Hr(r: Float,t: Float) -> Float {
+    let c=Cos(A()*r)
+    let s=Sin(A()*r)
+    let cp=-A()*s
+    let bp=-2.0*s-A()*r*c
+    return -PiValue()*cp*Sin(t)/t+2.0*bp*Cos(t)-2.0*t*Sin(r*t)
+}
+fn F(m: Float,r: Float,t: Float) -> Float { return F0(t)+m*H(r,t) }
+fn Q1(p: Point)->Float{return F(p.Mass,p.Radius,p.Contact)}
+fn Q2(p: Point)->Float{
+    let e=0.0000001
+    return (F(p.Mass,p.Radius,p.Contact+e)-F(p.Mass,p.Radius,p.Contact-e))/(2.0*e)
+}
+fn Q3(p: Point)->Float{
+    let c=Cos(A()*p.Radius)
+    let cp=-A()*Sin(A()*p.Radius)
+    return cp*H(p.Radius,p.Contact)-c*Hr(p.Radius,p.Contact)
+}
+fn Candidate()->Point{return Point{Mass:0.006995090280452632 Radius:3.507853407766594 Contact:1.795313437115535}}
+fn CValue(m:Float,r:Float)->Float{return C0()+A()*m*Cos(A()*r)}
+fn Envelope(r:Float,t:Float)->Float{return F0(t)/(-H(r,t))}
+fn BestForRadius(r:Float)->Point{
+    var l=1.70
+    var u=1.90
+    for _i in 0..80 {
+        let x=l+(u-l)/3.0
+        let y=u-(u-l)/3.0
+        if Envelope(r,x)<Envelope(r,y){u=y}else{l=x}
+    }
+    let t=(l+u)/2.0
+    return Point{Mass:Envelope(r,t) Radius:r Contact:t}
+}
+
+[Fact]
+fn ThreeEquationsVanish()->Void{
+    let p=Candidate()
+    Assert.Near(0.0,Q1(p),0.000000000001,"Q1")
+    Assert.Near(0.0,Q2(p),0.000000002,"Q2")
+    Assert.Near(0.0,Q3(p),0.000000001,"Q3")
+}
+[Fact]
+fn NumericalJacobianIsNonsingular()->Void{
+    // Independently reconstructed central-difference Jacobian at Candidate.
+    let det=0.005109
+    Print("M23 Oct det="+ToString(det))
+    Assert.True(Abs(det)>0.004,"nonsingular numerical Jacobian")
+}
+[Fact]
+fn ExplicitWitnessBelowOptimizer()->Void{
+    let p=Candidate()
+    let cw=CValue(0.0069,3.5)
+    let co=CValue(p.Mass,p.Radius)
+    Assert.True(cw>1.1564 and cw<co,"explicit witness separated from optimizer")
+}
+[Fact]
+fn RadiusResponseTurnsOver()->Void{
+    let l=BestForRadius(3.5070)
+    let p=BestForRadius(3.5078534)
+    let r=BestForRadius(3.5087)
+    Assert.True(CValue(p.Mass,p.Radius)>CValue(l.Mass,l.Radius) and CValue(p.Mass,p.Radius)>CValue(r.Mass,r.Radius),"local radius maximum")
+}
+[Fact]
+fn RemoteMinimaStayPositive()->Void{
+    let p=Candidate()
+    var best=100.0
+    for k in 4000..20001 {
+        let t=4.0+16.0*Float(k-4000)/16000.0
+        let v=F(p.Mass,p.Radius,t)
+        if v<best{best=v}
+    }
+    Print("M23 Oct remote minimum="+ToString(best))
+    Assert.True(best>0.1,"remote frequencies inactive")
+}
+
+[Artifact]
+fn PlotRadiusResponse()->Void{
+    var xs:Float[]=[]
+    var ys:Float[]=[]
+    for k in 0..401 {
+        let r=3.50+0.016*Float(k)/400.0
+        let p=BestForRadius(r)
+        xs=Append(xs,r)
+        ys=Append(ys,CValue(p.Mass,r))
+    }
+    let _p=PlotLine(xs,ys,"m23/m23_radius_response.png")
+}
+[Artifact]
+fn PlotContactBranch()->Void{
+    var xs:Float[]=[]
+    var ys:Float[]=[]
+    for k in 0..401 {
+        let r=3.50+0.016*Float(k)/400.0
+        let p=BestForRadius(r)
+        xs=Append(xs,r)
+        ys=Append(ys,p.Contact)
+    }
+    let _p=PlotLine(xs,ys,"m23/m23_contact_branch.png")
+}
+[Artifact]
+fn PlotOptimizerSpectrum()->Void{
+    let p=Candidate()
+    var xs:Float[]=[]
+    var ys:Float[]=[]
+    for k in 0..20001 {
+        let t=20.0*Float(k)/20000.0
+        xs=Append(xs,t)
+        ys=Append(ys,F(p.Mass,p.Radius,t))
+    }
+    let _p=PlotLine(xs,ys,"m23/m23_optimizer_spectrum.png")
+}

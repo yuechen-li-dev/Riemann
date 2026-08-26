@@ -1,0 +1,301 @@
+package M24TwoAtomComponent
+
+record ContactPoint {
+    Radius: Float
+    Mass: Float
+    Contact: Float
+    Objective: Float
+    Weight1: Float
+    Curvature: Float
+}
+
+fn PiValue() -> Float {
+    return 3.141592653589793
+}
+
+fn A() -> Float {
+    return PiValue() / 2.0
+}
+
+fn C0() -> Float {
+    return 1.0 + PiValue() / 4.0 - 2.0 / PiValue()
+}
+
+fn W0() -> Float {
+    let pi = PiValue()
+    return 1.0 / pi - 4.0 / (pi * pi) + 8.0 / (pi * pi * pi)
+}
+
+fn Sinc(t: Float) -> Float {
+    if Abs(t) < 0.00000001 {
+        return 1.0
+    }
+    return Sin(t) / t
+}
+
+fn F0(t: Float) -> Float {
+    if Abs(t) < 0.00000001 {
+        return 2.0 * (1.0 + W0() - C0())
+    }
+    return 1.0 +
+        2.0 * (Cos(t) - 1.0) / (t * t) +
+        2.0 * (1.0 - C0()) * Sin(t) / t +
+        2.0 * W0() * Cos(t)
+}
+
+fn H(r: Float, t: Float) -> Float {
+    let phaseCos = Cos(A() * r)
+    let phaseSin = Sin(A() * r)
+    let contactCoefficient = 2.0 * phaseCos / PiValue() - r * phaseSin
+    return -PiValue() * phaseCos * Sinc(t) +
+        2.0 * contactCoefficient * Cos(t) +
+        2.0 * Cos(r * t)
+}
+
+fn Envelope(r: Float, t: Float) -> Float {
+    return F0(t) / (-H(r, t))
+}
+
+fn Objective(m: Float, r: Float) -> Float {
+    return C0() + A() * m * Cos(A() * r)
+}
+
+fn Weight1(m: Float, r: Float) -> Float {
+    let phaseCos = Cos(A() * r)
+    let phaseSin = Sin(A() * r)
+    return W0() - m * (2.0 * phaseCos / PiValue() - r * phaseSin)
+}
+
+fn Spectrum(m: Float, r: Float, t: Float) -> Float {
+    return F0(t) + m * H(r, t)
+}
+
+fn Second(m: Float, r: Float, t: Float) -> Float {
+    let e = 0.00002
+    return (
+        Spectrum(m, r, t + e) -
+        2.0 * Spectrum(m, r, t) +
+        Spectrum(m, r, t - e)
+    ) / (e * e)
+}
+fn RefineMinimum(r: Float, left0: Float, right0: Float) -> ContactPoint {
+    var left = left0
+    var right = right0
+    for _i in 0 .. 70 {
+        let x = left +(right - left) / 3.0
+        let y = right -(right - left) / 3.0
+        if Envelope(r, x) < Envelope(r, y) {
+            right = y
+        } else {
+            left = x
+        }
+    }
+    let t =(left + right) / 2.0
+    let m = Envelope(r, t)
+    return ContactPoint {
+        Radius: r
+        Mass: m
+        Contact: t
+        Objective: Objective(m, r)
+        Weight1: Weight1(m, r)
+        Curvature: Second(m, r, t)
+    }
+}
+fn BestForRadius(r: Float) -> ContactPoint {
+    let step = 0.01
+    var best = 1000000.0
+    var bestT = 0.0
+    var prior = 1000000.0
+    var current = 1000000.0
+    for k in 1 .. 4001 {
+        let t = step * Float(k)
+        let h = H(r, t)
+        var next = 1000000.0
+        if h < 0.0 and Abs(t - PiValue() / 2.0) > 0.0001 {
+            next = Envelope(r, t)
+        }
+        if k > 1 and current < prior and current < next and current < best {
+            best = current
+            bestT = t - step
+        }
+        prior = current
+        current = next
+    }
+    if bestT == 0.0 {
+        return ContactPoint {
+            Radius: r
+            Mass: 0.0
+            Contact: 0.0
+            Objective: C0()
+            Weight1: W0()
+            Curvature: 0.0
+        }
+    }
+    return RefineMinimum(r, bestT - step, bestT + step)
+}
+fn NextForRadius(r: Float, active: Float) -> ContactPoint {
+    let step = 0.01
+    var best = 1000000.0
+    var bestT = 0.0
+    var prior = 1000000.0
+    var current = 1000000.0
+    for k in 1 .. 4001 {
+        let t = step * Float(k)
+        let h = H(r, t)
+        var next = 1000000.0
+        if h < 0.0 and Abs(t - PiValue() / 2.0) > 0.0001 {
+            next = Envelope(r, t)
+        }
+        if k > 1 and current < prior and current < next and Abs((t - step) - active) > 0.03 and current < best {
+            best = current
+            bestT = t - step
+        }
+        prior = current
+        current = next
+    }
+    if bestT == 0.0 {
+        return ContactPoint {
+            Radius: r
+            Mass: 0.0
+            Contact: 0.0
+            Objective: C0()
+            Weight1: W0()
+            Curvature: 0.0
+        }
+    }
+    return RefineMinimum(r, bestT - step, bestT + step)
+}
+fn BarrierContact(r: Float) -> Float {
+    var left = 1.64
+    var right = 2.65
+    for _i in 0 .. 70 {
+        let x = left +(right - left) / 3.0
+        let y = right -(right - left) / 3.0
+        if Envelope(r, x) < Envelope(r, y) {
+            right = y
+        } else {
+            left = x
+        }
+    }
+    return (left + right) / 2.0
+}
+
+[Fact]
+fn M23BranchIsRecovered() -> Void {
+    let p = BestForRadius(3.5078534)
+    Print("M24 recovered M23: r=" + ToString(p.Radius) + " m=" + ToString(p.Mass) + " t=" + ToString(p.Contact) + " c=" + ToString(p.Objective) + " w1=" + ToString(p.Weight1))
+    Assert.Near(1.7953134, p.Contact, 0.00002, "M23 contact")
+    Assert.Near(0.00699509, p.Mass, 0.0000002, "M23 mass")
+}
+
+[Fact]
+fn BroadRadiusAudit() -> Void {
+    var strongest = 0.0
+    var strongestR = 0.0
+    var strongestT = 0.0
+    var legalCount = 0
+    for k in 0 .. 1099 {
+        let r = 1.01 + 0.02 * Float(k)
+        let p = BestForRadius(r)
+        if p.Mass >= 0.0 and p.Weight1 >= 0.0 {
+            legalCount = legalCount + 1
+            if p.Objective > strongest {
+                strongest = p.Objective
+                strongestR = r
+                strongestT = p.Contact
+            }
+        }
+    }
+    Print("M24 broad strongest: r=" + ToString(strongestR) + " t=" + ToString(strongestT) + " c=" + ToString(strongest) + " legal=" + ToString(legalCount))
+    Assert.True(legalCount > 1000, "broad legal radii discovered")
+}
+
+[Fact]
+fn SpecialRadiusAudit() -> Void {
+    let rs =[2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 7.0, 7.5, 8.0, 8.5, 9.0, 12.0, 16.0, 20.0]
+    for k in 0 .. 14 {
+        let r = rs[k]
+        let p = BestForRadius(r)
+        let q = NextForRadius(r, p.Contact)
+        Print("M24 radius=" + ToString(r) + " active_t=" + ToString(p.Contact) + " m=" + ToString(p.Mass) + " c=" + ToString(p.Objective) + " w1=" + ToString(p.Weight1) + " next_t=" + ToString(q.Contact) + " next_m=" + ToString(q.Mass))
+    }
+    Assert.True(true, "special radii audited")
+}
+
+[Fact]
+fn LargeRadiusGainFalls() -> Void {
+    var strongest = 0.0
+    for k in 0 .. 600 {
+        let r = 10.0 + 0.05 * Float(k)
+        let p = BestForRadius(r)
+        if p.Mass >= 0.0 and p.Weight1 >= 0.0 and p.Objective > strongest {
+            strongest = p.Objective
+        }
+    }
+    Print("M24 sampled legal large-radius ceiling=" + ToString(strongest))
+    Assert.True(strongest < 1.155, "sampled large radii below M23")
+}
+
+[Fact]
+fn CompetingBranchGapNearM23() -> Void {
+    let p = BestForRadius(3.5078534)
+    let q = NextForRadius(3.5078534, p.Contact)
+    Print("M24 M23 competitor: t=" + ToString(q.Contact) + " m=" + ToString(q.Mass) + " mass_gap=" + ToString(q.Mass - p.Mass))
+    Assert.True(q.Mass > p.Mass + 0.01, "nearby active branch is isolated")
+}
+
+[Artifact]
+fn PlotGlobalRadiusEnvelope() -> Void {
+    var xs: Float[] = []
+    var ys: Float[] = []
+    for k in 0 .. 160 {
+        let r = 1.01 + 9.99 * Float(k) / 160.0
+        let p = BestForRadius(r)
+        xs = Append(xs, r)
+        ys = Append(ys, p.Objective)
+    }
+    let _p = PlotLine(xs, ys, "artifacts/m24/m24_global_radius_envelope.png")
+}
+
+[Artifact]
+fn PlotActiveContactAtlas() -> Void {
+    var xs: Float[] = []
+    var ys: Float[] = []
+    for k in 0 .. 160 {
+        let r = 1.01 + 9.99 * Float(k) / 160.0
+        let p = BestForRadius(r)
+        xs = Append(xs, r)
+        ys = Append(ys, p.Contact)
+    }
+    let _p = PlotLine(xs, ys, "artifacts/m24/m24_active_contact_atlas.png")
+}
+
+[Artifact]
+fn PlotCompetitorMassGap() -> Void {
+    var xs: Float[] = []
+    var ys: Float[] = []
+    for k in 0 .. 100 {
+        let r = 3.0 + 2.0 * Float(k) / 100.0
+        let p = BestForRadius(r)
+        let q = NextForRadius(r, p.Contact)
+        xs = Append(xs, r)
+        ys = Append(ys, q.Mass - p.Mass)
+    }
+    let _p = PlotLine(xs, ys, "artifacts/m24/m24_competitor_mass_gap.png")
+}
+
+[Artifact]
+fn GenerateRadiusBarrierCells() -> Void {
+    var source = "// Code generated by Oct M24 branch metaprogramming. DO NOT EDIT.\n\n"
+    source = source + "package semantic\n\n"
+    source = source + "var m24RadiusBarriers = [...]m24RadiusBarrierCell{\n"
+    for k in 0 .. 620 {
+        if k < 503 or k >= 512 {
+            let midpoint = 3.0005 + 0.001 * Float(k)
+            let contact = BarrierContact(midpoint)
+            source = source + "    {K: " + ToString(k) + ", Contact: \"" + ToString(contact) + "\"},\n"
+        }
+    }
+    source = source + "}\n"
+    Artifact.WriteText("semantic/m24_radius_barriers.generated.go", source)
+}

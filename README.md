@@ -1,12 +1,13 @@
 # Riemann
 
 Riemann is an experimental compiler for making transformations of mathematical
-claims mechanically inspectable. M22 releases exactly the second radius in
-M21's two-atom family and certifies the simple witness `r=7/2`, `m=17/2500`,
-proving `c_*>=1+pi/4-2/pi+17*pi*sqrt(2)/10000` and
-`J_*<=1-pi/4+2/pi-17*pi*sqrt(2)/10000`. A bounded nested-envelope search finds
-the numerical two-contact candidate near `r=3.50785349`, `t1=1.79531332`, and
-`c=1.15664324`. M18 closes the unsaturated one-radius
+claims mechanically inspectable. M24 proves that every legal point in M23's
+contact-preserving two-atom radius component outside `r in [3.503,3.512]` is
+strictly below the M23 optimizer's certified lower objective. It finds no
+stronger branch but honestly leaves that exact radius/contact window unresolved
+(Success C). The best whole-line theorem witness remains `r=7/2, m=69/10000`,
+giving `c_*>=1+pi/4-2/pi+69*pi*sqrt(2)/40000` and the complementary upper bound
+on `J_*`. M18 closes the unsaturated one-radius
 completion for the broader support-one Fourier extremal class. It derives the
 exact tangency weight `1/pi-4/pi^2+8/pi^3`, certifies the resulting transform
 on the whole real line, and composes that witness with M17's upper envelope:
@@ -42,6 +43,12 @@ go test -tags=slow ./semantic -run M21Slow -count=1
 
 # Replay the M22 algebraic/rational Taylor cover for r=7/2.
 go test -tags=slow ./semantic -run M22Slow -count=1
+
+# Replay the M23 improved explicit whole-line witness.
+go test -tags=slow ./semantic -run M23Slow -count=1
+
+# Replay M24's certified component complement.
+go test ./semantic -run M24 -count=1
 ```
 
 The normal unit and race suites validate the M18 proof object's exact
@@ -84,6 +91,13 @@ witness, certified ceiling rejection, and Oct artifacts.
 [M22's variable-radius two-atom report](docs/m22-contact-preserving-two-atom.md)
 derives the exact contact surface, first-order release, nested radius envelope,
 simple algebraic witness, whole-line proof, and deterministic Oct artifacts.
+[M23's certified local-optimizer report](docs/m23-variable-radius-local-optimum.md)
+boxes the three-equation root, proves strict local radius optimality, and keeps
+the improved explicit whole-line witness separate from optimizer evidence.
+[M24's component-control report](docs/m24-two-atom-component-control.md)
+uses Oct-first branch discovery, a fixed-contact large-radius theorem, and
+generated adverse-frequency interval cells to isolate the only unresolved
+radius/contact window without claiming globality.
 [M20's representation-selection report](docs/next-representation-selection.md)
 derives the contact sensitivity, compares four minimal extensions, and selects
 one exact one-parameter family for M21 without changing the certified bound.

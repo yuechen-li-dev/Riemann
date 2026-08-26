@@ -268,7 +268,9 @@ func VerifyTwoAtomWholeLine(f ContactPreservingTwoAtomFamily, p TwoAtomWholeLine
 	if p.ID == "" || !p.WholeLine || p.OriginalContact.Kind != NonnegativeCellWithCertifiedContact || p.TailStart != (ExactRational{4, 1}) || len(p.StrictPieces) == 0 {
 		return fmt.Errorf("incomplete M22 whole-line certificate")
 	}
-	if p.OriginalContact.GridStep != p.ContactGridStep || p.OriginalContact.TaylorDegree < 80 || p.Coverage != "evenness; strict rational Taylor cells on [0,154/100] and [160/100,4]; certified convex original-contact cell [154/100,160/100]; radius-uniform analytic tail [4,infinity)" {
+	m22Coverage := p.Coverage == "evenness; strict rational Taylor cells on [0,154/100] and [160/100,4]; certified convex original-contact cell [154/100,160/100]; radius-uniform analytic tail [4,infinity)"
+	m23Coverage := p.Coverage == "evenness; adaptive strict rational Taylor cells on [0,154/100] and [161/100,4]; certified convex original-contact cell [154/100,161/100]; radius-uniform analytic tail [4,infinity)"
+	if p.OriginalContact.GridStep != p.ContactGridStep || p.OriginalContact.TaylorDegree < 80 || (!m22Coverage && !m23Coverage) {
 		return fmt.Errorf("M22 contact or coverage declaration is incomplete")
 	}
 	cursor := big.NewRat(0, 1)

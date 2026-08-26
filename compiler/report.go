@@ -1352,3 +1352,54 @@ func M22HumanReport(r M22Result) string {
 	fmt.Fprintf(&b, "\nARCHITECTURAL AWKWARDNESS\n  %s\n\nCOMPILER THEORY\n  %s\n\nRH\n  %s\n\nONE PROPOSED NEXT MILESTONE\n  %s\n", r.ArchitecturalAwkwardness, r.CompilerTheory, r.RHStatus, r.NextMilestone)
 	return b.String()
 }
+
+func M23HumanReport(r M23Result) string {
+	var b strings.Builder
+	b.WriteString("RIEMANN-M23 — VARIABLE-RADIUS TWO-ATOM LOCAL OPTIMUM\n\n")
+	fmt.Fprintf(&b, "outcome: %s\n\nQ SYSTEM\n  Q1=%s\n  Q2=%s\n  Q3=%s\n  route A: %s\n  route B: %s\n", r.Outcome, r.System.Q1, r.System.Q2, r.System.Q3, r.System.EnvelopeDerivation, r.System.LagrangeDerivation)
+	fmt.Fprintf(&b, "\nCERTIFIED OPTIMIZER BOX\n  initial: %s\n  m=[%s,%s]\n  r=[%s,%s]\n  t=[%s,%s]\n  c=[%s,%s]\n  method: %s\n  det J=[%s,%s]\n  uniqueness: %s\n", r.Optimizer.InitialBox, r.Optimizer.Mass.Lower, r.Optimizer.Mass.Upper, r.Optimizer.Radius.Lower, r.Optimizer.Radius.Upper, r.Optimizer.Contact.Lower, r.Optimizer.Contact.Upper, r.Optimizer.C.Lower, r.Optimizer.C.Upper, r.Optimizer.Method, r.Optimizer.JacobianDeterminant.Lower, r.Optimizer.JacobianDeterminant.Upper, r.RootUniqueness)
+	fmt.Fprintf(&b, "\nLOCAL OPTIMALITY\n  fixed Ftt=[%s,%s]\n  movable Ftt=[%s,%s]\n  envelope C''=[%s,%s]\n  branch determinant=[%s,%s]\n  %s\n  %s\n  contacts: %s\n", r.LocalOptimality.FixedContactCurvature.Lower, r.LocalOptimality.FixedContactCurvature.Upper, r.LocalOptimality.MovableCurvature.Lower, r.LocalOptimality.MovableCurvature.Upper, r.LocalOptimality.EnvelopeSecond.Lower, r.LocalOptimality.EnvelopeSecond.Upper, r.LocalOptimality.BranchJacobian.Lower, r.LocalOptimality.BranchJacobian.Upper, r.LocalOptimality.ContactNeighborhood, r.LocalOptimality.RadiusSignStructure, r.ContactBookkeeping)
+	fmt.Fprintf(&b, "\nNESTED ENVELOPE / COMPETING BRANCHES\n  %s\n  %s\n  %s\n", r.NestedEnvelope, r.BranchCompetition, r.SecondaryMinima)
+	fmt.Fprintf(&b, "\nEXPLICIT GLOBAL WITNESS\n  r=7/2, m=69/10000\n  c=%s\n  c interval=[%s,%s]\n  partition: %s\n  tail: %s\n  replay: %s\n", r.ExplicitWitness.Witness.CExact, r.ExplicitWitness.CInterval.Lower, r.ExplicitWitness.CInterval.Upper, r.WholeLinePartition, r.TailProof, r.ReplayPerformance)
+	fmt.Fprintf(&b, "\nUPDATED EP3.1 BOUNDS\n  %s\n  %s\n  %s\n  CGdL: %s\n  Anthropic 0.68185: %s\n", r.CertifiedBounds, r.OptimizerWitnessGap, r.M22Gap, r.PrimalComparison, r.AnthropicComparison)
+	fmt.Fprintf(&b, "\nCONTACT / EQUIOSCILLATION INTERPRETATION\n  %s\n", r.Equioscillation)
+	fmt.Fprintf(&b, "\nOCT INDEPENDENT EVIDENCE\n  source: %s\n  interpreted: %s\n  compiled: %s; fallback: %d\n  artifacts: %v\n  SHA-256: %v\n  execution: %s\n  boundary: %s\n", r.Experiment.Path, r.Experiment.Interpreted, r.Experiment.Compiled, r.Experiment.FallbackCount, r.Experiment.Artifacts, r.Experiment.ArtifactSHA256, r.Experiment.ExecutionIdentity, r.Experiment.EvidenceBoundary)
+	fmt.Fprintf(&b, "\nLITERATURE / NOVELTY SCREEN\n  %s\n\nIMPORTED MATHEMATICS\n", r.LiteratureAssessment)
+	for _, x := range r.ImportedMathematics {
+		fmt.Fprintf(&b, "  %s\n", x)
+	}
+	b.WriteString("\nNEWLY DERIVED MATHEMATICS\n")
+	for _, x := range r.DerivedMathematics {
+		fmt.Fprintf(&b, "  %s\n", x)
+	}
+	fmt.Fprintf(&b, "\nARCHITECTURAL AWKWARDNESS\n  %s\n\nCOMPILER THEORY\n  %s\n\nRH\n  %s\n\nONE PROPOSED NEXT MILESTONE\n  %s\n", r.ArchitecturalAwkwardness, r.CompilerTheory, r.RHStatus, r.NextMilestone)
+	return b.String()
+}
+
+func M24HumanReport(r M24Result) string {
+	var b strings.Builder
+	b.WriteString("RIEMANN-M24 — GLOBAL CONTROL OF THE CONTACT-PRESERVING TWO-ATOM ENVELOPE\n\n")
+	fmt.Fprintf(&b, "outcome: %s\n\n", r.Outcome)
+	fmt.Fprintf(&b, "LEGAL RADIUS COMPONENT\n  definition: %s\n  support: %s\n  mass: %s\n  weights: %s\n  objective: %s\n  response: %s\n  boundaries: %s\n\n", r.Certificate.Component.Definition, r.Certificate.Component.SupportLegality, r.Certificate.Component.MassLegality, r.Certificate.Component.WeightLegality, r.Certificate.Component.ObjectiveLegality, r.Certificate.Component.ResponseSignStructure, r.ComponentBoundaries)
+	fmt.Fprintf(&b, "GLOBAL ENVELOPE REDUCTION\n  negative cosine: %s\n  fixed contact: %s\n  large radius: %s\n  compact cover: %s\n  generated cells: %d\n  unresolved r=[%s,%s]\n  unresolved contact research range=[%s,%s]\n\n", r.Certificate.GlobalEvidence.NegativeCosineRegion, r.Certificate.GlobalEvidence.FixedContactFormula, r.LargeRadiusBound, r.Certificate.GlobalEvidence.CompactRadiusCover, r.Certificate.GlobalEvidence.GeneratedCellCount, r.Certificate.GlobalEvidence.UnresolvedRadius.Lower, r.Certificate.GlobalEvidence.UnresolvedRadius.Upper, r.Certificate.GlobalEvidence.UnresolvedContact.Lower, r.Certificate.GlobalEvidence.UnresolvedContact.Upper)
+	b.WriteString("BRANCH ATLAS\n")
+	for _, branch := range r.Certificate.Branches {
+		fmt.Fprintf(&b, "  %s\n    radius: %s\n    contact: %s\n    envelope: %s\n    proof: %s\n    competitor: %s\n", branch.ID, branch.RadiusRange, branch.ContactRange, branch.EnvelopeBehavior, branch.ProofStatus, branch.NextCompetitor)
+	}
+	fmt.Fprintf(&b, "\nBRANCH SWITCHES / MONOTONICITY\n  switches: %s\n  continuation: %s\n  C' signs: %s\n  competitors: %s\n  frequency compactification: %s\n\n", r.BranchSwitches, r.M23BranchContinuation, r.DerivativeSignStructure, r.CompetingBranchBounds, r.FrequencyCompactification)
+	fmt.Fprintf(&b, "COMPONENT CONCLUSION\n  %s\n  missing theorem: %s\n  optimizer globally feasible: %s\n\n", r.ComponentConclusion, r.Certificate.MissingTheorem, r.OptimizerFeasibility)
+	fmt.Fprintf(&b, "CERTIFIED OPTIMIZER / WITNESS\n  M23 r=[%s,%s], m=[%s,%s], t=[%s,%s], c=[%s,%s]\n  best global witness: %s\n  c: %s\n  J: %s\n  gap: %s\n\n", r.Certificate.Optimizer.Radius.Lower, r.Certificate.Optimizer.Radius.Upper, r.Certificate.Optimizer.Mass.Lower, r.Certificate.Optimizer.Mass.Upper, r.Certificate.Optimizer.Contact.Lower, r.Certificate.Optimizer.Contact.Upper, r.Certificate.Optimizer.C.Lower, r.Certificate.Optimizer.C.Upper, r.BestGlobalWitness, r.BestCertifiedC, r.BestCertifiedJ, r.OptimizerWitnessGap)
+	fmt.Fprintf(&b, "ACTIVE SET / SCOPE\n  %s\n  contact preservation: %s\n  interpretation: %s\n\n", r.ActiveSetDimension, r.ContactPreservationScope, r.EquioscillationInterpretation)
+	fmt.Fprintf(&b, "OCT-FIRST IMPLEMENTATION\n  %s\n  compiled: %s; fallback: %d\n  artifact replay: %s\n  artifacts: %v\n  generated Go: %s\n  execution: %s\n  boundary: %s\n\n", r.OctFirstImplementation, r.Experiment.Compiled, r.Experiment.FallbackCount, r.Experiment.ArtifactReplay, r.Experiment.Artifacts, r.Experiment.GeneratedGo, r.Experiment.ExecutionIdentity, r.Experiment.EvidenceBoundary)
+	fmt.Fprintf(&b, "GO / GENERATION BOUNDARY\n  handwritten: %s\n  duplication: %s\n  replay: %s\n\n", r.HandwrittenGo, r.DuplicatedLogic, r.ReplayPerformance)
+	fmt.Fprintf(&b, "LITERATURE / NOVELTY SCREEN\n  %s\n\nIMPORTED MATHEMATICS\n", r.LiteratureAssessment)
+	for _, item := range r.ImportedMathematics {
+		fmt.Fprintf(&b, "  %s\n", item)
+	}
+	b.WriteString("\nNEWLY DERIVED MATHEMATICS\n")
+	for _, item := range r.DerivedMathematics {
+		fmt.Fprintf(&b, "  %s\n", item)
+	}
+	fmt.Fprintf(&b, "\nARTIFACTS\n  %v\n\nARCHITECTURAL AWKWARDNESS\n  %s\n\nCOMPILER THEORY\n  %s\n\nRH\n  %s\n\nONE PROPOSED NEXT MILESTONE\n  %s\n", r.Artifacts, r.ArchitecturalAwkwardness, r.CompilerTheory, r.RHStatus, r.NextMilestone)
+	return b.String()
+}
