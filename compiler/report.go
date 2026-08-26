@@ -1242,3 +1242,31 @@ func M18JSONReport(result M18Result) ([]byte, error) {
 	}{Schema: "riemann.m18.v1", Result: result}
 	return json.MarshalIndent(payload, "", "  ")
 }
+
+func M20HumanReport(r M20Result) string {
+	var b strings.Builder
+	b.WriteString("RIEMANN-M20 — REPRESENTATION SELECTION BEYOND THE EXACT ONE-RADIUS OPTIMUM\n\n")
+	fmt.Fprintf(&b, "outcome: %s\n\nEXACT M18 BASELINE\n  %s\n\n", r.Outcome, r.Baseline)
+	b.WriteString("FIRST VARIATION AND CONTACT SENSITIVITY\n")
+	fmt.Fprintf(&b, "  %s\n  %s\n", r.FirstVariation, r.ContactSensitivity)
+	for _, x := range r.ActiveConstraints {
+		fmt.Fprintf(&b, "  - %s\n", x)
+	}
+	fmt.Fprintf(&b, "\nMISSING CAPABILITY\n  %s\n\n", r.MissingCapability)
+	b.WriteString("CANDIDATE COMPARISON\n")
+	for _, c := range r.Candidates {
+		fmt.Fprintf(&b, "  %s%s\n    DOF: %d; utility: %d\n    structural: %s\n    numerical: c=%.14g, off-contact sampled min=%.8g at t=%.4g (%s)\n    certificate: %s\n    limitation: %s\n", c.ID, map[bool]string{true: " [SELECTED]"}[c.Selected], c.NewScalarParameters, c.UtilityScore, c.StructuralResult, c.BestNumerical.CandidateC, c.BestNumerical.SampledMinimum, c.BestNumerical.MinimumAt, c.BestNumerical.Evidence, c.CertificationRoute, c.FailureMode)
+	}
+	fmt.Fprintf(&b, "\nWHEN UTILITY / SELECTION\n  %s\n  selected: %s\n", r.SelectionReason, r.SelectedFamily)
+	for _, x := range r.RejectedFamilies {
+		fmt.Fprintf(&b, "  - %s\n", x)
+	}
+	fmt.Fprintf(&b, "\nOCT PRESSURE MAP AND BOUNDED PROBES\n  source: %s\n  interpreted: %s\n  compiled: %s; fallback: %d\n  domain: %s\n", r.Experiment.Path, r.Experiment.Interpreted, r.Experiment.Compiled, r.Experiment.FallbackCount, r.Experiment.Domain)
+	for _, x := range r.Experiment.PressureFindings {
+		fmt.Fprintf(&b, "  - %s\n", x)
+	}
+	fmt.Fprintf(&b, "  artifacts: %v\n  SHA-256: %v\n  execution: %s\n  boundary: %s\n\n", r.Experiment.Artifacts, r.Experiment.ArtifactSHA256, r.Experiment.ArtifactExecution, r.Experiment.EvidenceBoundary)
+	fmt.Fprintf(&b, "THEOREM BOUNDARY\n  certified improvement: %s\n  theorem stack: %s\n  primal guard: %s\n\nFULL EP3.1 / ANTHROPIC CONTEXT\n  %s\n  ANTHROPIC 0.68185: %s\n\n", r.CertifiedImprovement, r.TheoremStack, r.CompatiblePrimalGuard, r.FullClassRelation, r.AnthropicComparison)
+	fmt.Fprintf(&b, "PROVENANCE AND ARCHITECTURE\n  imported: %v\n  newly derived: %v\n  awkwardness: %s\n  Compiler Theory: %s\n\nRH\n  %s\n\nONE PROPOSED NEXT MILESTONE\n  %s\n", r.ImportedMathematics, r.DerivedMathematics, r.ArchitecturalAwkwardness, r.CompilerTheory, r.RHStatus, r.NextMilestone)
+	return b.String()
+}

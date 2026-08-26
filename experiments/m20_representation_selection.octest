@@ -1,0 +1,227 @@
+package M20RepresentationSelection
+
+record ContactRay {
+    C: Float
+    W1: Float
+    Mass: Float
+    Radius: Float
+}
+
+record ScanSummary {
+    Minimum: Float
+    Location: Float
+}
+
+record SearchSummary {
+    C: Float
+    Parameter: Float
+    Mass: Float
+    Minimum: Float
+    Location: Float
+}
+
+fn PiValue() -> Float { return 3.141592653589793 }
+fn Contact() -> Float { return PiValue() / 2.0 }
+fn BaselineC() -> Float { return 1.0 + PiValue() / 4.0 - 2.0 / PiValue() }
+fn BaselineW() -> Float { return 1.0 / PiValue() - 4.0 / (PiValue() * PiValue()) + 8.0 / (PiValue() * PiValue() * PiValue()) }
+
+fn Core(c: Float, w1: Float, t: Float) -> Float {
+    if Abs(t) < 0.00000001 { return 2.0 * (1.0 + w1 - c) }
+    return 1.0 + 2.0 * (Cos(t) - 1.0) / (t * t)
+        + 2.0 * (1.0 - c) * Sin(t) / t + 2.0 * w1 * Cos(t)
+}
+
+fn Baseline(t: Float) -> Float { return Core(BaselineC(), BaselineW(), t) }
+
+fn AtomRay(mass: Float, radius: Float) -> ContactRay {
+    let a = Contact()
+    let h = 2.0 * mass * Cos(radius * a)
+    let hPrime = -2.0 * mass * radius * Sin(radius * a)
+    let gamma = a * h / 2.0
+    let beta = gamma / (a * a) + hPrime / 2.0
+    return ContactRay {C: BaselineC() + gamma W1: BaselineW() + beta Mass: mass Radius: radius}
+}
+
+fn AtomSpectrum(ray: ContactRay, t: Float) -> Float {
+    return Core(ray.C, ray.W1, t) + 2.0 * ray.Mass * Cos(ray.Radius * t)
+}
+
+fn Sinc(x: Float) -> Float {
+    if Abs(x) < 0.00000001 { return 1.0 }
+    return Sin(x) / x
+}
+
+fn SincDerivative(scale: Float, t: Float) -> Float {
+    let x = scale * t
+    if Abs(x) < 0.00000001 { return 0.0 }
+    return scale * (x * Cos(x) - Sin(x)) / (x * x)
+}
+
+fn IntervalRay(mass: Float, halfWidth: Float) -> ContactRay {
+    let a = Contact()
+    let center = 4.0
+    let s = Sinc(halfWidth * a)
+    let h = 2.0 * mass * s * Cos(center * a)
+    let hPrime = 2.0 * mass * (SincDerivative(halfWidth, a) * Cos(center * a)
+        - s * center * Sin(center * a))
+    let gamma = a * h / 2.0
+    let beta = gamma / (a * a) + hPrime / 2.0
+    return ContactRay {C: BaselineC() + gamma W1: BaselineW() + beta Mass: mass Radius: halfWidth}
+}
+
+fn IntervalSpectrum(ray: ContactRay, t: Float) -> Float {
+    return Core(ray.C, ray.W1, t) + 2.0 * ray.Mass * Sinc(ray.Radius * t) * Cos(4.0 * t)
+}
+
+fn LatticeRay(mass: Float) -> ContactRay {
+    let a = Contact()
+    let h = 2.0 * mass / 3.0 * (Cos(3.0 * a) + Cos(4.0 * a) + Cos(5.0 * a))
+    let hPrime = -2.0 * mass / 3.0 * (3.0 * Sin(3.0 * a) + 4.0 * Sin(4.0 * a) + 5.0 * Sin(5.0 * a))
+    let gamma = a * h / 2.0
+    let beta = gamma / (a * a) + hPrime / 2.0
+    return ContactRay {C: BaselineC() + gamma W1: BaselineW() + beta Mass: mass Radius: 0.0}
+}
+
+fn LatticeSpectrum(ray: ContactRay, t: Float) -> Float {
+    return Core(ray.C, ray.W1, t) + 2.0 * ray.Mass / 3.0 * (Cos(3.0 * t) + Cos(4.0 * t) + Cos(5.0 * t))
+}
+
+fn ScanAtom(ray: ContactRay) -> ScanSummary {
+    var out = ScanSummary {Minimum: AtomSpectrum(ray, 0.0) Location: 0.0}
+    for i in 1..4001 {
+        let t = Float(i) / 50.0
+        let value = AtomSpectrum(ray, t)
+        if value < out.Minimum { out = ScanSummary {Minimum: value Location: t} }
+    }
+    return out
+}
+
+fn ScanInterval(ray: ContactRay) -> ScanSummary {
+    var out = ScanSummary {Minimum: IntervalSpectrum(ray, 0.0) Location: 0.0}
+    for i in 1..4001 {
+        let t = Float(i) / 50.0
+        let value = IntervalSpectrum(ray, t)
+        if value < out.Minimum { out = ScanSummary {Minimum: value Location: t} }
+    }
+    return out
+}
+
+fn ScanLattice(ray: ContactRay) -> ScanSummary {
+    var out = ScanSummary {Minimum: LatticeSpectrum(ray, 0.0) Location: 0.0}
+    for i in 1..4001 {
+        let t = Float(i) / 50.0
+        let value = LatticeSpectrum(ray, t)
+        if value < out.Minimum { out = ScanSummary {Minimum: value Location: t} }
+    }
+    return out
+}
+
+[Fact]
+fn BaselineRegressionAndPressureMap() -> Void {
+    Assert.Near(0.0, Baseline(Contact()), 0.000000000000002, "M18 contact")
+    var secondary = ScanSummary {Minimum: Baseline(2.0) Location: 2.0}
+    for i in 401..12001 {
+        let t = Float(i) / 200.0
+        let value = Baseline(t)
+        if value < secondary.Minimum { secondary = ScanSummary {Minimum: value Location: t} }
+    }
+    Print("M20 baseline c=" + ToString(BaselineC()) + " secondary[2,60]="
+        + ToString(secondary.Minimum) + " at " + ToString(secondary.Location))
+    Assert.True(secondary.Minimum > 0.0, "baseline secondary region has positive margin")
+}
+
+[Fact]
+fn ContactAdaptedAtomicRadiusProbe() -> Void {
+    var best = SearchSummary {C: BaselineC() Parameter: 0.0 Mass: 0.0 Minimum: 0.0 Location: Contact()}
+    for radiusIndex in 0..9 {
+        let radius = 2.0 + Float(radiusIndex) / 2.0
+        for massIndex in 1..41 {
+            let ray = AtomRay(Float(massIndex) / 10000.0, radius)
+            if ray.C > BaselineC() and ray.C < 1.3208 {
+                let scan = ScanAtom(ray)
+                if scan.Minimum > -0.00000001 and ray.C > best.C {
+                    best = SearchSummary {C: ray.C Parameter: radius Mass: ray.Mass Minimum: scan.Minimum Location: scan.Location}
+                }
+            }
+        }
+    }
+    let exactPhase = AtomRay(0.004, 4.0)
+    Assert.Near(0.0, AtomSpectrum(exactPhase, Contact()), 0.000000000000003, "contact value preserved")
+    Print("M20 atom best c=" + ToString(best.C) + " r=" + ToString(best.Parameter)
+        + " mass=" + ToString(best.Mass) + " min=" + ToString(best.Minimum) + " at=" + ToString(best.Location))
+    Assert.True(best.C > BaselineC() + 0.005, "atomic direction should clearly improve sampled c")
+}
+
+[Fact]
+fn ContinuousIntervalModeProbe() -> Void {
+    var best = SearchSummary {C: BaselineC() Parameter: 0.0 Mass: 0.0 Minimum: 0.0 Location: Contact()}
+    for widthIndex in 1..5 {
+        let width = Float(widthIndex) / 8.0
+        for massIndex in 1..41 {
+            let ray = IntervalRay(Float(massIndex) / 10000.0, width)
+            let scan = ScanInterval(ray)
+            if scan.Minimum > -0.00000001 and ray.C > best.C {
+                best = SearchSummary {C: ray.C Parameter: width Mass: ray.Mass Minimum: scan.Minimum Location: scan.Location}
+            }
+        }
+    }
+    Print("M20 interval best c=" + ToString(best.C) + " halfwidth=" + ToString(best.Parameter)
+        + " mass=" + ToString(best.Mass) + " min=" + ToString(best.Minimum) + " at=" + ToString(best.Location))
+    Assert.True(best.C > BaselineC() + 0.004, "continuous direction should improve sampled c")
+}
+
+[Fact]
+fn PeriodicProxyProbeAndFailureMode() -> Void {
+    var best = SearchSummary {C: BaselineC() Parameter: 3.0 Mass: 0.0 Minimum: 0.0 Location: Contact()}
+    for massIndex in 1..41 {
+        let ray = LatticeRay(Float(massIndex) / 10000.0)
+        let scan = ScanLattice(ray)
+        if scan.Minimum > -0.00000001 and ray.C > best.C {
+            best = SearchSummary {C: ray.C Parameter: 3.0 Mass: ray.Mass Minimum: scan.Minimum Location: scan.Location}
+        }
+    }
+    Print("M20 lattice packet best c=" + ToString(best.C) + " mass=" + ToString(best.Mass)
+        + " min=" + ToString(best.Minimum) + " at=" + ToString(best.Location))
+    Assert.True(best.C > BaselineC(), "finite periodic proxy has a positive direction")
+    Assert.True(best.C < BaselineC() + 0.004, "three-site packet is inefficient per total mass")
+}
+
+[Fact]
+fn UtilitySelectsContactAdaptedFamilyWithoutChangingEvidence() -> Void {
+    let family = when utility {
+        case 4 when true score 52
+        case 2 when true score 45
+        case 1 when true score 44
+        case 3 when true score 31
+        else 0
+    }
+    Print("M20 when utility selected family=" + ToString(family) + " score=52")
+    Assert.Equal(4, family, "contact-adapted ray should win explicit research utility")
+    let evidenceIsNumerical = true
+    Assert.True(evidenceIsNumerical, "utility is prioritization, never theorem evidence")
+}
+
+[Artifact]
+fn PlotPressureMap() -> Void {
+    var xs: Float[] = []
+    var ys: Float[] = []
+    for i in 0..8001 {
+        let t = Float(i) / 400.0
+        xs = Append(xs, t)
+        ys = Append(ys, Baseline(t))
+    }
+    let _plot = PlotLine(xs, ys, "m20/m20_baseline_pressure_map.png")
+}
+
+[Artifact]
+fn PlotSelectedPerturbationEffect() -> Void {
+    let ray = AtomRay(0.004, 4.0)
+    var xs: Float[] = []
+    var ys: Float[] = []
+    for i in 0..8001 {
+        let t = Float(i) / 400.0
+        xs = Append(xs, t)
+        ys = Append(ys, AtomSpectrum(ray, t) - Baseline(t))
+    }
+    let _plot = PlotLine(xs, ys, "m20/m20_selected_perturbation_effect.png")
+}

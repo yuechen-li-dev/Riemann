@@ -34,9 +34,13 @@ go test -tags=slow ./compiler -run M18Slow -count=1
 ```
 
 The normal unit and race suites validate the M18 proof object's exact
-parameters, structural invariants, rejection paths, deterministic artifact,
-and bound propagation. The `slow` suite additionally replays the inherited
-M17 rational cover and M18's equality-aware endpoint cover. Report serialization never reruns that
+parameters and bound propagation plus M20's perturbation, evidence-separation,
+utility, primal-guard, and deterministic-artifact invariants. The `slow` suite
+additionally replays the inherited
+M17 rational cover and M18's equality-aware endpoint cover. M20 then uses the
+exact endpoint as a regression oracle, derives its contact first variation, and
+selects a one-parameter phase-aligned exterior perturbation without changing
+the theorem stack. Report serialization never reruns that
 proof. Compiler test fixtures also build the M6–M15 chain once and pass each
 stage to the next; M7 receives an independent graph clone because it extends
 the proof graph.
@@ -59,6 +63,9 @@ Firmament syntax findings are recorded in the companion
 [parser-backed inventory](docs/m19-firmament-syntax-audit.md) and
 [language snapshot](docs/m19-firmament-language-snapshot.md). M19 introduces
 no production integration and makes no theorem claim from approximate geometry.
+[M20's representation-selection report](docs/next-representation-selection.md)
+derives the contact sensitivity, compares four minimal extensions, and selects
+one exact one-parameter family for M21 without changing the certified bound.
 [docs/m14a-architecture.md](docs/m14a-architecture.md) retains
 the primal/dual reconstruction. [docs/m13-architecture.md](docs/m13-architecture.md)
 retains the exact window functional and M8-M13 provenance. Earlier milestone

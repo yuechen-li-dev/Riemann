@@ -101,6 +101,10 @@ var m18Once sync.Once
 var m18Cached M18Result
 var m18CachedErr error
 
+var m20Once sync.Once
+var m20Cached M20Result
+var m20CachedErr error
+
 func testM18() (M18Result, error) {
 	m18Once.Do(func() {
 		m17, err := testM17()
@@ -111,4 +115,16 @@ func testM18() (M18Result, error) {
 		m18Cached, m18CachedErr = compileM18FromM17(m17, false)
 	})
 	return m18Cached, m18CachedErr
+}
+
+func testM20() (M20Result, error) {
+	m20Once.Do(func() {
+		m18, err := testM18()
+		if err != nil {
+			m20CachedErr = err
+			return
+		}
+		m20Cached, m20CachedErr = compileM20FromM18(m18)
+	})
+	return m20Cached, m20CachedErr
 }
