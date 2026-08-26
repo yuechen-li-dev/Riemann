@@ -118,6 +118,9 @@ var m23CachedErr error
 var m24Once sync.Once
 var m24Cached M24Result
 var m24CachedErr error
+var m25Once sync.Once
+var m25Cached M25Result
+var m25CachedErr error
 
 func testM18() (M18Result, error) {
 	m18Once.Do(func() {
@@ -189,4 +192,13 @@ func testM24() (M24Result, error) {
 		m24Cached, m24CachedErr = compileM24FromM23(m23)
 	})
 	return m24Cached, m24CachedErr
+}
+
+func testM25() (M25Result, error) {
+	m25Once.Do(func() {
+		// M25 unit tests validate the pre-initialized M24 composition boundary.
+		// M24's own suite separately replays its 611 exact barrier cells.
+		m25Cached, m25CachedErr = compileM25FromM24(M24Result{Outcome: "Success C — pre-initialized M24 boundary manifest"})
+	})
+	return m25Cached, m25CachedErr
 }

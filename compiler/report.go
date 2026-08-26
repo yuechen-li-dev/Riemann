@@ -1403,3 +1403,23 @@ func M24HumanReport(r M24Result) string {
 	fmt.Fprintf(&b, "\nARTIFACTS\n  %v\n\nARCHITECTURAL AWKWARDNESS\n  %s\n\nCOMPILER THEORY\n  %s\n\nRH\n  %s\n\nONE PROPOSED NEXT MILESTONE\n  %s\n", r.Artifacts, r.ArchitecturalAwkwardness, r.CompilerTheory, r.RHStatus, r.NextMilestone)
 	return b.String()
 }
+
+func M25HumanReport(r M25Result) string {
+	var b strings.Builder
+	b.WriteString("RIEMANN-M25 — B1 CONTROL ON THE REMAINING RADIUS WINDOW\n\n")
+	fmt.Fprintf(&b, "outcome: %s\n\nB1 CERTIFIED GRAPH\n  definition: %s\n  r=[%s,%s]\n  m=[%s,%s]\n  t=[%s,%s]\n  curvature=[%s,%s]\n  derivative: %s\n  slabs/contact boxes: %d/%d\n", r.Outcome, r.B1Definition, r.Certificate.Branch.Radius.Lower, r.Certificate.Branch.Radius.Upper, r.Certificate.Branch.Mass.Lower, r.Certificate.Branch.Mass.Upper, r.Certificate.Branch.Contact.Lower, r.Certificate.Branch.Contact.Upper, r.Certificate.Branch.Curvature.Lower, r.Certificate.Branch.Curvature.Upper, r.Certificate.Branch.DerivativeSign, r.Experiment.RadiusSlabs, r.Experiment.ContactBoxes)
+	fmt.Fprintf(&b, "\nWHOLE-LINE / COMPETITOR CONTROL\n  compact t=[%s,%s]\n  tail lower=[%s,%s]\n  strict compact margin=[%s,%s]\n  bands: %d\n  exclusion: %s\n  gap: %s\n  switch: %s\n", r.Certificate.Control.CompactFrequency.Lower, r.Certificate.Control.CompactFrequency.Upper, r.Certificate.Control.TailLower.Lower, r.Certificate.Control.TailLower.Upper, r.Certificate.Control.StrictCompactMargin.Lower, r.Certificate.Control.StrictCompactMargin.Upper, r.Experiment.CompetingBands, r.CompetitorExclusion, r.ObjectiveGap, r.BranchSwitch)
+	fmt.Fprintf(&b, "\nM23/M24/M25 COMPOSITION\n  %s\n  window: %s\n  component: %s\n  optimizer feasible: %s\n  optimizer r=[%s,%s], m=[%s,%s], t=[%s,%s], c=[%s,%s]\n", r.BoundaryComposition, r.WindowConclusion, r.ComponentConclusion, r.OptimizerFeasibility, r.Certificate.Optimum.Radius.Lower, r.Certificate.Optimum.Radius.Upper, r.Certificate.Optimum.Mass.Lower, r.Certificate.Optimum.Mass.Upper, r.Certificate.Optimum.Contact.Lower, r.Certificate.Optimum.Contact.Upper, r.Certificate.Optimum.Objective.Lower, r.Certificate.Optimum.Objective.Upper)
+	fmt.Fprintf(&b, "\nBOUNDS / ACTIVE SET\n  c: %s\n  J: %s\n  explicit witness: %s\n  gap: %s\n  active set: %s\n  next restriction: %s\n", r.BestCertifiedC, r.BestCertifiedJ, r.BestExplicitWitness, r.OptimizerWitnessGap, r.ActiveSet, r.NextRestriction)
+	fmt.Fprintf(&b, "\nOCT-FIRST IMPLEMENTATION\n  %s\n  interpreted: %s\n  compiled: %s; fallback: %d\n  generation: %s\n  exact replay: %s\n  manifest replay: %s\n  generated Go: %s\n  artifacts: %v\n  evidence: %s\n", r.OctFirstImplementation, r.Experiment.Interpreted, r.Experiment.Compiled, r.Experiment.FallbackCount, r.Experiment.Generation, r.Experiment.ExactReplay, r.Experiment.ManifestReplay, r.Experiment.GeneratedGo, r.Experiment.Artifacts, r.Experiment.EvidenceBoundary)
+	fmt.Fprintf(&b, "\nLITERATURE / NOVELTY SCREEN\n  %s\n\nIMPORTED MATHEMATICS\n", r.LiteratureAssessment)
+	for _, item := range r.ImportedMathematics {
+		fmt.Fprintf(&b, "  %s\n", item)
+	}
+	b.WriteString("\nNEWLY DERIVED MATHEMATICS\n")
+	for _, item := range r.DerivedMathematics {
+		fmt.Fprintf(&b, "  %s\n", item)
+	}
+	fmt.Fprintf(&b, "\nARCHITECTURAL AWKWARDNESS\n  %s\n\nCOMPILER THEORY\n  %s\n\nRH\n  %s\n\nONE PROPOSED NEXT MILESTONE\n  %s\n", r.ArchitecturalAwkwardness, r.CompilerTheory, r.RHStatus, r.NextMilestone)
+	return b.String()
+}

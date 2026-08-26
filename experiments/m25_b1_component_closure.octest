@@ -1,0 +1,236 @@
+package M25B1ComponentClosure
+
+record ContactPoint {
+    Radius: Float
+    Mass: Float
+    Contact: Float
+    Objective: Float
+    Curvature: Float
+}
+
+fn PiValue() -> Float { return 3.141592653589793 }
+fn A() -> Float { return PiValue() / 2.0 }
+fn C0() -> Float { return 1.0 + PiValue() / 4.0 - 2.0 / PiValue() }
+fn W0() -> Float {
+    let pi = PiValue()
+    return 1.0 / pi - 4.0 / (pi * pi) + 8.0 / (pi * pi * pi)
+}
+fn Sinc(t: Float) -> Float {
+    if Abs(t) < 0.00000001 { return 1.0 }
+    return Sin(t) / t
+}
+fn F0(t: Float) -> Float {
+    if Abs(t) < 0.00000001 { return 2.0 * (1.0 + W0() - C0()) }
+    return 1.0 + 2.0 * (Cos(t) - 1.0) / (t * t) +
+        2.0 * (1.0 - C0()) * Sin(t) / t + 2.0 * W0() * Cos(t)
+}
+fn H(r: Float, t: Float) -> Float {
+    let c = Cos(A() * r)
+    let s = Sin(A() * r)
+    return -PiValue() * c * Sinc(t) +
+        2.0 * (2.0 * c / PiValue() - r * s) * Cos(t) + 2.0 * Cos(r * t)
+}
+fn Envelope(r: Float, t: Float) -> Float { return F0(t) / (-H(r, t)) }
+fn Objective(m: Float, r: Float) -> Float { return C0() + A() * m * Cos(A() * r) }
+fn Spectrum(m: Float, r: Float, t: Float) -> Float { return F0(t) + m * H(r, t) }
+fn Min3(x: Float, y: Float, z: Float) -> Float {
+    var v = x
+    if y < v { v = y }
+    if z < v { v = z }
+    return v
+}
+fn Max3(x: Float, y: Float, z: Float) -> Float {
+    var v = x
+    if y > v { v = y }
+    if z > v { v = z }
+    return v
+}
+fn Second(m: Float, r: Float, t: Float) -> Float {
+    let e = 0.00002
+    return (Spectrum(m, r, t + e) - 2.0 * Spectrum(m, r, t) + Spectrum(m, r, t - e)) / (e * e)
+}
+fn RefineB1(r: Float) -> ContactPoint {
+    var left = 1.78
+    var right = 1.81
+    for _i in 0 .. 80 {
+        let x = left + (right - left) / 3.0
+        let y = right - (right - left) / 3.0
+        if Envelope(r, x) < Envelope(r, y) { right = y } else { left = x }
+    }
+    let t = (left + right) / 2.0
+    let m = Envelope(r, t)
+    return ContactPoint {
+        Radius: r
+        Mass: m
+        Contact: t
+        Objective: Objective(m, r)
+        Curvature: Second(m, r, t)
+    }
+}
+fn NextMinimum(r: Float, active: Float) -> ContactPoint {
+    let m = RefineB1(r).Mass
+    let step = 0.001
+    var best = 1000000.0
+    var bestT = 0.0
+    var prior = Spectrum(m, r, 0.0)
+    var current = Spectrum(m, r, step)
+    for k in 2 .. 4001 {
+        let t = step * Float(k)
+        let next = Spectrum(m, r, t)
+        if current < prior and current < next and Abs((t - step) - active) > 0.04 and Abs((t - step) - PiValue() / 2.0) > 0.04 and current < best {
+            best = current
+            bestT = t - step
+        }
+        prior = current
+        current = next
+    }
+    return ContactPoint {
+        Radius: r
+        Mass: m
+        Contact: bestT
+        Objective: best
+        Curvature: 0.0
+    }
+}
+
+[Fact]
+fn B1EndpointAndOptimizerAudit() -> Void {
+    let left = RefineB1(3.503)
+    let middle = RefineB1(3.5078534)
+    let right = RefineB1(3.512)
+    Print("M25 B1 left m=" + ToString(left.Mass) + " t=" + ToString(left.Contact) + " c=" + ToString(left.Objective))
+    Print("M25 B1 optimizer m=" + ToString(middle.Mass) + " t=" + ToString(middle.Contact) + " c=" + ToString(middle.Objective))
+    Print("M25 B1 right m=" + ToString(right.Mass) + " t=" + ToString(right.Contact) + " c=" + ToString(right.Objective))
+    Assert.True(middle.Objective > left.Objective and middle.Objective > right.Objective, "interior maximum recovered")
+}
+
+[Fact]
+fn AdversarialCompactScan() -> Void {
+    var minimumGap = 1000000.0
+    var minimumAt = 0.0
+    var competingBands = 0
+    for j in 0 .. 91 {
+        let r = 3.503 + 0.0001 * Float(j)
+        let p = RefineB1(r)
+        let q = NextMinimum(r, p.Contact)
+        if q.Contact > 0.0 {
+            competingBands = competingBands + 1
+            if q.Objective < minimumGap {
+                minimumGap = q.Objective
+                minimumAt = q.Contact
+            }
+        }
+    }
+    Print("M25 compact adversarial minimum gap=" + ToString(minimumGap) + " at t=" + ToString(minimumAt) + " sampled bands=" + ToString(competingBands))
+    Assert.True(minimumGap > 0.0001, "all sampled noncontact stationary minima are strict")
+}
+
+[Fact]
+fn TailAndCurvatureAudit() -> Void {
+    var minimumCurvature = 1000000.0
+    var minimumTail = 1000000.0
+    for j in 0 .. 91 {
+        let r = 3.503 + 0.0001 * Float(j)
+        let p = RefineB1(r)
+        if p.Curvature < minimumCurvature { minimumCurvature = p.Curvature }
+        let c = p.Objective
+        let phaseC = Cos(A() * r)
+        let phaseS = Sin(A() * r)
+        let w1 = W0() + p.Mass * (2.0 * phaseC / PiValue() - r * phaseS)
+        let tail = 0.75 - (c - 1.0) / 2.0 - 2.0 * w1 - 2.0 * p.Mass
+        if tail < minimumTail { minimumTail = tail }
+    }
+    Print("M25 sampled curvature lower=" + ToString(minimumCurvature) + " tail lower=" + ToString(minimumTail))
+    Assert.True(minimumCurvature > 0.007 and minimumTail > 0.27, "quadratic contact and t>=4 tail")
+}
+
+[Fact]
+fn GeneratedAtlasShape() -> Void {
+    let left = RefineB1(3.503)
+    let right = RefineB1(3.512)
+    Assert.True(left.Contact > right.Contact, "B1 contact decreases")
+    Assert.True(left.Mass < 0.0071 and right.Mass < 0.0071, "B1 mass stays narrow")
+}
+
+[Fact]
+fn ContactConvexityRangeAudit() -> Void {
+    var fixedMinimum = 1000000.0
+    var movableMinimum = 1000000.0
+    for j in 0 .. 91 {
+        let r = 3.503 + 0.0001 * Float(j)
+        let p = RefineB1(r)
+        for k in 0 .. 71 {
+            let t = 1.54 + 0.001 * Float(k)
+            let q = Second(p.Mass, r, t)
+            if q < fixedMinimum { fixedMinimum = q }
+        }
+        for k in 0 .. 61 {
+            let t = 1.76 + 0.001 * Float(k)
+            let q = Second(p.Mass, r, t)
+            if q < movableMinimum { movableMinimum = q }
+        }
+    }
+    Assert.True(fixedMinimum > 0.0, "sampled fixed-contact convex range")
+    Assert.True(movableMinimum > 0.0, "sampled movable-contact convex range")
+}
+
+[Artifact]
+fn GenerateContinuationAtlas() -> Void {
+    var source = "// Code generated by Oct M25 continuation metaprogramming. DO NOT EDIT.\n\n"
+    source = source + "package semantic\n\n"
+    source = source + "var m25ContinuationAtlas = [...]m25ContinuationSlab{\n"
+    for k in 0 .. 90 {
+        let r0 = 3.503 + 0.0001 * Float(k)
+        let r1 = r0 + 0.0001
+        let p0 = RefineB1(r0)
+        let pm = RefineB1((r0 + r1) / 2.0)
+        let p1 = RefineB1(r1)
+        let mlo = Min3(p0.Mass, pm.Mass, p1.Mass) - 0.00000002
+        let mhi = Max3(p0.Mass, pm.Mass, p1.Mass) + 0.00000002
+        let tlo = Min3(p0.Contact, pm.Contact, p1.Contact) - 0.0005
+        let thi = Max3(p0.Contact, pm.Contact, p1.Contact) + 0.0005
+        source = source + "    {K: " + ToString(k) + ", MassLo: \"" + ToString(mlo) + "\", MassHi: \"" + ToString(mhi) + "\", ContactLo: \"" + ToString(tlo) + "\", ContactHi: \"" + ToString(thi) + "\"},\n"
+    }
+    source = source + "}\n"
+    Artifact.WriteText("semantic/m25_continuation.generated.go", source)
+}
+
+[Artifact]
+fn PlotB1Continuation() -> Void {
+    var xs: Float[] = []
+    var ys: Float[] = []
+    for k in 0 .. 181 {
+        let r = 3.503 + 0.009 * Float(k) / 180.0
+        let p = RefineB1(r)
+        xs = Append(xs, r)
+        ys = Append(ys, p.Contact)
+    }
+    let _p = PlotLine(xs, ys, "artifacts/m25/m25_b1_continuation.png")
+}
+
+[Artifact]
+fn PlotB1Objective() -> Void {
+    var xs: Float[] = []
+    var ys: Float[] = []
+    for k in 0 .. 181 {
+        let r = 3.503 + 0.009 * Float(k) / 180.0
+        let p = RefineB1(r)
+        xs = Append(xs, r)
+        ys = Append(ys, p.Objective)
+    }
+    let _p = PlotLine(xs, ys, "artifacts/m25/m25_b1_objective.png")
+}
+
+[Artifact]
+fn PlotCompetitorGap() -> Void {
+    var xs: Float[] = []
+    var ys: Float[] = []
+    for k in 0 .. 91 {
+        let r = 3.503 + 0.009 * Float(k) / 90.0
+        let p = RefineB1(r)
+        let q = NextMinimum(r, p.Contact)
+        xs = Append(xs, r)
+        ys = Append(ys, q.Objective)
+    }
+    let _p = PlotLine(xs, ys, "artifacts/m25/m25_competitor_gap.png")
+}

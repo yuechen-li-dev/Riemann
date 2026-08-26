@@ -1,13 +1,14 @@
 # Riemann
 
 Riemann is an experimental compiler for making transformations of mathematical
-claims mechanically inspectable. M24 proves that every legal point in M23's
-contact-preserving two-atom radius component outside `r in [3.503,3.512]` is
-strictly below the M23 optimizer's certified lower objective. It finds no
-stronger branch but honestly leaves that exact radius/contact window unresolved
-(Success C). The best whole-line theorem witness remains `r=7/2, m=69/10000`,
-giving `c_*>=1+pi/4-2/pi+69*pi*sqrt(2)/40000` and the complementary upper bound
-on `J_*`. M18 closes the unsaturated one-radius
+claims mechanically inspectable. M25 proves that B1 is the unique controlling
+contact branch on the last M24 window `r in [3.503,3.512]`, certifies its
+whole-line feasibility, and composes with M23/M24 to establish the unique
+`ContactPreservingTwoAtomComponentGlobalOptimum` (Success A). The optimizer is
+contained in `r in [3.507850,3.507857]` and gives
+`c_*>=1.1566431645986454`, `J_*<=-0.1566431645986454`. This is not a theorem
+about all two-atom families. The best simple explicit witness remains
+`r=7/2, m=69/10000`. M18 closes the unsaturated one-radius
 completion for the broader support-one Fourier extremal class. It derives the
 exact tangency weight `1/pi-4/pi^2+8/pi^3`, certifies the resulting transform
 on the whole real line, and composes that witness with M17's upper envelope:
@@ -49,6 +50,12 @@ go test -tags=slow ./semantic -run M23Slow -count=1
 
 # Replay M24's certified component complement.
 go test ./semantic -run M24 -count=1
+
+# Validate M25's pre-initialized proof manifest (fast).
+go test ./semantic -run M25 -count=1
+
+# Explicitly reconstruct the expensive M25 rational interval proof.
+go run ./cmd/m25replay
 ```
 
 The normal unit and race suites validate the M18 proof object's exact
@@ -98,6 +105,10 @@ the improved explicit whole-line witness separate from optimizer evidence.
 uses Oct-first branch discovery, a fixed-contact large-radius theorem, and
 generated adverse-frequency interval cells to isolate the only unresolved
 radius/contact window without claiming globality.
+[M25's B1/global-component report](docs/m25-b1-component-global-optimum.md)
+certifies the continuation graph, whole-line competitor exclusion, unique
+window maximum, globally feasible optimizer, and fast manifest/explicit replay
+split.
 [M20's representation-selection report](docs/next-representation-selection.md)
 derives the contact sensitivity, compares four minimal extensions, and selects
 one exact one-parameter family for M21 without changing the certified bound.
