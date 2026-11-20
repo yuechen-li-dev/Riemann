@@ -1,0 +1,372 @@
+{
+  "claims": [
+    {
+      "ID": "b2.instance",
+      "Proposition": {
+        "predicate": "b2.instance",
+        "revision": "a172c464fd4bcfc4f53e394dcba45d742b1409a6",
+        "instance": "l=3 d=2 certificate=0ebda770c970b470b7612e639ea4ed4bb2daf364d135a795b874b4baae5ae052"
+      },
+      "Assumptions": null,
+      "Evidence": [
+        {
+          "kind": "definition",
+          "source": {
+            "kind": "standard_reference",
+            "citation": "Pinned cyclic LP",
+            "uri": "https://github.com/Deicyde/riemann-hypothesis/blob/a172c464fd4bcfc4f53e394dcba45d742b1409a6/src/Formalism/IncomingBounds/IncomingBound.lean"
+          },
+          "note": "Fixed source parameters"
+        }
+      ],
+      "Exactness": "exact",
+      "Provenance": {
+        "kind": "authored",
+        "parents": null,
+        "source": {
+          "kind": "standard_reference",
+          "citation": "Pinned cyclic LP",
+          "uri": "https://github.com/Deicyde/riemann-hypothesis/blob/a172c464fd4bcfc4f53e394dcba45d742b1409a6/src/Formalism/IncomingBounds/IncomingBound.lean"
+        }
+      }
+    },
+    {
+      "ID": "b2.primal",
+      "Proposition": {
+        "predicate": "b2.primal",
+        "revision": "a172c464fd4bcfc4f53e394dcba45d742b1409a6",
+        "instance": "l=3 d=2 certificate=0ebda770c970b470b7612e639ea4ed4bb2daf364d135a795b874b4baae5ae052"
+      },
+      "Assumptions": null,
+      "Evidence": [
+        {
+          "kind": "certified_computation",
+          "source": {
+            "kind": "standard_reference",
+            "citation": "B2 exact Go replay",
+            "uri": "byproducts/cyclic.go"
+          },
+          "note": "Checked all nonnegativity and capacity inequalities"
+        }
+      ],
+      "Exactness": "exact",
+      "Provenance": {
+        "kind": "derived",
+        "parents": [
+          "b2.instance"
+        ],
+        "transformation": "b2.derive.primal",
+        "source": {
+          "kind": "standard_reference",
+          "citation": "B2 exact Go replay",
+          "uri": "byproducts/cyclic.go"
+        }
+      }
+    },
+    {
+      "ID": "b2.dual",
+      "Proposition": {
+        "predicate": "b2.dual",
+        "revision": "a172c464fd4bcfc4f53e394dcba45d742b1409a6",
+        "instance": "l=3 d=2 certificate=0ebda770c970b470b7612e639ea4ed4bb2daf364d135a795b874b4baae5ae052"
+      },
+      "Assumptions": null,
+      "Evidence": [
+        {
+          "kind": "certified_computation",
+          "source": {
+            "kind": "standard_reference",
+            "citation": "B2 exact Go replay",
+            "uri": "byproducts/cyclic.go"
+          },
+          "note": "Checked all covering and box inequalities"
+        }
+      ],
+      "Exactness": "exact",
+      "Provenance": {
+        "kind": "derived",
+        "parents": [
+          "b2.instance"
+        ],
+        "transformation": "b2.derive.dual",
+        "source": {
+          "kind": "standard_reference",
+          "citation": "B2 exact Go replay",
+          "uri": "byproducts/cyclic.go"
+        }
+      }
+    },
+    {
+      "ID": "b2.certificate",
+      "Proposition": {
+        "predicate": "b2.certificate",
+        "revision": "a172c464fd4bcfc4f53e394dcba45d742b1409a6",
+        "instance": "l=3 d=2 certificate=0ebda770c970b470b7612e639ea4ed4bb2daf364d135a795b874b4baae5ae052"
+      },
+      "Assumptions": null,
+      "Evidence": [
+        {
+          "kind": "certified_computation",
+          "source": {
+            "kind": "standard_reference",
+            "citation": "B2 exact Go replay",
+            "uri": "byproducts/cyclic.go"
+          },
+          "note": "Recomputed equal objectives 1/2"
+        }
+      ],
+      "Exactness": "exact",
+      "Provenance": {
+        "kind": "derived",
+        "parents": [
+          "b2.primal",
+          "b2.dual"
+        ],
+        "transformation": "b2.derive.certificate",
+        "source": {
+          "kind": "standard_reference",
+          "citation": "B2 exact Go replay",
+          "uri": "byproducts/cyclic.go"
+        }
+      }
+    },
+    {
+      "ID": "b2.optimality",
+      "Proposition": {
+        "predicate": "b2.optimality",
+        "revision": "a172c464fd4bcfc4f53e394dcba45d742b1409a6",
+        "instance": "l=3 d=2 certificate=0ebda770c970b470b7612e639ea4ed4bb2daf364d135a795b874b4baae5ae052"
+      },
+      "Assumptions": null,
+      "Evidence": [
+        {
+          "kind": "derived",
+          "source": {
+            "kind": "standard_reference",
+            "citation": "B2 exact Go replay",
+            "uri": "byproducts/cyclic.go"
+          },
+          "note": "Weak duality for the exact certificate"
+        }
+      ],
+      "Exactness": "exact",
+      "Provenance": {
+        "kind": "derived",
+        "parents": [
+          "b2.certificate"
+        ],
+        "transformation": "b2.derive.optimality",
+        "source": {
+          "kind": "standard_reference",
+          "citation": "B2 exact Go replay",
+          "uri": "byproducts/cyclic.go"
+        }
+      }
+    },
+    {
+      "ID": "b2.universal",
+      "Proposition": {
+        "predicate": "b2.universal",
+        "revision": "a172c464fd4bcfc4f53e394dcba45d742b1409a6"
+      },
+      "Assumptions": null,
+      "Evidence": [
+        {
+          "kind": "unverified_conjecture",
+          "source": {
+            "kind": "standard_reference",
+            "citation": "Pinned cyclic LP",
+            "uri": "https://github.com/Deicyde/riemann-hypothesis/blob/a172c464fd4bcfc4f53e394dcba45d742b1409a6/src/Formalism/IncomingBounds/IncomingBound.lean"
+          },
+          "note": "Source proposition FlowAttained and LemmaFa"
+        }
+      ],
+      "Exactness": "exact",
+      "Provenance": {
+        "kind": "authored",
+        "parents": null,
+        "source": {
+          "kind": "standard_reference",
+          "citation": "Pinned cyclic LP",
+          "uri": "https://github.com/Deicyde/riemann-hypothesis/blob/a172c464fd4bcfc4f53e394dcba45d742b1409a6/src/Formalism/IncomingBounds/IncomingBound.lean"
+        }
+      }
+    },
+    {
+      "ID": "b2.lean-proof",
+      "Proposition": {
+        "predicate": "b2.lean-proof",
+        "revision": "a172c464fd4bcfc4f53e394dcba45d742b1409a6"
+      },
+      "Assumptions": null,
+      "Evidence": [
+        {
+          "kind": "unverified_conjecture",
+          "source": {
+            "kind": "standard_reference",
+            "citation": "Pinned Lean declarations",
+            "uri": "https://github.com/Deicyde/riemann-hypothesis/blob/a172c464fd4bcfc4f53e394dcba45d742b1409a6/src/Formalism/IncomingBounds/FlowDegreeBounds/MaxFlowValueAttained.lean"
+          },
+          "note": "Formalism.IncomingBounds.maxFlowValueAttained and strongDuality"
+        }
+      ],
+      "Exactness": "exact",
+      "Provenance": {
+        "kind": "derived",
+        "parents": [
+          "b2.universal"
+        ],
+        "transformation": "b2.derive.lean-proof",
+        "source": {
+          "kind": "standard_reference",
+          "citation": "Pinned Lean declarations",
+          "uri": "https://github.com/Deicyde/riemann-hypothesis/blob/a172c464fd4bcfc4f53e394dcba45d742b1409a6/src/Formalism/IncomingBounds/FlowDegreeBounds/MaxFlowValueAttained.lean"
+        }
+      }
+    },
+    {
+      "ID": "b2.formal-status",
+      "Proposition": {
+        "predicate": "b2.formal-status",
+        "revision": "a172c464fd4bcfc4f53e394dcba45d742b1409a6"
+      },
+      "Assumptions": null,
+      "Evidence": [
+        {
+          "kind": "unverified_conjecture",
+          "source": {
+            "kind": "standard_reference",
+            "citation": "Pinned Lean declarations",
+            "uri": "https://github.com/Deicyde/riemann-hypothesis/blob/a172c464fd4bcfc4f53e394dcba45d742b1409a6/src/Formalism/IncomingBounds/FlowDegreeBounds/MaxFlowValueAttained.lean"
+          },
+          "note": "External checking evidence belongs to the B2 Lean transcript; compiler import is open"
+        }
+      ],
+      "Exactness": "exact",
+      "Provenance": {
+        "kind": "derived",
+        "parents": [
+          "b2.lean-proof"
+        ],
+        "transformation": "b2.derive.formal-status",
+        "source": {
+          "kind": "standard_reference",
+          "citation": "Pinned Lean declarations",
+          "uri": "https://github.com/Deicyde/riemann-hypothesis/blob/a172c464fd4bcfc4f53e394dcba45d742b1409a6/src/Formalism/IncomingBounds/FlowDegreeBounds/MaxFlowValueAttained.lean"
+        }
+      }
+    }
+  ],
+  "transformations": [
+    {
+      "ID": "b2.derive.primal",
+      "Pass": "B2",
+      "From": "b2.instance",
+      "Premises": null,
+      "To": "b2.primal",
+      "Relation": "implies",
+      "Obligations": null,
+      "Losses": null,
+      "Provenance": {
+        "kind": "standard_reference",
+        "citation": "B2 exact Go replay",
+        "uri": "byproducts/cyclic.go"
+      },
+      "Theorem": "",
+      "Bindings": null,
+      "Trusted": false
+    },
+    {
+      "ID": "b2.derive.dual",
+      "Pass": "B2",
+      "From": "b2.instance",
+      "Premises": null,
+      "To": "b2.dual",
+      "Relation": "implies",
+      "Obligations": null,
+      "Losses": null,
+      "Provenance": {
+        "kind": "standard_reference",
+        "citation": "B2 exact Go replay",
+        "uri": "byproducts/cyclic.go"
+      },
+      "Theorem": "",
+      "Bindings": null,
+      "Trusted": false
+    },
+    {
+      "ID": "b2.derive.certificate",
+      "Pass": "B2",
+      "From": "b2.primal",
+      "Premises": [
+        "b2.dual"
+      ],
+      "To": "b2.certificate",
+      "Relation": "implies",
+      "Obligations": null,
+      "Losses": null,
+      "Provenance": {
+        "kind": "standard_reference",
+        "citation": "B2 exact Go replay",
+        "uri": "byproducts/cyclic.go"
+      },
+      "Theorem": "",
+      "Bindings": null,
+      "Trusted": false
+    },
+    {
+      "ID": "b2.derive.optimality",
+      "Pass": "B2",
+      "From": "b2.certificate",
+      "Premises": null,
+      "To": "b2.optimality",
+      "Relation": "implies",
+      "Obligations": null,
+      "Losses": null,
+      "Provenance": {
+        "kind": "standard_reference",
+        "citation": "B2 exact Go replay",
+        "uri": "byproducts/cyclic.go"
+      },
+      "Theorem": "",
+      "Bindings": null,
+      "Trusted": false
+    },
+    {
+      "ID": "b2.derive.lean-proof",
+      "Pass": "B2",
+      "From": "b2.universal",
+      "Premises": null,
+      "To": "b2.lean-proof",
+      "Relation": "implies",
+      "Obligations": null,
+      "Losses": null,
+      "Provenance": {
+        "kind": "standard_reference",
+        "citation": "Pinned Lean declarations",
+        "uri": "https://github.com/Deicyde/riemann-hypothesis/blob/a172c464fd4bcfc4f53e394dcba45d742b1409a6/src/Formalism/IncomingBounds/FlowDegreeBounds/MaxFlowValueAttained.lean"
+      },
+      "Theorem": "",
+      "Bindings": null,
+      "Trusted": false
+    },
+    {
+      "ID": "b2.derive.formal-status",
+      "Pass": "B2",
+      "From": "b2.lean-proof",
+      "Premises": null,
+      "To": "b2.formal-status",
+      "Relation": "implies",
+      "Obligations": null,
+      "Losses": null,
+      "Provenance": {
+        "kind": "standard_reference",
+        "citation": "Pinned Lean declarations",
+        "uri": "https://github.com/Deicyde/riemann-hypothesis/blob/a172c464fd4bcfc4f53e394dcba45d742b1409a6/src/Formalism/IncomingBounds/FlowDegreeBounds/MaxFlowValueAttained.lean"
+      },
+      "Theorem": "",
+      "Bindings": null,
+      "Trusted": false
+    }
+  ]
+}

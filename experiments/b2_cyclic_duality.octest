@@ -1,0 +1,117 @@
+package Main
+
+fn Power(base: Int, exponent: Int) -> Int {
+    var result = 1
+    for i in 0 .. exponent { result = result * base }
+    return result
+}
+
+fn Row(size: Int) -> Int[] {
+    var result: Int[] = []
+    for i in 0 .. size { result = Append(result, 0) }
+    return result
+}
+
+// Exact fraction-free primal simplex with Bland's entering and leaving rules.
+// Each tableau represents one common denominator.
+fn Solve(l: Int, d: Int, capacities: Int[]) -> Int[] {
+    let offsets = d / 2
+    let edges = d * offsets
+    let rhs = edges + d
+    var basic: Int[] = []
+    var table: Int[][] = []
+    for s in 0 .. (d + 1) { table = Append(table, Row(rhs + 1)) }
+    for s in 0 .. d {
+        table[s][edges+s] = 1
+        table[s][rhs] = capacities[s]
+        basic = Append(basic, edges+s)
+        for j in 0 .. offsets {
+            let i = 2*j+1
+            let col = s * offsets + j
+            table[s][col] = Power(l, i)
+            table[(s+i)%d][col] = 1
+            table[d][col] = -1
+        }
+    }
+    var den = 1
+    for step in 0 .. 256 {
+        var enter = -1
+        for c in 0 .. rhs {
+            if enter == -1 and table[d][c] < 0 { enter = c }
+        }
+        if enter == -1 {
+            var numerators = Row(edges)
+            for r in 0 .. d {
+                if basic[r] < edges { numerators[basic[r]] = table[r][rhs] }
+            }
+            var result = [den]
+            for c in 0 .. edges { result = Append(result,numerators[c]) }
+            for r in 0 .. d { result = Append(result,table[d][edges+r]) }
+            return result
+        }
+        var leave = -1
+        for r in 0 .. d {
+            if table[r][enter] > 0 {
+                if leave == -1 { leave = r }
+                else {
+                    let a = table[r][rhs] * table[leave][enter]
+                    let b = table[leave][rhs] * table[r][enter]
+                    if a < b or (a == b and basic[r] < basic[leave]) { leave = r }
+                }
+            }
+        }
+        if leave == -1 { return Row(0) }
+        let pivot = table[leave][enter]
+        for r in 0 .. (d+1) {
+            if r != leave {
+                let multiplier = table[r][enter]
+                for c in 0 .. (rhs+1) {
+                    let scaled = pivot * table[r][c] - multiplier * table[leave][c]
+                    if scaled % den != 0 { return Row(0) }
+                    table[r][c] = scaled / den
+                }
+            }
+        }
+        den = pivot
+        basic[leave] = enter
+    }
+    return Row(0)
+}
+
+fn ExportCase(l: Int, d: Int, capacities: Int[]) -> String {
+    let solved = Solve(l,d,capacities)
+    if Len(solved) == 0 { return "unsolved" }
+    var parts = [ToString(l),ToString(d)]
+    for i in 0 .. Len(capacities) { parts = Append(parts,ToString(capacities[i])) }
+    for i in 0 .. Len(solved) { parts = Append(parts,ToString(solved[i])) }
+    return StringJoin(parts," ")
+}
+
+fn Discover() -> String[] {
+    var result: String[] = []
+    // Same base and budget box as the B1 independent replay.
+    for l in 3 .. 8 {
+        for a in 0 .. 9 {
+            for b in 0 .. 9 { result = Append(result, ExportCase(l,2,[a,b])) }
+        }
+    }
+    // Sweep one capacity from zero through the active-set breakpoints.
+    for a in 0 .. 13 {
+        result = Append(result,ExportCase(3,4,[a,4,0,1]))
+        result = Append(result,ExportCase(3,6,[a,4,0,1,0,2]))
+    }
+    result = Append(result,ExportCase(3,4,[27,0,0,1]))
+    result = Append(result,ExportCase(3,6,[243,0,0,0,0,1]))
+    result = Append(result,ExportCase(3,6,[1,1,1,1,1,1]))
+    result = Append(result,ExportCase(7,2,[9007199254740993,9007199254740991]))
+    return result
+}
+
+[Fact]
+fn ExportCyclicCertificates() -> Void ! Error {
+    let rows = Discover()
+    Assert.Equal(435, Len(rows), "bounded search size")
+    Assert.Equal("3 2 1 1 8 2 2 2 2", rows[10], "balanced two-letter certificate")
+    for i in 0 .. Len(rows) { Assert.True(rows[i] != "unsolved", "simplex finished") }
+    let _ = FileWriteLines("certificates.txt",rows)?
+}

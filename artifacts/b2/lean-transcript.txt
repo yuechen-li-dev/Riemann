@@ -1,0 +1,39 @@
+B2 isolated WSL run. Selected command and status lines, with complete Check.lean output below.
+201476c18ccbb46a0022e76b63901c7feea2a565b8f9802910d9c36285791ba6  Formalism/IncomingBounds/IncomingBound.lean
+18d881da800499e504baa5eb485c4cc800837fa4f14a87fa217b504ea4a903b9  Formalism/IncomingBounds/FlowDegreeBounds/MaxFlowValueAttained.lean
++ lean --version
+Lean (version 4.33.1, x86_64-unknown-linux-gnu, commit 819816b2e0a3bf405af45ae5c7af2491d8f5bee6, Release)
+Lake version 5.0.0-src+819816b (Lean version 4.33.1)
++ lake update
++ test 0df444a360eaa60ab8c11dca51a86af692955474 = 0df444a360eaa60ab8c11dca51a86af692955474
++ lake exe cache get Mathlib
++ lake build Formalism.IncomingBounds.FlowDegreeBounds.MaxFlowValueAttained
+✔ [8706/8707] Built Formalism.IncomingBounds.IncomingBound (7.2s)
+⚠ [8707/8707] Built Formalism.IncomingBounds.FlowDegreeBounds.MaxFlowValueAttained (6.2s)
+Build completed successfully (8707 jobs).
++ lake env lean -DwarningAsError=true Check.lean
+Axiom policy passed for Formalism.IncomingBounds.maxFlowValueAttained
+Axiom policy passed for Formalism.IncomingBounds.strongDuality
++ lake env leanchecker -v Formalism.IncomingBounds
+replaying Formalism.IncomingBounds.IncomingBound
+replaying Formalism.IncomingBounds.FlowDegreeBounds.MaxFlowValueAttained
+exit 0
+
+Formalism.IncomingBounds.FlowAttained : Prop
+Formalism.IncomingBounds.LemmaFa : Prop
+def Formalism.IncomingBounds.FlowAttained : Prop :=
+∀ (l d : ℕ) [inst : NeZero d],
+  3 ≤ l → 2 ≤ d → Even d → ∀ (D : ZMod d → ℝ), 0 ≤ D → ∃ x, IsFlow l d D x ∧ flowVal d x = maxFlow l d D
+def Formalism.IncomingBounds.LemmaFa : Prop :=
+∀ (l d : ℕ) [inst : NeZero d],
+  3 ≤ l →
+    2 ≤ d →
+      Even d →
+        ∀ (D : ZMod d → ℝ),
+          0 ≤ D →
+            (∃ sig, IsDual l d sig ∧ IsDualAll l d sig ∧ Fnum l d D = ∑ s, D s * (gam l - sig s)) ∧
+              IsGreatest {t | ∃ sig, IsDual l d sig ∧ t = ∑ s, D s * (gam l - sig s)} (Fnum l d D)
+Formalism.IncomingBounds.maxFlowValueAttained : FlowAttained
+Formalism.IncomingBounds.strongDuality : LemmaFa
+'Formalism.IncomingBounds.maxFlowValueAttained' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Formalism.IncomingBounds.strongDuality' depends on axioms: [propext, Classical.choice, Quot.sound]
