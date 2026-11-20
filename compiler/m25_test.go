@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"fmt"
+	"math/big"
 	"os"
 	"strings"
 	"testing"
@@ -19,6 +20,23 @@ func TestM25SuccessAClosesOnlyContactPreservingComponent(t *testing.T) {
 	}
 	if !strings.Contains(r.Certificate.Optimum.Scope, "contact-preserving") || strings.Contains(r.Certificate.Optimum.Scope, "all two-atom") {
 		t.Fatalf("M25 scope overclaim: %s", r.Certificate.Optimum.Scope)
+	}
+}
+
+func TestM25ReportedJUsesComponentObjectiveLowerEndpoint(t *testing.T) {
+	r, err := testM25()
+	if err != nil {
+		t.Fatal(err)
+	}
+	lower := r.Certificate.Optimum.Objective.Lower
+	c, ok := new(big.Rat).SetString(lower)
+	if !ok {
+		t.Fatalf("invalid M25 objective endpoint %q", lower)
+	}
+	j := new(big.Rat).Sub(big.NewRat(2, 1), c)
+	if !strings.HasPrefix(r.BestCertifiedC, "c_* >= "+lower+" ") ||
+		!strings.HasPrefix(r.BestCertifiedJ, "J_* <= "+j.FloatString(16)+" from J=2-c ") {
+		t.Fatalf("inconsistent M25 projection of %s: %s, %s", lower, r.BestCertifiedC, r.BestCertifiedJ)
 	}
 }
 

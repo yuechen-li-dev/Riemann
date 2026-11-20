@@ -139,6 +139,13 @@ func (g *Graph) AddTransformation(t Transformation) error {
 	if t.Relation == Equivalent && from.Exactness != to.Exactness {
 		return fmt.Errorf("equivalence %q changes exactness", t.ID)
 	}
+	if a, ok := from.Proposition.(semantic.ExternalStatement); ok {
+		if b, ok := to.Proposition.(semantic.ExternalStatement); ok && a.Instance != "" && b.Instance == "" {
+			return fmt.Errorf("transformation %q generalizes a finite external instance", t.ID)
+		} else if ok && t.Relation.Reversible() && a.Instance == "" && b.Instance != "" {
+			return fmt.Errorf("transformation %q reversibly restricts an external statement to one instance", t.ID)
+		}
+	}
 	for _, required := range structuralLosses(from.Proposition, to.Proposition) {
 		if !hasLoss(t.Losses, required) {
 			return fmt.Errorf("transformation %q fails to declare structural loss %s", t.ID, required)
@@ -402,7 +409,7 @@ type ProofAttempt struct {
 }
 
 func (g *Graph) AttemptProof(fromID, targetID semantic.ClaimID) ProofAttempt {
-	attempt := g.CheckDischarge(fromID, targetID)
+	attempt := g.checkDischarge(fromID, targetID, true)
 	if len(attempt.Diagnostics) != 0 {
 		return attempt
 	}
@@ -414,6 +421,10 @@ func (g *Graph) AttemptProof(fromID, targetID semantic.ClaimID) ProofAttempt {
 }
 
 func (g *Graph) CheckDischarge(fromID, targetID semantic.ClaimID) ProofAttempt {
+	return g.checkDischarge(fromID, targetID, false)
+}
+
+func (g *Graph) checkDischarge(fromID, targetID semantic.ClaimID, requireTrust bool) ProofAttempt {
 	attempt := ProofAttempt{From: fromID, Target: targetID}
 	from, fromOK := g.claims[fromID]
 	target, targetOK := g.claims[targetID]
@@ -424,10 +435,14 @@ func (g *Graph) CheckDischarge(fromID, targetID semantic.ClaimID) ProofAttempt {
 	if from.Exactness == semantic.Approximate && target.Exactness == semantic.Exact {
 		attempt.Diagnostics = append(attempt.Diagnostics, Diagnostic{ApproximationBoundary, "an approximate or numerical claim cannot certify an exact theorem target"})
 	}
-	path, found := g.findPath(fromID, targetID)
+	path, found := g.findPath(fromID, targetID, requireTrust)
+	if !found && requireTrust {
+		// Retain a source-only path for diagnostics when no trusted route exists.
+		path, found = g.findPath(fromID, targetID, false)
+	}
 	if !found {
 		message := fmt.Sprintf("no established transformation permits %s → %s", fromID, targetID)
-		if reversePath, ok := g.findPath(targetID, fromID); ok {
+		if reversePath, ok := g.findPath(targetID, fromID, false); ok {
 			for _, step := range reversePath {
 				if !step.Relation.Reversible() {
 					message = fmt.Sprintf("%s is directional (%s → %s) and cannot be traversed backward", step.Relation, step.From, step.To)
@@ -444,6 +459,9 @@ func (g *Graph) CheckDischarge(fromID, targetID semantic.ClaimID) ProofAttempt {
 	}
 	if found {
 		for _, step := range path {
+			if requireTrust && step.Theorem != "" && !step.Trusted {
+				attempt.Diagnostics = append(attempt.Diagnostics, Diagnostic{UncertifiedEvidence, fmt.Sprintf("theorem contract %s is not trusted", step.Theorem)})
+			}
 			for _, loss := range step.Losses {
 				if g.lossBlocksTarget(step, loss.Kind, target.Proposition) {
 					attempt.Diagnostics = append(attempt.Diagnostics, Diagnostic{InformationLost, fmt.Sprintf("path loses %s: %s", loss.Kind, loss.Reason)})
@@ -537,7 +555,7 @@ func functionClassShapeSubset(sub, sup semantic.FunctionClass) bool {
 	return sub.Kind == semantic.FiniteFunctionClass && sup.Kind == semantic.WeilNiceFunctionClass && sub.TransformConvention == sup.TransformConvention
 }
 
-func (g *Graph) findPath(from, target semantic.ClaimID) ([]Transformation, bool) {
+func (g *Graph) findPath(from, target semantic.ClaimID, requireTrust bool) ([]Transformation, bool) {
 	if from == target {
 		return nil, true
 	}
@@ -551,6 +569,9 @@ func (g *Graph) findPath(from, target semantic.ClaimID) ([]Transformation, bool)
 		current := queue[0]
 		queue = queue[1:]
 		for _, t := range g.transformations {
+			if requireTrust && t.Theorem != "" && !t.Trusted {
+				continue
+			}
 			var next semantic.ClaimID
 			if t.From == current.id {
 				next = t.To

@@ -1,0 +1,20 @@
+package A1ClaudeDivisibility
+
+// For two integer entries, v_2((a+b)/2) >= 1 iff 4 divides a+b.
+// Restrict to positive entries so that cancellation to zero is excluded.
+[Fact]
+fn FirstAveragingFailure() -> Void {
+    var firstA = 0
+    var firstB = 0
+    for a in 1 .. 5 {
+        for b in a .. 5 {
+            if firstA == 0 and (a + b) % 4 == 0 and (a % 2 == 1 or b % 2 == 1) {
+                firstA = a
+                firstB = b
+            }
+        }
+    }
+    Print("REDUCED_MODEL_COUNTEREXAMPLE row=" + ToString(firstA) + "," + ToString(firstB))
+    Assert.Equal(1, firstA, "first entry")
+    Assert.Equal(3, firstB, "second entry")
+}

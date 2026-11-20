@@ -440,6 +440,10 @@ func (c Claim) Validate() error {
 		return fmt.Errorf("claim %q has invalid exactness %q", c.ID, c.Exactness)
 	}
 	switch p := c.Proposition.(type) {
+	case ExternalStatement:
+		if p.Predicate == "" || p.Revision == "" {
+			return fmt.Errorf("claim %q lacks an external predicate or revision", c.ID)
+		}
 	case QuantifiedStatement:
 		if err := p.Validate(); err != nil {
 			return fmt.Errorf("claim %q: %w", c.ID, err)
@@ -559,6 +563,8 @@ func Quantified(p Proposition) (QuantifiedStatement, bool) {
 // Display-only representation formulae and affordances are deliberately absent.
 func SemanticKey(p Proposition) string {
 	switch v := p.(type) {
+	case ExternalStatement:
+		return fmt.Sprintf("external|%q|%q|%q", v.Revision, v.Predicate, v.Instance)
 	case QuantifiedStatement:
 		return fmt.Sprintf("q|%s|%s|%d|%d|%s|%d", v.Quantifier, v.Domain.Kind, v.Domain.Function, v.Domain.Bound, v.Predicate.Kind, v.Predicate.Function)
 	case RepresentationProposition:

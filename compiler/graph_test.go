@@ -98,6 +98,29 @@ func TestTypedDomainAlgebra(t *testing.T) {
 	}
 }
 
+func TestSourceOnlyTheoremCannotProveEvenFromCertifiedPremises(t *testing.T) {
+	g := NewGraph()
+	mustAddClaim(t, g, authoredClaim("premise", semantic.DefinitionEvidence))
+	mustAddClaim(t, g, derivedClaim("conclusion", []semantic.ClaimID{"premise"}, "external"))
+	tr := Transformation{ID: "external", Pass: "test", From: "premise", To: "conclusion", Relation: Implies, Theorem: "external.declaration"}
+	if err := g.AddTransformation(tr); err != nil {
+		t.Fatal(err)
+	}
+	if !g.CheckDischarge(tr.From, tr.To).Accepted {
+		t.Fatal("lost the structural dependency")
+	}
+	if a := g.AttemptProof(tr.From, tr.To); a.Accepted || !hasCode(a.Diagnostics, UncertifiedEvidence) {
+		t.Fatal(a)
+	}
+	tr.ID, tr.Theorem, tr.Trusted = "reconstructed", "test.independent", true
+	if err := g.AddTransformation(tr); err != nil {
+		t.Fatal(err)
+	}
+	if a := g.AttemptProof(tr.From, tr.To); !a.Accepted {
+		t.Fatal(a)
+	}
+}
+
 func TestUniversalDomainRestrictionAndReverseRejection(t *testing.T) {
 	g := NewGraph()
 	source := semantic.Claim{ID: "all-zeros", Proposition: criticalLineStatement(semantic.ForAll, semantic.NontrivialZeros(semantic.RiemannZeta)), Evidence: []semantic.Evidence{{Kind: semantic.KnownTheoremEvidence, Source: testReference}}, Exactness: semantic.Exact, Provenance: semantic.Provenance{Kind: semantic.AuthoredProvenance, Source: testReference}}
