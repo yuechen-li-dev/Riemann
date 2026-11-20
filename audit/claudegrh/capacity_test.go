@@ -91,3 +91,27 @@ func TestA4PartitionBoundary(t *testing.T) {
 		}
 	}
 }
+
+// Saturate both size bounds in MeanNum.tot_arith. Choose x=2^(300q),
+// epsilon=1/q so every fractional power in the hypotheses is integral.
+// Clearing x^-12 compares integers. This checks the scalar budget only.
+func TestA4AccumulatedShareBudget(t *testing.T) {
+	pow2 := func(n uint) *big.Int { return new(big.Int).Lsh(big.NewInt(1), n) }
+	for _, q := range []uint{53, 100, 1000} {
+		logX := 300 * q
+		// x^(1/2+epsilon/100), 2*x^(2+8epsilon+epsilon/100).
+		m := pow2(logX/2 + 3)
+		tops := pow2(1 + 2*logX + 2400 + 3)
+		// The source's remaining large-x hypothesis is 48 <= x^delta.
+		// log_2(x^delta) = 150q - 2906.
+		if pow2(150*q-2906).Cmp(big.NewInt(48)) < 0 {
+			t.Fatal("large-x hypothesis failed")
+		}
+		cost := new(big.Int).Add(pow2(300), big.NewInt(1))
+		cost.Mul(cost, m).Mul(cost, tops).Mul(cost, pow2(100))
+		cost.Mul(cost, new(big.Int).Add(pow2(100), big.NewInt(2)))
+		if cost.Cmp(pow2(3*logX-2)) > 0 {
+			t.Fatalf("epsilon=1/%d: combined cost exceeds x^3/4", q)
+		}
+	}
+}
