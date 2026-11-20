@@ -5,6 +5,7 @@ package claudegrh
 import (
 	"fmt"
 	"slices"
+	"strings"
 
 	"github.com/yuechen-li-dev/Riemann/compiler"
 	"github.com/yuechen-li-dev/Riemann/semantic"
@@ -31,12 +32,19 @@ type statement struct {
 	scope     scope
 }
 
+func (s statement) name() string {
+	if strings.HasPrefix(string(s.predicate), "a2.") {
+		return string(s.predicate)
+	}
+	return "a1." + string(s.predicate)
+}
+
 func (s statement) id() semantic.ClaimID {
-	return semantic.ClaimID(fmt.Sprintf("a1.%s.%s", s.predicate, s.scope))
+	return semantic.ClaimID(fmt.Sprintf("%s.%s", s.name(), s.scope))
 }
 
 func (s statement) proposition() semantic.ExternalStatement {
-	p := semantic.ExternalStatement{Predicate: "a1." + string(s.predicate), Revision: Revision}
+	p := semantic.ExternalStatement{Predicate: s.name(), Revision: Revision}
 	switch s {
 	case finite:
 		p.Instance = "Q, row=(2,4), p=2, sigma=tau=1"
@@ -91,6 +99,10 @@ func ref(path, name string) semantic.Reference {
 // apply uses only the recorded signature, even when a caller proposes a
 // differently scoped bound with the same underlying pairing predicate.
 func (r rule) apply(g *compiler.Graph, args ...statement) error {
+	return r.applyIn(g, "A1", args...)
+}
+
+func (r rule) applyIn(g *compiler.Graph, pass string, args ...statement) error {
 	if !slices.Equal(args, r.inputs) {
 		return fmt.Errorf("%s requires %v, got %v", r.name, r.inputs, args)
 	}
@@ -113,13 +125,17 @@ func (r rule) apply(g *compiler.Graph, args ...statement) error {
 	}); err != nil {
 		return err
 	}
-	return g.AddTransformation(compiler.Transformation{ID: tr, Pass: "A1", From: parents[0], Premises: parents[1:], To: id,
+	return g.AddTransformation(compiler.Transformation{ID: tr, Pass: pass, From: parents[0], Premises: parents[1:], To: id,
 		Relation: compiler.Implies, Theorem: proof, Trusted: false, Provenance: src})
 }
 
 // ProofGraph constructs an isolated graph. Source use, even with a paper
 // reconstruction of a rule, cannot certify a concrete application in Go.
 func ProofGraph() (*compiler.Graph, error) {
+	return proofGraph(false)
+}
+
+func proofGraph(withSelection bool) (*compiler.Graph, error) {
 	g := compiler.NewGraph()
 	add := func(s statement, src semantic.Reference, kind semantic.EvidenceKind, note string) error {
 		c := semantic.Claim{ID: s.id(), Proposition: s.proposition(), Exactness: semantic.Exact,
@@ -145,6 +161,9 @@ func ProofGraph() (*compiler.Graph, error) {
 		{analytic, topWin + "#L68", "level_of_tiedWin (FormBAt and arbitrary small positive epsilon); imprimitive extension in TopPlug"},
 		{conditional, "Formalism/SharpRestriction/Divisibility/LocalQuadraticParts.lean", "assumed period bound"},
 	} {
+		if withSelection && x.s == periods {
+			continue // A2 expands the derivation of this A1 input.
+		}
 		if err := add(x.s, ref(x.path, x.name), semantic.UnverifiedConjectureEvidence, "open in Riemann"); err != nil {
 			return nil, err
 		}
@@ -163,6 +182,11 @@ func ProofGraph() (*compiler.Graph, error) {
 		}
 		src := semantic.Reference{Kind: semantic.ExperimentRecord, Citation: fmt.Sprintf("A1 Go replay, p=2 sigma=tau=1 row=%v", x.row)}
 		if err := add(x.s, src, semantic.CertifiedComputationEvidence, string(got.Outcome)); err != nil {
+			return nil, err
+		}
+	}
+	if withSelection {
+		if err := addSelectionTrace(g); err != nil {
 			return nil, err
 		}
 	}

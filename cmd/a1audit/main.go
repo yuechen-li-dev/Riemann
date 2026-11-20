@@ -16,14 +16,19 @@ import (
 func run() error {
 	path := flag.String("replay", "", "replay a JSON instance (default: discover the first averaging failure)")
 	graph := flag.Bool("graph", false, "show pinned proof dependencies and their evidence status")
+	a2 := flag.Bool("a2-graph", false, "show the A2 selection premises in the RH dependency graph")
 	flag.Parse()
 	out := json.NewEncoder(os.Stdout)
 	out.SetIndent("", "  ")
-	if flag.NArg() != 0 || (*graph && *path != "") {
-		return fmt.Errorf("choose discovery, -replay FILE, or -graph")
+	if flag.NArg() != 0 || ((*graph || *a2) && *path != "") || (*graph && *a2) {
+		return fmt.Errorf("choose discovery, -replay FILE, -graph, or -a2-graph")
 	}
-	if *graph {
-		g, err := claudegrh.ProofGraph()
+	if *graph || *a2 {
+		build := claudegrh.ProofGraph
+		if *a2 {
+			build = claudegrh.SimultaneousGraph
+		}
+		g, err := build()
 		if err != nil {
 			return err
 		}

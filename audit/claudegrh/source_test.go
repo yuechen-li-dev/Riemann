@@ -40,7 +40,17 @@ func TestPinnedSourceUses(t *testing.T) {
 	}
 	defer gz.Close()
 	const characterBoxes = "Development/AutomorphicArithmetic/CharacterBoxes/"
+	const satake = "Development/AbelianVarietyTheory/Proofs/SatakeParameters/"
 	sites := map[string]map[int]string{
+		satake + "UnitaryWeightModels.lean":                              {27: "h0, LC, hLC", 29: "LC h0", 30: "E LC", 31: "hLC μ hU u w hg hQ).2"},
+		satake + "LocalSystemsLowerBoundsSecondRealPlace.lean":           {53: "fun v j => if", 54: "FOrb D j", 60: "local_model_bound_place_over_second_embedding", 64: "low_term_le_second_real_place_bounds", 66: "hr2"},
+		satake + "LocalModelBoundPlaceOverSecondEmbeddingStatement.lean": {12: "GlobalTheory.TwU.LowF.lowAt_F"},
+		satake + "RowTwUHolds.lean":                                      {24: "rowTwU_of_models"},
+		thirdPlace + "LinkROfIsLinked.lean":                              {76: "hServ_of_linkR"},
+		thirdPlace + "GServT.lean":                                       {15: "∃ LC", 16: "LC)", 29: "twU := h.twU"},
+		thirdPlace + "ClosedFamilyAdmissibleTwistLink.lean":              {29: "closed_servF_of_servT_of_dGamSize", 31: "admissible_family_of_inclusion"},
+		service: {128: "lowS", 201: "⟨LC, hV, hSys⟩", 202: "hSys", 220: "hV hAdm"},
+		"Formalism/LocalRingCardinality/DataRows.lean": {56: "muAt_conj", 60: "muAt_or"},
 		topWin: {28: "Λ.Gm x ≤ x ^ ((1 : ℝ) / 2 + (eD + eL + 7) * eps)", 75: "exists_small_eps", 77: "h112 eD eL ε", 78: "refine hB"},
 		characterBoxes + "ZeroFreeAllOfTopG.lean":                                               {28: "zeroFreeOn_of_tiedWin_cyc", 29: "level_gm_le_on_family_scales"},
 		"Development/AutomorphicArithmetic/PrimitiveCosets/LevelGmLeOnFamilyScales.lean":        {30: "windowInequality_of_artinInputs"},
