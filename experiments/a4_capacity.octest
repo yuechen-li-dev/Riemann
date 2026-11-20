@@ -1,0 +1,28 @@
+package A4Capacity
+
+// Signed reach for a top row of length t at letter 0 and partition
+// (u,v) at letter 1. Odd shifts of absolute value >= 3 cost at least 125.
+[Fact]
+fn SignedReachAtFive() -> Void {
+    var shapes = 0
+    var allocations = 0
+    var both = 0
+    for t in 0 .. 6 {
+        for u in 0 .. 6 {
+            for v in 0 .. 6 {
+                if v <= u and u + v <= 5 {
+                    shapes = shapes + 1
+                    var orders = 1
+                    if t >= 5 and u + v >= 5 {
+                        both = both + 1
+                        orders = 2
+                    }
+                    allocations = allocations + orders * (v + 1)
+                }
+            }
+        }
+    }
+    Assert.Equal(72, shapes, "partition pairs")
+    Assert.Equal(3, both, "two signs at one destination")
+    Assert.Equal(126, allocations, "supported monomials and label orders")
+}

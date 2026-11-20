@@ -44,6 +44,15 @@ func TestPinnedSourceUses(t *testing.T) {
 	const gauss = "Formalism/GaussJetBounds/"
 	const jet = "Formalism/SharpRestriction/Divisibility/JetPolynomialLogs/"
 	sites := map[string]map[int]string{
+		gauss + "GaussJetProofs/FrameA.lean":                                                                     {205: "let spec", 207: "hspec_e"},
+		gauss + "GaussJetProofs/ThmAOp.lean":                                                                     {335: "op_prod_shape", 388: "sum_filter_rows", 391: "= {r0}", 402: "exact hcap"},
+		gauss + "GaussJetProofs/CapacityLeReachCapacity.lean":                                                    {278: "rowRadiusAssembly : ThmAAssembly"},
+		"Development/AbelianVarietyTheory/Proofs/GlobalInterpolation/LinkGl.lean":                                {30: "hGLm.link8"},
+		"Development/AbelianVarietyTheory/Proofs/GlobalInterpolation/WindowShareRequirementClosedFormProof.lean": {24: "family_first_bound_of_theorem", 37: "meanEx_of", 41: "RangeOne.rangeOne_abs"},
+		"Formalism/SharpRestriction/GrowthBounds/PlaneCountTheoremWithConstants.lean":                            {969: "Conclusion2Family", 971: "⟨C, hC0, x0"},
+		"Formalism/SharpRestriction/GrowthBounds/ProjectionLemmaBaseLevel.lean":                                  {80: "HypI", 83: "meanKap", 91: "LPprime"},
+		"Formalism/LocalToGlobal/GlobalTheory/LossRequirementsOfSmallShares.lean":                                {129: "loss_setting_family", 340: "chosenWS_of_wall"},
+		"Formalism/SizeWindowBrackets/ChainSlopeWindows/DiscriminantSettingSatisfied.lean":                       {201: "loss_bound", 209: "second_discriminant_bound", 216: "io_discriminant_bound"},
 		gauss + "Statement.lean":                                         {98: "def LemmaS", 104: "¬ IsBiPower"},
 		gauss + "OneLetterRadius.lean":                                   {17: "lemmaS : LemmaS", 19: "binomial_coefficient_extraction"},
 		gauss + "GaussJetProofs/TheoremAOneMonomialLogLoss.lean":         {239: "lemmaS.{u} lemma_R_log_loss"},
