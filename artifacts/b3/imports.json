@@ -1,0 +1,3203 @@
+{
+  "archive_sha256": "2757f699bc40beff25a67722696f55be68009e00ce6b27ad6fdc95a79df38d75",
+  "closure_sizes": {
+    "GroundTheory.GlobalFields.TateThesis.Chebotarev": 351,
+    "GroundTheory.GlobalFields.TateThesis.ChebotarevAbelian": 346,
+    "GroundTheory.GlobalFields.TateThesis.ChebotarevCount": 57,
+    "GroundTheory.GlobalFields.TateThesis.DegreeOneDensity": 9
+  },
+  "declarations": {
+    "GroundTheory.Global.HasDirichletDensity.union": {
+      "header": "theorem HasDirichletDensity.union {A B : Set (HeightOneSpectrum (\ud835\udcde K))} {a b : \u211d}\n    (hA : A.HasDirichletDensity a) (hB : B.HasDirichletDensity b) (hd : Disjoint A B) :\n    (A \u222a B).HasDirichletDensity (a + b)",
+      "line": 55
+    },
+    "GroundTheory.Global.hasDirichletDensity_chebotarevSet": {
+      "header": "theorem hasDirichletDensity_chebotarevSet (C : Set Gal(L/K))\n    (hC : \u2200 \u03c3 \u2208 C, \u2200 \u03c4 : Gal(L/K), \u03c4 * \u03c3 * \u03c4\u207b\u00b9 \u2208 C) :\n    (chebotarevSet C).HasDirichletDensity (Nat.card C / Nat.card Gal(L/K))",
+      "line": 198
+    },
+    "GroundTheory.Global.hasDirichletDensity_chebotarevSet_isConj": {
+      "header": "theorem hasDirichletDensity_chebotarevSet_isConj (\u03c3 : Gal(L/K)) :\n    (chebotarevSet {\u03c4 : Gal(L/K) | IsConj \u03c3 \u03c4}).HasDirichletDensity\n      (1 / Nat.card (Subgroup.centralizer {\u03c3}))",
+      "line": 114
+    },
+    "GroundTheory.Global.hasDirichletDensity_deuringSet": {
+      "header": "theorem hasDirichletDensity_deuringSet (\u03c3 : Gal(L/K)) :\n    (deuringSet \u03c3).HasDirichletDensity (1 / orderOf \u03c3)",
+      "line": 92
+    }
+  },
+  "external_imports": [
+    "Mathlib"
+  ],
+  "modules": {
+    "Development.AutomorphicArithmetic.IntegralCasts.CapelliIdentities.ContinuousToZModPow": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/Development/AutomorphicArithmetic/IntegralCasts/CapelliIdentities/ContinuousToZModPow.lean",
+      "sha256": "07469037fb33e34d21e2b4d7d9811c69b5f1badd77e43b279d19331172faecd8"
+    },
+    "Development.AutomorphicArithmetic.IntegralCasts.CapelliIdentities.CyclicSubtraction": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/Development/AutomorphicArithmetic/IntegralCasts/CapelliIdentities/CyclicSubtraction.lean",
+      "sha256": "c534cc4276b908e49182ac420676f91df5efd9f3063bef4ed2654960afd2362d"
+    },
+    "Development.AutomorphicArithmetic.IntegralCasts.CapelliIdentities.ExistsLimitOfApprox": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/Development/AutomorphicArithmetic/IntegralCasts/CapelliIdentities/ExistsLimitOfApprox.lean",
+      "sha256": "0658012deb7fee836f56dc6710cb5f7c83194b1374acbb420b29bbd4b182e457"
+    },
+    "Development.AutomorphicArithmetic.IntegralCasts.CapelliIdentities.ExistsRootOfAdicComplete": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/Development/AutomorphicArithmetic/IntegralCasts/CapelliIdentities/ExistsRootOfAdicComplete.lean",
+      "sha256": "d8a0749f218fa5a78a7f9d089552d64ec850a2cf4aaec6662e465a62ceb23bad"
+    },
+    "Development.AutomorphicArithmetic.IntegralCasts.CapelliIdentities.ExistsUniqueFixedPoint": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/Development/AutomorphicArithmetic/IntegralCasts/CapelliIdentities/ExistsUniqueFixedPoint.lean",
+      "sha256": "76b02309e29963f8d772e741d76c58ef1c30814f2e1b4d2c09f76672d06153f1"
+    },
+    "Development.AutomorphicArithmetic.IntegralCasts.CapelliIdentities.ExistsValuationSubLeOne": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/Development/AutomorphicArithmetic/IntegralCasts/CapelliIdentities/ExistsValuationSubLeOne.lean",
+      "sha256": "5619958611e0ceb50889b9256a90fc0a30fe7b478cb2f14d8949c6b5490a8630"
+    },
+    "Development.AutomorphicArithmetic.IntegralCasts.CapelliIdentities.InfiniteTraceAlgebraMap": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/Development/AutomorphicArithmetic/IntegralCasts/CapelliIdentities/InfiniteTraceAlgebraMap.lean",
+      "sha256": "734465b694238615715c4c3be145a07ce92116b727a3ea77b1208be9c688a467"
+    },
+    "Development.AutomorphicArithmetic.IntegralCasts.CapelliIdentities.SummableAbsNormRpowInv": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/Development/AutomorphicArithmetic/IntegralCasts/CapelliIdentities/SummableAbsNormRpowInv.lean",
+      "sha256": "eab51f06a9ba186277cfd115b998cbe5528022bf7556fd890841be45a0e41db9"
+    },
+    "Development.AutomorphicArithmetic.IntegralCasts.CapelliIdentities.TransferOfCompSubtype": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/Development/AutomorphicArithmetic/IntegralCasts/CapelliIdentities/TransferOfCompSubtype.lean",
+      "sha256": "0748fa56f090385c3dd4d5aecdb84bb5fd0edf97552227ecdadc6cc18f2ecb08"
+    },
+    "GroundTheory.GlobalFields.Adele.Approximation": {
+      "imports": [
+        "Mathlib",
+        "Development.AutomorphicArithmetic.IntegralCasts.CapelliIdentities.ExistsValuationSubLeOne"
+      ],
+      "path": "src/GroundTheory/GlobalFields/Adele/Approximation.lean",
+      "sha256": "d08a149d63a6736e99c00c16338bf1d34df9a136b54fb784ad829586bba8140f"
+    },
+    "GroundTheory.GlobalFields.Adele.BaseChange": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.Adele.BaseChange.AdeleEquiv"
+      ],
+      "path": "src/GroundTheory/GlobalFields/Adele/BaseChange.lean",
+      "sha256": "7e611a3fb95b5f8b66e411426a1b76482901d61a16f0b21ad71a13fcfc5e1fe6"
+    },
+    "GroundTheory.GlobalFields.Adele.BaseChange.AdeleEquiv": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.Adele.BaseChange.FiniteTensor",
+        "GroundTheory.GlobalFields.SemilocalAlgebras.InfiniteAdeleTopology"
+      ],
+      "path": "src/GroundTheory/GlobalFields/Adele/BaseChange/AdeleEquiv.lean",
+      "sha256": "544d0ab9b594e10425affacd54acad855039f47af1b2c42b21bb4a8c6eb720d1"
+    },
+    "GroundTheory.GlobalFields.Adele.BaseChange.FiniteCoord": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.Adele.BaseChange.FiniteMap"
+      ],
+      "path": "src/GroundTheory/GlobalFields/Adele/BaseChange/FiniteCoord.lean",
+      "sha256": "0a101c54b064d92d2a0c11ed5def898b47f5282a391e5ccc979bf457cbc72446"
+    },
+    "GroundTheory.GlobalFields.Adele.BaseChange.FiniteMap": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.SemilocalAlgebras.NormTrace",
+        "GroundTheory.GlobalFields.CompletionAtPlace.Integers"
+      ],
+      "path": "src/GroundTheory/GlobalFields/Adele/BaseChange/FiniteMap.lean",
+      "sha256": "375c0a2b2f17b6e330c56258dee7062452d511dcd0a071c55327b38299c77c25"
+    },
+    "GroundTheory.GlobalFields.Adele.BaseChange.FiniteTensor": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.Adele.BaseChange.FiniteCoord"
+      ],
+      "path": "src/GroundTheory/GlobalFields/Adele/BaseChange/FiniteTensor.lean",
+      "sha256": "fdb0266338ec487edf3c31fd3b81649fa08ac2a472e376344d1a4e7d975e451e"
+    },
+    "GroundTheory.GlobalFields.Adele.Compact": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.LocalAtPlace",
+        "GroundTheory.GlobalFields.Adele.Approximation",
+        "GroundTheory.GlobalFields.Adele.Discrete"
+      ],
+      "path": "src/GroundTheory/GlobalFields/Adele/Compact.lean",
+      "sha256": "8fadb9279758906d40dd448973e61c03b848b0690f745b3807db769fb6e631c2"
+    },
+    "GroundTheory.GlobalFields.Adele.Discrete": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.Adele.Approximation",
+        "GroundTheory.GlobalFields.Adele.IntegersLattice"
+      ],
+      "path": "src/GroundTheory/GlobalFields/Adele/Discrete.lean",
+      "sha256": "c928882e9d4a46dc16320872990b6ed20eefccc6a655c143a8eb13029e062306"
+    },
+    "GroundTheory.GlobalFields.Adele.IdeleBasis": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleGroups.InfiniteProjInfiniteEmbeddingOfNe",
+        "GroundTheory.GlobalFields.IdeleGroups.Restricted",
+        "GroundTheory.GlobalFields.Adele.Topology"
+      ],
+      "path": "src/GroundTheory/GlobalFields/Adele/IdeleBasis.lean",
+      "sha256": "f39cee032be21d4e178d587f6c1bfc0786198507b2fc75994c59f3f6ec5ebaf9"
+    },
+    "GroundTheory.GlobalFields.Adele.IntegersLattice": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/GroundTheory/GlobalFields/Adele/IntegersLattice.lean",
+      "sha256": "2425c46191a2a5717bace2c546fc6e5881e6bd2dc49f82991d40365a6c07dc76"
+    },
+    "GroundTheory.GlobalFields.Adele.Topology": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.LocalAtPlace",
+        "GroundTheory.GlobalFields.Adele.Approximation",
+        "GroundTheory.GlobalFields.IdeleGroups.InfiniteProjInfiniteEmbeddingOfNe",
+        "GroundTheory.GlobalFields.IdeleGroups.Restricted"
+      ],
+      "path": "src/GroundTheory/GlobalFields/Adele/Topology.lean",
+      "sha256": "3241831ce399844c6accdfa90abbf99c0dba831600f742b285b54c2c66a7dbcb"
+    },
+    "GroundTheory.GlobalFields.Adele.WeakApprox": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/GroundTheory/GlobalFields/Adele/WeakApprox.lean",
+      "sha256": "495e1a0f6562ed2ec1baa3e68559c72094e1b44e932c04f36880fd4c370bb238"
+    },
+    "GroundTheory.GlobalFields.Adele.WeakApproxUnits": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.Adele.WeakApprox"
+      ],
+      "path": "src/GroundTheory/GlobalFields/Adele/WeakApproxUnits.lean",
+      "sha256": "58729c0c7325cc960b5d105c65fa3d89eb1c763c67b6179986f963cef3031715"
+    },
+    "GroundTheory.GlobalFields.CompletionAtPlace": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.LocalFieldAtPlace",
+        "GroundTheory.LocalFields.Interface"
+      ],
+      "path": "src/GroundTheory/GlobalFields/CompletionAtPlace.lean",
+      "sha256": "dee0bda405172b4b8096b1bad2dfe53e167efbdf8a76ce7bab28bcd3ff2aa717"
+    },
+    "GroundTheory.GlobalFields.CompletionAtPlace.Degree": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.CompletionAtPlace.Integers"
+      ],
+      "path": "src/GroundTheory/GlobalFields/CompletionAtPlace/Degree.lean",
+      "sha256": "41ce097b4331e1a6dd197469583d078686ea9c3888e9f1ab8bdcd336a3a466c7"
+    },
+    "GroundTheory.GlobalFields.CompletionAtPlace.Galois": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.CompletionAtPlace.Degree"
+      ],
+      "path": "src/GroundTheory/GlobalFields/CompletionAtPlace/Galois.lean",
+      "sha256": "1c2cac3daf455f9b01752bf1a9d4afa217d960eb8b5f200374b782e516f4a76d"
+    },
+    "GroundTheory.GlobalFields.CompletionAtPlace.Inertia": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.CompletionAtPlace.Galois",
+        "GroundTheory.LocalFields.Ramification"
+      ],
+      "path": "src/GroundTheory/GlobalFields/CompletionAtPlace/Inertia.lean",
+      "sha256": "12cd7e9a66a33cb0ff6d190b53a9b4867b3d634c5e19f489f0729ca8e2971c9f"
+    },
+    "GroundTheory.GlobalFields.CompletionAtPlace.Integers": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.CompletionAtPlace"
+      ],
+      "path": "src/GroundTheory/GlobalFields/CompletionAtPlace/Integers.lean",
+      "sha256": "ae026a99b66b52b687d1e06960afeca020f6ee049da701e41f2dd94e9c6a88e9"
+    },
+    "GroundTheory.GlobalFields.CyclotomicCharacters.Character": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.ProfiniteInteger",
+        "GroundTheory.GlobalFields.CyclotomicCharacters.Frobenius"
+      ],
+      "path": "src/GroundTheory/GlobalFields/CyclotomicCharacters/Character.lean",
+      "sha256": "869a79567ec0f7231fe65c87e585110fb8328895b12dc4031f7abefbd26b4584"
+    },
+    "GroundTheory.GlobalFields.CyclotomicCharacters.ClosedSubgroups": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.CyclotomicCharacters.ProfinitePadic"
+      ],
+      "path": "src/GroundTheory/GlobalFields/CyclotomicCharacters/ClosedSubgroups.lean",
+      "sha256": "6f4be08749675c02017ab0d944a0c3719d93b05d2f59d667899dfd7de4f28155"
+    },
+    "GroundTheory.GlobalFields.CyclotomicCharacters.Degree": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.CyclotomicCharacters.PadicUnitsLog"
+      ],
+      "path": "src/GroundTheory/GlobalFields/CyclotomicCharacters/Degree.lean",
+      "sha256": "b05f0f150cf4ff8e200cf7eba08f5efbca8dc934f41b6045caca1c771d016c8a"
+    },
+    "GroundTheory.GlobalFields.CyclotomicCharacters.DegreeDecomposition": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.CyclotomicCharacters.Degree",
+        "GroundTheory.GlobalFields.CyclotomicCharacters.ClosedSubgroups"
+      ],
+      "path": "src/GroundTheory/GlobalFields/CyclotomicCharacters/DegreeDecomposition.lean",
+      "sha256": "ef0e037b996d3de11f8230f7342ec28345cdaa22c7c5b6e6415ba1d6a2ac997a"
+    },
+    "GroundTheory.GlobalFields.CyclotomicCharacters.Frobenius": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/GroundTheory/GlobalFields/CyclotomicCharacters/Frobenius.lean",
+      "sha256": "656956a2c0535469991853e25fd0797679fcf0cfe90b14d1dc75b6ad40e533fc"
+    },
+    "GroundTheory.GlobalFields.CyclotomicCharacters.PadicUnitsLog": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.CyclotomicCharacters.ProfinitePadic"
+      ],
+      "path": "src/GroundTheory/GlobalFields/CyclotomicCharacters/PadicUnitsLog.lean",
+      "sha256": "0344569aca68e09aa61956d9d2cc359303724eecdef36c6cf145b857d684791c"
+    },
+    "GroundTheory.GlobalFields.CyclotomicCharacters.ProfinitePadic": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.CyclotomicCharacters.Character",
+        "Development.AutomorphicArithmetic.IntegralCasts.CapelliIdentities.ContinuousToZModPow"
+      ],
+      "path": "src/GroundTheory/GlobalFields/CyclotomicCharacters/ProfinitePadic.lean",
+      "sha256": "edd64e2de2a1b369f53f1847595ad1bc085c5d9e61ed1d935c15c47648572f13"
+    },
+    "GroundTheory.GlobalFields.ExistenceTheorem.IndexRangePowMonoidHomAdicCompletionMulNorm": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.ExistenceTheorem.PowerIndex",
+        "GroundTheory.GlobalFields.ExistenceTheorem.LocalPowers",
+        "GroundTheory.GlobalFields.IdeleGroups.IndexFormula",
+        "GroundTheory.GlobalFields.IdeleGroups.IndexProductFormula",
+        "GroundTheory.GlobalFields.IdeleGroups.LocalConditionIndex"
+      ],
+      "path": "src/GroundTheory/GlobalFields/ExistenceTheorem/IndexRangePowMonoidHomAdicCompletionMulNorm.lean",
+      "sha256": "5a5b9d06d06ab3062256a21e8019000bc7045ee7a9e49470f3260561e1713cd7"
+    },
+    "GroundTheory.GlobalFields.ExistenceTheorem.LocalPowers": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.SplittingFromInequality",
+        "GroundTheory.GlobalFields.IdeleGroups.SIdeleGroups",
+        "GroundTheory.GlobalFields.KummerTheory.SplittingKummer",
+        "GroundTheory.GlobalFields.KummerTheory.Unramified"
+      ],
+      "path": "src/GroundTheory/GlobalFields/ExistenceTheorem/LocalPowers.lean",
+      "sha256": "1b157ba5b21dd287aad6e795e94a577e6dc74c057cc094eb9cef4681c5c55f9e"
+    },
+    "GroundTheory.GlobalFields.ExistenceTheorem.PowerIndex": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.SUnits"
+      ],
+      "path": "src/GroundTheory/GlobalFields/ExistenceTheorem/PowerIndex.lean",
+      "sha256": "c31a5478cb9119f2f39fa9625914acbc6461f692ddc73e399457633e17273d95"
+    },
+    "GroundTheory.GlobalFields.FirstInequality": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.FirstInequality.HerbrandClass",
+        "GroundTheory.GlobalFields.FirstInequalityStatement"
+      ],
+      "path": "src/GroundTheory/GlobalFields/FirstInequality.lean",
+      "sha256": "56e5e2406813f04ac2cc3c89f5a6199a3c70db285396737649c756c365ba666b"
+    },
+    "GroundTheory.GlobalFields.FirstInequality.HerbrandClass": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleGroups.SIdeleHerbrand",
+        "GroundTheory.GlobalFields.HerbrandQuotients.SUnits",
+        "GroundTheory.GlobalFields.IdeleGroups.LocalNormsEverywhere",
+        "GroundTheory.GlobalFields.IdeleGroups.GaloisOnAdeles.Action",
+        "GroundTheory.GlobalFields.CompletionAtPlace.Degree"
+      ],
+      "path": "src/GroundTheory/GlobalFields/FirstInequality/HerbrandClass.lean",
+      "sha256": "0e18c69f8abd788e1c5950deb1153a0063b082787b4bc63b6403436b8f8f7af7"
+    },
+    "GroundTheory.GlobalFields.FirstInequalityStatement": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleGroups.IdeleNorms.BaseChange"
+      ],
+      "path": "src/GroundTheory/GlobalFields/FirstInequalityStatement.lean",
+      "sha256": "68c35e20528f40058ab654cdae5286569c1d9b86402e44c92b94329887262d39"
+    },
+    "GroundTheory.GlobalFields.GlobalReciprocity.DegreeLift": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.GlobalReciprocity.PrimesAbove"
+      ],
+      "path": "src/GroundTheory/GlobalFields/GlobalReciprocity/DegreeLift.lean",
+      "sha256": "2b816f468d62060ca6989c0b49881bf7a568232f5f20c453cdb55c444ec80c18"
+    },
+    "GroundTheory.GlobalFields.GlobalReciprocity.FinitePlaces": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.GlobalReciprocity.Layers",
+        "GroundTheory.GlobalFields.GlobalReciprocity.NormSquare",
+        "GroundTheory.GlobalFields.GlobalReciprocity.LocalSurjective",
+        "GroundTheory.GlobalFields.GlobalReciprocity.DegreeLift",
+        "GroundTheory.PowerSubgroups.CountableNeighbourhoods.PowInvariant"
+      ],
+      "path": "src/GroundTheory/GlobalFields/GlobalReciprocity/FinitePlaces.lean",
+      "sha256": "1999cdff84ff03320d405ea2b1ccd754f051ea23bad9cee722a08bd321ff838d"
+    },
+    "GroundTheory.GlobalFields.GlobalReciprocity.Frobenius": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.NormResidueSymbol.FunctorialLocal",
+        "GroundTheory.GlobalFields.NormResidueSymbol.RangeIdeleNormLeKerIdeleSymbol",
+        "GroundTheory.GlobalFields.CompletionAtPlace.Inertia",
+        "GroundTheory.LocalFields.MaximalUnramifiedIntegers",
+        "GroundTheory.LocalFields.TameExtension",
+        "GroundTheory.LocalFields.LocalArtinTransport",
+        "GroundTheory.LocalFields.LocalArtinMap",
+        "GroundTheory.LocalFields.ExistsUnitFiltrationUnitsLeRangeNormUnits"
+      ],
+      "path": "src/GroundTheory/GlobalFields/GlobalReciprocity/Frobenius.lean",
+      "sha256": "acb5b7b5d0dbfab27d48afb94f85d8c42e22f839f594f3f453292aa32015b1fd"
+    },
+    "GroundTheory.GlobalFields.GlobalReciprocity.General": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.GlobalReciprocity.RangeDiagonalLeKerIdeleSymbol",
+        "GroundTheory.GlobalFields.NormResidueSymbol.Functorial"
+      ],
+      "path": "src/GroundTheory/GlobalFields/GlobalReciprocity/General.lean",
+      "sha256": "90dad5af9deb5dfcfba779fe7ecbc2e95ac34b25bfed332f8077919b547bd666"
+    },
+    "GroundTheory.GlobalFields.GlobalReciprocity.InfKerDegreeLeOfLeSupZhatField": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleClassGroup.Theory",
+        "GroundTheory.GlobalFields.NormResidueSymbol.Cyclotomic",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.Isomorphism"
+      ],
+      "path": "src/GroundTheory/GlobalFields/GlobalReciprocity/InfKerDegreeLeOfLeSupZhatField.lean",
+      "sha256": "4e28947ab3a54e41cacf4e50f1d4dab4f0ccaa11c89d29a84904e7f4cddc951a"
+    },
+    "GroundTheory.GlobalFields.GlobalReciprocity.Layers": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.GlobalReciprocity.InfKerDegreeLeOfLeSupZhatField"
+      ],
+      "path": "src/GroundTheory/GlobalFields/GlobalReciprocity/Layers.lean",
+      "sha256": "9e4c52730bfb6a9bd5240fcade331406eea79c22570cc532af0cac552570067c"
+    },
+    "GroundTheory.GlobalFields.GlobalReciprocity.LocalSurjective": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.NormResidueSymbol.FunctorialFinite"
+      ],
+      "path": "src/GroundTheory/GlobalFields/GlobalReciprocity/LocalSurjective.lean",
+      "sha256": "dcdd69659bd8b2f538bb93fe6b9960811d83c3c41b00e282e4db9315ddbf6a61"
+    },
+    "GroundTheory.GlobalFields.GlobalReciprocity.NormSquare": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.GlobalReciprocity.InfKerDegreeLeOfLeSupZhatField",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.Functoriality",
+        "GroundTheory.GlobalFields.NormResidueSymbol.Functorial"
+      ],
+      "path": "src/GroundTheory/GlobalFields/GlobalReciprocity/NormSquare.lean",
+      "sha256": "b395c3a11321bbb803b49e4d4c9eebbcd17fe07259702a35fa5a7f1bb0a218be"
+    },
+    "GroundTheory.GlobalFields.GlobalReciprocity.PrimesAbove": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.GlobalReciprocity.NormSquare",
+        "GroundTheory.GlobalFields.CyclotomicCharacters.DegreeDecomposition"
+      ],
+      "path": "src/GroundTheory/GlobalFields/GlobalReciprocity/PrimesAbove.lean",
+      "sha256": "8b72af72daa4261471234bc41426030884ea8b32173574e79863812ac84e1b6b"
+    },
+    "GroundTheory.GlobalFields.GlobalReciprocity.RangeDiagonalLeKerIdeleSymbol": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.GlobalReciprocity.FinitePlaces",
+        "GroundTheory.GlobalFields.GlobalReciprocity.RealPlaces",
+        "GroundTheory.GlobalFields.NormResidueSymbol.Surjective",
+        "GroundTheory.GlobalFields.Adele.IdeleBasis"
+      ],
+      "path": "src/GroundTheory/GlobalFields/GlobalReciprocity/RangeDiagonalLeKerIdeleSymbol.lean",
+      "sha256": "03f669e0f7ceaa39437534597d6fdf75fda4c4f1d5ffb9eedd497dfabec9c8e1"
+    },
+    "GroundTheory.GlobalFields.GlobalReciprocity.RealPlaces": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.GlobalReciprocity.NormSquare",
+        "GroundTheory.GlobalFields.GlobalReciprocity.RealPlacesQuadratic",
+        "GroundTheory.GlobalFields.NormResidueSymbol.Functorial"
+      ],
+      "path": "src/GroundTheory/GlobalFields/GlobalReciprocity/RealPlaces.lean",
+      "sha256": "ac4f508843b94df31d550444a76e4bba7201082e6b161436418bbdb43adb17a1"
+    },
+    "GroundTheory.GlobalFields.GlobalReciprocity.RealPlacesQuadratic": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.GlobalReciprocity.Layers"
+      ],
+      "path": "src/GroundTheory/GlobalFields/GlobalReciprocity/RealPlacesQuadratic.lean",
+      "sha256": "984a737fe085dc26f68580f78e6cdfdcb107da0d369a95c9fb42394b52647736"
+    },
+    "GroundTheory.GlobalFields.HerbrandQuotients.CycTate": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.TateCohomology.HerbrandAbstract"
+      ],
+      "path": "src/GroundTheory/GlobalFields/HerbrandQuotients/CycTate.lean",
+      "sha256": "4406a4762c6ee454ee5a52e9ada3442276d76228df50a3977eb35af4473d55b6"
+    },
+    "GroundTheory.GlobalFields.HerbrandQuotients.CycTateNegOneOrbitEquivSymmMk": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.TateCohomology.HerbrandAbstract",
+        "GroundTheory.GlobalFields.HerbrandQuotients.CycTate"
+      ],
+      "path": "src/GroundTheory/GlobalFields/HerbrandQuotients/CycTateNegOneOrbitEquivSymmMk.lean",
+      "sha256": "ec85e8ed8f6c49798b84ebb192a3d791308c4b86e7f910f83fde0706f0601ec5"
+    },
+    "GroundTheory.GlobalFields.HerbrandQuotients.Cyclic": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.TateCohomology.HerbrandAbstract",
+        "Development.AutomorphicArithmetic.IntegralCasts.CapelliIdentities.CyclicSubtraction"
+      ],
+      "path": "src/GroundTheory/GlobalFields/HerbrandQuotients/Cyclic.lean",
+      "sha256": "1bb435f542530b08ec7d89f63676ebd53a303b2708f30b49644ed4c6dabc4c82"
+    },
+    "GroundTheory.GlobalFields.HerbrandQuotients.Lattice": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.TateCohomology.HerbrandAbstract",
+        "GroundTheory.GlobalFields.HerbrandQuotients.Cyclic",
+        "GroundTheory.GlobalFields.HerbrandQuotients.RationalForm"
+      ],
+      "path": "src/GroundTheory/GlobalFields/HerbrandQuotients/Lattice.lean",
+      "sha256": "731cb1b098b96b00c2f2983e91746acfa86fd8ee917f0ebb48e5eecd27b4fc5d"
+    },
+    "GroundTheory.GlobalFields.HerbrandQuotients.LatticeBridge": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.HerbrandQuotients.Cyclic",
+        "GroundTheory.GlobalFields.HerbrandQuotients.Lattice",
+        "GroundTheory.GlobalFields.HerbrandQuotients.Permutation",
+        "GroundTheory.GlobalFields.HerbrandQuotients.CycTate"
+      ],
+      "path": "src/GroundTheory/GlobalFields/HerbrandQuotients/LatticeBridge.lean",
+      "sha256": "392e9c0019feee2170cf9f1e91d7fdfcb9692dfbef965b87e6495f931ef39ae5"
+    },
+    "GroundTheory.GlobalFields.HerbrandQuotients.Permutation": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.TateCohomology.HerbrandAbstract",
+        "GroundTheory.GlobalFields.HerbrandQuotients.Cyclic"
+      ],
+      "path": "src/GroundTheory/GlobalFields/HerbrandQuotients/Permutation.lean",
+      "sha256": "a9f551adbe803f76102b3aeaae7b897ed40385a5e84c0076d38eb0c8a088e8f8"
+    },
+    "GroundTheory.GlobalFields.HerbrandQuotients.RationalForm": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/GroundTheory/GlobalFields/HerbrandQuotients/RationalForm.lean",
+      "sha256": "aeb67adb6a76b6a0e7e1dbed52d1ecfe27f2389c6d2ef62e30a351a8e64ff351"
+    },
+    "GroundTheory.GlobalFields.HerbrandQuotients.SUnits": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.SUnits",
+        "GroundTheory.GlobalFields.HerbrandQuotients.Lattice",
+        "GroundTheory.GlobalFields.HerbrandQuotients.SUnitsExact",
+        "GroundTheory.GlobalFields.HerbrandQuotients.SUnitsPerm",
+        "GroundTheory.GlobalFields.HerbrandQuotients.SUnitsRep",
+        "GroundTheory.GlobalFields.HerbrandQuotients.UnitsHerbrandValue"
+      ],
+      "path": "src/GroundTheory/GlobalFields/HerbrandQuotients/SUnits.lean",
+      "sha256": "2b544aa9cdc83d7c9dc664a6a54302184078719bf4d368d13d01c3767e4e8e59"
+    },
+    "GroundTheory.GlobalFields.HerbrandQuotients.SUnitsExact": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.TateCohomology.HerbrandAbstract",
+        "GroundTheory.GlobalFields.HerbrandQuotients.Cyclic",
+        "GroundTheory.GlobalFields.HerbrandQuotients.CycTate"
+      ],
+      "path": "src/GroundTheory/GlobalFields/HerbrandQuotients/SUnitsExact.lean",
+      "sha256": "8ebf1887690dc29faa9ad78b988d6951db672cd4cd261925803452ed6b569ee8"
+    },
+    "GroundTheory.GlobalFields.HerbrandQuotients.SUnitsPerm": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.HerbrandQuotients.Permutation",
+        "GroundTheory.GlobalFields.HerbrandQuotients.LatticeBridge",
+        "GroundTheory.GlobalFields.SemilocalAlgebras.Galois"
+      ],
+      "path": "src/GroundTheory/GlobalFields/HerbrandQuotients/SUnitsPerm.lean",
+      "sha256": "185c3b869ac6427885b55ff547ef450d03f0d2dc32438c60b1a1c5d7a71d2e72"
+    },
+    "GroundTheory.GlobalFields.HerbrandQuotients.SUnitsRep": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.SUnits",
+        "GroundTheory.GlobalFields.SemilocalAlgebras.Galois",
+        "GroundTheory.GlobalFields.HerbrandQuotients.SUnitsPerm"
+      ],
+      "path": "src/GroundTheory/GlobalFields/HerbrandQuotients/SUnitsRep.lean",
+      "sha256": "1b1dee46cc993dbca6dd0b40cbf1023fb27d9c1f6a1ec1855e328dbc063bae36"
+    },
+    "GroundTheory.GlobalFields.HerbrandQuotients.UnitsHerbrand": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.HerbrandQuotients.SUnitsExact",
+        "GroundTheory.GlobalFields.HerbrandQuotients.SUnitsPerm",
+        "GroundTheory.GlobalFields.HerbrandQuotients.SUnitsRep",
+        "GroundTheory.GlobalFields.HerbrandQuotients.LatticeBridge"
+      ],
+      "path": "src/GroundTheory/GlobalFields/HerbrandQuotients/UnitsHerbrand.lean",
+      "sha256": "631bbca8e31724b72863f0927141473c5239c3a0fa0e0bbbbb67778c7427f11f"
+    },
+    "GroundTheory.GlobalFields.HerbrandQuotients.UnitsHerbrandValue": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.HerbrandQuotients.UnitsHerbrand"
+      ],
+      "path": "src/GroundTheory/GlobalFields/HerbrandQuotients/UnitsHerbrandValue.lean",
+      "sha256": "bab61036dde9a651d95f0c41c52643e19115ff56adb66be09f28bd1b0973788d"
+    },
+    "GroundTheory.GlobalFields.IdeleClassGroup.ConjugateNorm": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleGroups.GaloisOnAdeles.Action"
+      ],
+      "path": "src/GroundTheory/GlobalFields/IdeleClassGroup/ConjugateNorm.lean",
+      "sha256": "1e75ed55ea5076eec91bf978b51bce9e8ece0fcbde5ae5e2ef04a3c9f0d2ea1a"
+    },
+    "GroundTheory.GlobalFields.IdeleClassGroup.IdeleClassEquivIdeleClassMapOfComm": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleClassGroup.IdeleClassMapIdeleClassMap",
+        "GroundTheory.GlobalFields.IdeleGroups.GaloisOnAdeles",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.ExistsOpenSubgroupMemFixedModule"
+      ],
+      "path": "src/GroundTheory/GlobalFields/IdeleClassGroup/IdeleClassEquivIdeleClassMapOfComm.lean",
+      "sha256": "e8513c32b54c0a95ec35d467c0995b21275e8a2a9804bf19b263b96aa0eba3cb"
+    },
+    "GroundTheory.GlobalFields.IdeleClassGroup.IdeleClassMapIdeleClassMap": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.CyclotomicCharacters.Character",
+        "GroundTheory.GlobalFields.IdeleGroups.IdeleNorms.InfiniteAdeleRingMapInfiniteAdeleRingMap"
+      ],
+      "path": "src/GroundTheory/GlobalFields/IdeleClassGroup/IdeleClassMapIdeleClassMap.lean",
+      "sha256": "7c2754cca787a7359088eb05285032865ed2de71cce9ed2cbcb410faf66189dd"
+    },
+    "GroundTheory.GlobalFields.IdeleClassGroup.Invariants": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleClassGroup.IdeleClassEquivIdeleClassMapOfComm",
+        "GroundTheory.GlobalFields.IdeleClassGroup.ConjugateNorm"
+      ],
+      "path": "src/GroundTheory/GlobalFields/IdeleClassGroup/Invariants.lean",
+      "sha256": "99a7be4987d02e14548441f266c314ff8972b95b10f5b3aefdb11d41651ac594"
+    },
+    "GroundTheory.GlobalFields.IdeleClassGroup.InvariantsGalois": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleClassGroup.Invariants",
+        "GroundTheory.LocalFields.CompleteTrivial"
+      ],
+      "path": "src/GroundTheory/GlobalFields/IdeleClassGroup/InvariantsGalois.lean",
+      "sha256": "c4bf0617fdd3a693295cd7231e11465d05c847ca06ec200179e7ed3eae34c1e6"
+    },
+    "GroundTheory.GlobalFields.IdeleClassGroup.NatCardTateOfIsCyclic": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleClassGroup.InvariantsGalois",
+        "GroundTheory.GlobalFields.SecondInequality.Cyclic",
+        "GroundTheory.LocalFields.HerbrandCyclic"
+      ],
+      "path": "src/GroundTheory/GlobalFields/IdeleClassGroup/NatCardTateOfIsCyclic.lean",
+      "sha256": "e0dfb7cf9892f53fa050954bb87295e35f74644377416154df4d08f7c17e38bd"
+    },
+    "GroundTheory.GlobalFields.IdeleClassGroup.Theory": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleClassGroup.NatCardTateOfIsCyclic",
+        "GroundTheory.GlobalFields.NormResidueSymbol.Cyclotomic",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.Valuation",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.ExistsEqNsmulOfProjEqZero"
+      ],
+      "path": "src/GroundTheory/GlobalFields/IdeleClassGroup/Theory.lean",
+      "sha256": "a298950ea9f1b3db055442e3519597e98fb1ce44670ff15a0225ca16233b5b95"
+    },
+    "GroundTheory.GlobalFields.IdeleGroups.ClassGroup": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleGroups.InfiniteProjInfiniteEmbeddingOfNe"
+      ],
+      "path": "src/GroundTheory/GlobalFields/IdeleGroups/ClassGroup.lean",
+      "sha256": "6abb28e46ce9462fb5ceec172bc799367bc3fff733b8f2304e06cf6a42eb4c41"
+    },
+    "GroundTheory.GlobalFields.IdeleGroups.GaloisOnAdeles": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleGroups.IdeleNorms.InfiniteAdeleRingMapInfiniteAdeleRingMap"
+      ],
+      "path": "src/GroundTheory/GlobalFields/IdeleGroups/GaloisOnAdeles.lean",
+      "sha256": "3df004c5547b4cfb0e710c90d5b0de4c2dab953b0dba94851b8e7b2e02a6009c"
+    },
+    "GroundTheory.GlobalFields.IdeleGroups.GaloisOnAdeles.Action": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleGroups.GaloisOnAdeles"
+      ],
+      "path": "src/GroundTheory/GlobalFields/IdeleGroups/GaloisOnAdeles/Action.lean",
+      "sha256": "fe182ffa064e521c215905847f1f79bf7d666b1dff547bda6e1bca46bdc459e0"
+    },
+    "GroundTheory.GlobalFields.IdeleGroups.GaloisOnAdeles.Places": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleGroups.GaloisOnAdeles.Action",
+        "GroundTheory.GlobalFields.SemilocalAlgebras.Galois"
+      ],
+      "path": "src/GroundTheory/GlobalFields/IdeleGroups/GaloisOnAdeles/Places.lean",
+      "sha256": "83d3bf0b302ef2ef6fee1b443aaaf6152e73ecfaea180e77147e36773d7390f4"
+    },
+    "GroundTheory.GlobalFields.IdeleGroups.IdeleNorms": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleGroups.InfiniteProjInfiniteEmbeddingOfNe"
+      ],
+      "path": "src/GroundTheory/GlobalFields/IdeleGroups/IdeleNorms.lean",
+      "sha256": "c3c4299496b4db89261c42bf2a602a08973563247bb87a76e20724d6977a9b38"
+    },
+    "GroundTheory.GlobalFields.IdeleGroups.IdeleNorms.BaseChange": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.Adele.BaseChange",
+        "GroundTheory.GlobalFields.IdeleGroups.InfiniteProjInfiniteEmbeddingOfNe"
+      ],
+      "path": "src/GroundTheory/GlobalFields/IdeleGroups/IdeleNorms/BaseChange.lean",
+      "sha256": "69beea2178b68edabddc048db0162f733503433eb730f7ab72baf804f12cfd62"
+    },
+    "GroundTheory.GlobalFields.IdeleGroups.IdeleNorms.CompletionsOverBasisRepr": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleGroups.IdeleNorms.BaseChange",
+        "GroundTheory.GlobalFields.CompletionAtPlace"
+      ],
+      "path": "src/GroundTheory/GlobalFields/IdeleGroups/IdeleNorms/CompletionsOverBasisRepr.lean",
+      "sha256": "45c59a89fe1034db77bac25482e7a21302963aa0392bc7398452647a67f676c9"
+    },
+    "GroundTheory.GlobalFields.IdeleGroups.IdeleNorms.InfiniteAdeleRingMapInfiniteAdeleRingMap": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleGroups.IdeleNorms.BaseChange"
+      ],
+      "path": "src/GroundTheory/GlobalFields/IdeleGroups/IdeleNorms/InfiniteAdeleRingMapInfiniteAdeleRingMap.lean",
+      "sha256": "06d50bd62b3ce829ca21bcd0db101895ef574a38fafff3425830f49e01dc4bc3"
+    },
+    "GroundTheory.GlobalFields.IdeleGroups.IndexFormula": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleGroups.SIdeleGroups"
+      ],
+      "path": "src/GroundTheory/GlobalFields/IdeleGroups/IndexFormula.lean",
+      "sha256": "0cbce56f38916015e6cfc9170fb03c8371d4ad0b34ccfe7ab459170e95a75f6d"
+    },
+    "GroundTheory.GlobalFields.IdeleGroups.IndexProductFormula": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/GroundTheory/GlobalFields/IdeleGroups/IndexProductFormula.lean",
+      "sha256": "780646488252b145240a3fb3631c43aa9de0eb785944782e0f6c3d0140bf8aca"
+    },
+    "GroundTheory.GlobalFields.IdeleGroups.InfiniteProjInfiniteEmbeddingOfNe": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/GroundTheory/GlobalFields/IdeleGroups/InfiniteProjInfiniteEmbeddingOfNe.lean",
+      "sha256": "a24aa2ef32b13aa0f64168bddccd89c6c8ab4f0fa65ebcfdfeda29325e96ce08"
+    },
+    "GroundTheory.GlobalFields.IdeleGroups.LocalConditionIndex": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleGroups.SIdeleGroups",
+        "GroundTheory.GlobalFields.KummerTheory.LocalIndexAtPlace"
+      ],
+      "path": "src/GroundTheory/GlobalFields/IdeleGroups/LocalConditionIndex.lean",
+      "sha256": "270b031a5905e818fff147341a783977344b14d32f4b5122245e0546f340e470"
+    },
+    "GroundTheory.GlobalFields.IdeleGroups.LocalHerbrand": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.HerbrandQuotients.CycTate",
+        "GroundTheory.GlobalFields.CompletionAtPlace.Galois",
+        "GroundTheory.LocalFields.HerbrandLocal",
+        "GroundTheory.LocalFields.UnramifiedNorms",
+        "GroundTheory.LocalFields.HerbrandCyclic"
+      ],
+      "path": "src/GroundTheory/GlobalFields/IdeleGroups/LocalHerbrand.lean",
+      "sha256": "aba27325c7a59453c58241d370f530f5f7968bbcac271f935b938c9085865d1c"
+    },
+    "GroundTheory.GlobalFields.IdeleGroups.LocalHerbrandInfinite": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleGroups.LocalHerbrand",
+        "GroundTheory.GlobalFields.InfiniteNormIndex.LocalSymbol"
+      ],
+      "path": "src/GroundTheory/GlobalFields/IdeleGroups/LocalHerbrandInfinite.lean",
+      "sha256": "3525e164fea929dbbb1e49dcac5329d8d10223fecf14f18696350919eb260bd8"
+    },
+    "GroundTheory.GlobalFields.IdeleGroups.LocalNormGroups": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleGroups.LocalNorms",
+        "GroundTheory.GlobalFields.KummerTheory.Splitting",
+        "GroundTheory.LocalFields.ExistsUnitFiltrationUnitsLeRangeNormUnits",
+        "GroundTheory.LocalFields.UnramifiedNorms",
+        "GroundTheory.GlobalFields.CompletionAtPlace.Integers"
+      ],
+      "path": "src/GroundTheory/GlobalFields/IdeleGroups/LocalNormGroups.lean",
+      "sha256": "842d15ddb536c3f7dcbb490970f195f41a91cae78bd19f81751e0a1d1f2a3181"
+    },
+    "GroundTheory.GlobalFields.IdeleGroups.LocalNorms": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleGroups.IdeleNorms.CompletionsOverBasisRepr",
+        "GroundTheory.GlobalFields.IdeleGroups.Restricted",
+        "GroundTheory.GlobalFields.Adele.BaseChange.FiniteMap"
+      ],
+      "path": "src/GroundTheory/GlobalFields/IdeleGroups/LocalNorms.lean",
+      "sha256": "ce6cc5ed95f2513508e6490325ca972d9fceca6ccbc95d88498bb8cf8547a7a0"
+    },
+    "GroundTheory.GlobalFields.IdeleGroups.LocalNormsEverywhere": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleGroups.LocalNormGroups"
+      ],
+      "path": "src/GroundTheory/GlobalFields/IdeleGroups/LocalNormsEverywhere.lean",
+      "sha256": "c86591c48b07baec772744ab3bb939d1405b955fb08231391bfed48ac239472f"
+    },
+    "GroundTheory.GlobalFields.IdeleGroups.NormOneCompact": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleGroups.UnitBound",
+        "GroundTheory.GlobalFields.IdeleGroups.ClassGroup"
+      ],
+      "path": "src/GroundTheory/GlobalFields/IdeleGroups/NormOneCompact.lean",
+      "sha256": "2c792623d9e06ddd89f31707d70b400350f05e9f53768212092ef279122d7f29"
+    },
+    "GroundTheory.GlobalFields.IdeleGroups.Rational": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleGroups.StandardOpenEquiv"
+      ],
+      "path": "src/GroundTheory/GlobalFields/IdeleGroups/Rational.lean",
+      "sha256": "fb8f6c78f08a64f628d5cb6fd6b8bebe8441c2d3d48ddf5b89fc903ba2a4849b"
+    },
+    "GroundTheory.GlobalFields.IdeleGroups.Restricted": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleGroups.InfiniteProjInfiniteEmbeddingOfNe"
+      ],
+      "path": "src/GroundTheory/GlobalFields/IdeleGroups/Restricted.lean",
+      "sha256": "55e3f3105e5461028b885f2ba0796959d2438cd162ba149f860d93a35eab504d"
+    },
+    "GroundTheory.GlobalFields.IdeleGroups.SIdeleGroups": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleGroups.ClassGroup"
+      ],
+      "path": "src/GroundTheory/GlobalFields/IdeleGroups/SIdeleGroups.lean",
+      "sha256": "a032500c33eb9d5fef5feca2b8f5ffaf4aed42bd4c2fee4bff68f2d9c2995957"
+    },
+    "GroundTheory.GlobalFields.IdeleGroups.SIdeleGroups.Decomposition": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleGroups.SIdeleGroups.InfinitePlaces",
+        "GroundTheory.GlobalFields.IdeleGroups.SIdeleGroups.IntegerUnits"
+      ],
+      "path": "src/GroundTheory/GlobalFields/IdeleGroups/SIdeleGroups/Decomposition.lean",
+      "sha256": "c7d1331933eaf6712934eb7fc1f1f6462c2c29ba04877958c308e00e02269d0b"
+    },
+    "GroundTheory.GlobalFields.IdeleGroups.SIdeleGroups.Galois": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleGroups.SIdeleGroups",
+        "GroundTheory.GlobalFields.IdeleGroups.GaloisOnAdeles.Places"
+      ],
+      "path": "src/GroundTheory/GlobalFields/IdeleGroups/SIdeleGroups/Galois.lean",
+      "sha256": "470b2ac52489206a738389c8f811742b8463744492e21ab1c42468230a1216f9"
+    },
+    "GroundTheory.GlobalFields.IdeleGroups.SIdeleGroups.InfinitePlaces": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleGroups.SIdeleGroups.Places",
+        "GroundTheory.GlobalFields.SemilocalAlgebras.Infinite"
+      ],
+      "path": "src/GroundTheory/GlobalFields/IdeleGroups/SIdeleGroups/InfinitePlaces.lean",
+      "sha256": "aa69c5aa3ccfc3e09fc57f1dadd8dc08ed171cdfb62d25ed82da2abb84ecc1ef"
+    },
+    "GroundTheory.GlobalFields.IdeleGroups.SIdeleGroups.IntegerUnits": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleGroups.SIdeleGroups.Places"
+      ],
+      "path": "src/GroundTheory/GlobalFields/IdeleGroups/SIdeleGroups/IntegerUnits.lean",
+      "sha256": "d959e57255ef0f6e39cc676e9553675790ccc736850916b6eb95ffae87f6b686"
+    },
+    "GroundTheory.GlobalFields.IdeleGroups.SIdeleGroups.Places": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleGroups.SIdeleGroups.Galois",
+        "GroundTheory.GlobalFields.IdeleGroups.StandardOpenEquiv"
+      ],
+      "path": "src/GroundTheory/GlobalFields/IdeleGroups/SIdeleGroups/Places.lean",
+      "sha256": "fe9fe915ae2799d2e1b0fb8caf8f9ac07d2ae78f9f1cc661692fb062c437acdd"
+    },
+    "GroundTheory.GlobalFields.IdeleGroups.SIdeleHerbrand": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleGroups.SIdeleHerbrand.Places",
+        "GroundTheory.GlobalFields.SemilocalAlgebras.Finite"
+      ],
+      "path": "src/GroundTheory/GlobalFields/IdeleGroups/SIdeleHerbrand.lean",
+      "sha256": "66dcbca99263c1f744643a17f954941988180c24e1b396e0e28b60a6f3f50b6c"
+    },
+    "GroundTheory.GlobalFields.IdeleGroups.SIdeleHerbrand.Places": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleGroups.SIdeleHerbrand.Product",
+        "GroundTheory.GlobalFields.IdeleGroups.SIdeleGroups.Decomposition",
+        "GroundTheory.GlobalFields.IdeleGroups.LocalHerbrandInfinite"
+      ],
+      "path": "src/GroundTheory/GlobalFields/IdeleGroups/SIdeleHerbrand/Places.lean",
+      "sha256": "dd44c7af87b340dd73a0b1dd4389f817e9d19e449b19f138590f367aeabf7335"
+    },
+    "GroundTheory.GlobalFields.IdeleGroups.SIdeleHerbrand.Product": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.HerbrandQuotients.CycTateNegOneOrbitEquivSymmMk"
+      ],
+      "path": "src/GroundTheory/GlobalFields/IdeleGroups/SIdeleHerbrand/Product.lean",
+      "sha256": "8c1d4a0c75b761d29a7266401dcae34d792edfc22438518b109cf9b13ad05eea"
+    },
+    "GroundTheory.GlobalFields.IdeleGroups.StandardOpenEquiv": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleGroups.ClassGroup"
+      ],
+      "path": "src/GroundTheory/GlobalFields/IdeleGroups/StandardOpenEquiv.lean",
+      "sha256": "a4ada2a6aeb970395587f646ed798f844284ef714990e2f0edfc6eb1f14f6912"
+    },
+    "GroundTheory.GlobalFields.IdeleGroups.UnitBound": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleGroups.IdeleNorms",
+        "GroundTheory.GlobalFields.Adele.Compact"
+      ],
+      "path": "src/GroundTheory/GlobalFields/IdeleGroups/UnitBound.lean",
+      "sha256": "76a581192d798da84000553fc65af1a040481157359e1a64071a03e2682e4d05"
+    },
+    "GroundTheory.GlobalFields.InfiniteNormIndex.LocalSymbol": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.HerbrandQuotients.Cyclic",
+        "GroundTheory.ProfiniteCohomology.GaloisModules.CoeGalRootsOfUnityHomApply",
+        "GroundTheory.GlobalFields.SemilocalAlgebras.Infinite"
+      ],
+      "path": "src/GroundTheory/GlobalFields/InfiniteNormIndex/LocalSymbol.lean",
+      "sha256": "154c61b9946d9ad452503e0297e636f9920d21d29168956b5386682250ef3b08"
+    },
+    "GroundTheory.GlobalFields.KummerTheory.Degree": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.ProfiniteCohomology.KummerBasic",
+        "GroundTheory.ProfiniteCohomology.KummerFinite",
+        "GroundTheory.ProfiniteCohomology.KummerCorrespondence"
+      ],
+      "path": "src/GroundTheory/GlobalFields/KummerTheory/Degree.lean",
+      "sha256": "0950ecc32f21aa36bc58d281c4af0a46924c23c9e23e1ba47571c6049b51776a"
+    },
+    "GroundTheory.GlobalFields.KummerTheory.KummerIndexLemma": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.KummerTheory.KummerIndexLemma.PowerKernel",
+        "GroundTheory.GlobalFields.ExistenceTheorem.IndexRangePowMonoidHomAdicCompletionMulNorm"
+      ],
+      "path": "src/GroundTheory/GlobalFields/KummerTheory/KummerIndexLemma.lean",
+      "sha256": "7e77b857506f90caaa6865d051115e599d1d403291bd7c7b3842159549f03f43"
+    },
+    "GroundTheory.GlobalFields.KummerTheory.KummerIndexLemma.HasEnoughRootsOfUnityOfRingHom": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.KummerTheory.LocalIndexAtPlace",
+        "GroundTheory.GlobalFields.IdeleGroups.IndexProductFormula",
+        "GroundTheory.ProfiniteCohomology.KummerBasic"
+      ],
+      "path": "src/GroundTheory/GlobalFields/KummerTheory/KummerIndexLemma/HasEnoughRootsOfUnityOfRingHom.lean",
+      "sha256": "282b3a617f869b81a3e389aee9b432d76ea71fe822c999f37f6c5a0c9656c299"
+    },
+    "GroundTheory.GlobalFields.KummerTheory.KummerIndexLemma.Places": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.KummerTheory.KummerIndexLemma.PowerPlaces",
+        "GroundTheory.GlobalFields.SUnits"
+      ],
+      "path": "src/GroundTheory/GlobalFields/KummerTheory/KummerIndexLemma/Places.lean",
+      "sha256": "792094ff68e74d90a06d63e82b19765a199f6eed3729554f30fa3616b8680d7a"
+    },
+    "GroundTheory.GlobalFields.KummerTheory.KummerIndexLemma.PowerKernel": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.KummerTheory.KummerIndexLemma.Places",
+        "GroundTheory.GlobalFields.KummerTheory.Unramified",
+        "GroundTheory.GlobalFields.IdeleGroups.LocalNormsEverywhere",
+        "GroundTheory.GlobalFields.IdeleGroups.SIdeleGroups",
+        "GroundTheory.GlobalFields.SplittingFromInequality"
+      ],
+      "path": "src/GroundTheory/GlobalFields/KummerTheory/KummerIndexLemma/PowerKernel.lean",
+      "sha256": "1faf0b6c2129a6801e75775c2d33479e28273d8351ace5da38b540ba254f334d"
+    },
+    "GroundTheory.GlobalFields.KummerTheory.KummerIndexLemma.PowerPlaces": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.KummerTheory.KummerIndexLemma.HasEnoughRootsOfUnityOfRingHom",
+        "GroundTheory.GlobalFields.KummerTheory.SplittingKummer",
+        "GroundTheory.GlobalFields.SplittingFromInequality",
+        "GroundTheory.GlobalFields.IdeleGroups.LocalNorms"
+      ],
+      "path": "src/GroundTheory/GlobalFields/KummerTheory/KummerIndexLemma/PowerPlaces.lean",
+      "sha256": "1ec1ca9a01b55ec112354d05c75a1691dadcdacc85b811798db331e16c6c2743"
+    },
+    "GroundTheory.GlobalFields.KummerTheory.LocalIndex": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.UnitsBasic",
+        "GroundTheory.LocalFields.FilteredSurj"
+      ],
+      "path": "src/GroundTheory/GlobalFields/KummerTheory/LocalIndex.lean",
+      "sha256": "08ac092827337f4fd9c7c756d3a01fef3ee6e07990a6844c606919030a47478a"
+    },
+    "GroundTheory.GlobalFields.KummerTheory.LocalIndexAtPlace": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.LocalFieldAtPlace",
+        "GroundTheory.GlobalFields.KummerTheory.LocalIndex"
+      ],
+      "path": "src/GroundTheory/GlobalFields/KummerTheory/LocalIndexAtPlace.lean",
+      "sha256": "7fff07e9334febffaffe2c1542f41a456524ddc7cc325dbbef3642a1baa042d4"
+    },
+    "GroundTheory.GlobalFields.KummerTheory.Splitting": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.SemilocalAlgebras.Finite",
+        "GroundTheory.GlobalFields.SemilocalAlgebras.Galois"
+      ],
+      "path": "src/GroundTheory/GlobalFields/KummerTheory/Splitting.lean",
+      "sha256": "2afdf1a72b583dab6e16fa7500f5f54576c9a2e05321eb92478722b362c920aa"
+    },
+    "GroundTheory.GlobalFields.KummerTheory.SplittingInfinite": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.SemilocalAlgebras.Infinite",
+        "GroundTheory.GlobalFields.KummerTheory.Splitting"
+      ],
+      "path": "src/GroundTheory/GlobalFields/KummerTheory/SplittingInfinite.lean",
+      "sha256": "f693a8f80f0cabd3e13c97fddd16c2004621a9ff2ab11fdd0fafe0ebdcff337c"
+    },
+    "GroundTheory.GlobalFields.KummerTheory.SplittingKummer": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.KummerTheory.Degree",
+        "GroundTheory.GlobalFields.KummerTheory.Splitting",
+        "GroundTheory.GlobalFields.KummerTheory.SplittingInfinite"
+      ],
+      "path": "src/GroundTheory/GlobalFields/KummerTheory/SplittingKummer.lean",
+      "sha256": "7ba34290c95fb206db28e3c8eb78d7cf0fc62d1408424fe8e69c5596f38c1d92"
+    },
+    "GroundTheory.GlobalFields.KummerTheory.Unramified": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/GroundTheory/GlobalFields/KummerTheory/Unramified.lean",
+      "sha256": "a1c01357b2abd17a87c1f3de4babeb470437a44e2b076b4a31fe3ec65ccaf5e5"
+    },
+    "GroundTheory.GlobalFields.LocalAtPlace": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/GroundTheory/GlobalFields/LocalAtPlace.lean",
+      "sha256": "f07176f6b892a3fa1e4d3361a823a9663f37da3a0ad428d09dce9c2238fabf4c"
+    },
+    "GroundTheory.GlobalFields.LocalFieldAtPlace": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.LocalAtPlace"
+      ],
+      "path": "src/GroundTheory/GlobalFields/LocalFieldAtPlace.lean",
+      "sha256": "dee636d9397df796f8e61ec73530633ef54f980598811429ad78d9ab5889e231"
+    },
+    "GroundTheory.GlobalFields.NormResidueSymbol.Abstract": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleGroups.InfiniteProjInfiniteEmbeddingOfNe",
+        "GroundTheory.GlobalFields.Adele.IdeleBasis"
+      ],
+      "path": "src/GroundTheory/GlobalFields/NormResidueSymbol/Abstract.lean",
+      "sha256": "9b3ff24ee116808f9700b2917905f0473de2f610237b35d8e22527a54178cc08"
+    },
+    "GroundTheory.GlobalFields.NormResidueSymbol.AbstractUnique": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.NormResidueSymbol.Abstract"
+      ],
+      "path": "src/GroundTheory/GlobalFields/NormResidueSymbol/AbstractUnique.lean",
+      "sha256": "c90e565d2615868f909039049a2e3825eef0fd1d227d5a65549f6681d8bb5e49"
+    },
+    "GroundTheory.GlobalFields.NormResidueSymbol.Cyclotomic": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.NormResidueSymbol.CyclotomicImage"
+      ],
+      "path": "src/GroundTheory/GlobalFields/NormResidueSymbol/Cyclotomic.lean",
+      "sha256": "986782f065ee0fee1796335087e3113402da31fea3752673f04c63c73d96c6d9"
+    },
+    "GroundTheory.GlobalFields.NormResidueSymbol.CyclotomicBase": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.NormResidueSymbol.Functorial",
+        "GroundTheory.GlobalFields.NormResidueSymbol.Rational",
+        "GroundTheory.GlobalFields.NormResidueSymbol.Surjective"
+      ],
+      "path": "src/GroundTheory/GlobalFields/NormResidueSymbol/CyclotomicBase.lean",
+      "sha256": "9d9a9da8b62f4429dafeda57e61a9861364b7a090ed4957232fbab7702c175d1"
+    },
+    "GroundTheory.GlobalFields.NormResidueSymbol.CyclotomicCompositum": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.NormResidueSymbol.CyclotomicBase",
+        "GroundTheory.GlobalFields.IdeleClassGroup.InvariantsGalois"
+      ],
+      "path": "src/GroundTheory/GlobalFields/NormResidueSymbol/CyclotomicCompositum.lean",
+      "sha256": "bcdae22dac2ae1ea0cf30d92f78d2aa2fdbec93e8839b015bf3f6879495ff83e"
+    },
+    "GroundTheory.GlobalFields.NormResidueSymbol.CyclotomicImage": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.NormResidueSymbol.CyclotomicCompositum",
+        "GroundTheory.GlobalFields.IdeleGroups.NormOneCompact",
+        "GroundTheory.GlobalFields.CyclotomicCharacters.Degree",
+        "GroundTheory.GlobalFields.NormResidueSymbol.RationalContinuous"
+      ],
+      "path": "src/GroundTheory/GlobalFields/NormResidueSymbol/CyclotomicImage.lean",
+      "sha256": "c009990bab4eee75e41c5e88014a280791c3b4b5afad5270a0a017e13f4c4213"
+    },
+    "GroundTheory.GlobalFields.NormResidueSymbol.Functorial": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.NormResidueSymbol.FunctorialFinite",
+        "GroundTheory.GlobalFields.NormResidueSymbol.FunctorialInfinite"
+      ],
+      "path": "src/GroundTheory/GlobalFields/NormResidueSymbol/Functorial.lean",
+      "sha256": "81e6980d99d3ce9f63dac5cef2bdac260b683d39333bf037d1b3766a63d6314b"
+    },
+    "GroundTheory.GlobalFields.NormResidueSymbol.FunctorialFinite": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.NormResidueSymbol.FunctorialLocal",
+        "GroundTheory.GlobalFields.NormResidueSymbol.RangeIdeleNormLeKerIdeleSymbol",
+        "GroundTheory.GlobalFields.IdeleGroups.IdeleNorms.CompletionsOverBasisRepr",
+        "GroundTheory.GlobalFields.IdeleGroups.IdeleNorms.InfiniteAdeleRingMapInfiniteAdeleRingMap"
+      ],
+      "path": "src/GroundTheory/GlobalFields/NormResidueSymbol/FunctorialFinite.lean",
+      "sha256": "b22904237203fdb28b586844fd365ffa689e5a7c14ba7d74715375d1ca9d50d9"
+    },
+    "GroundTheory.GlobalFields.NormResidueSymbol.FunctorialInfinite": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.NormResidueSymbol.RangeIdeleNormLeKerIdeleSymbol",
+        "GroundTheory.GlobalFields.IdeleGroups.IdeleNorms.CompletionsOverBasisRepr",
+        "GroundTheory.GlobalFields.NormResidueSymbol.RestrictNormalInfiniteLocalSymbol"
+      ],
+      "path": "src/GroundTheory/GlobalFields/NormResidueSymbol/FunctorialInfinite.lean",
+      "sha256": "7531973f3585429346441dc7bbff165f0358df29335c753da72a66c12c73a8a7"
+    },
+    "GroundTheory.GlobalFields.NormResidueSymbol.FunctorialLocal": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.NormResidueSymbol.RangeFiniteLocalNormLeKerLocalSymbol",
+        "GroundTheory.LocalFields.LocalArtinAbstractField",
+        "GroundTheory.LocalFields.MainTheorem"
+      ],
+      "path": "src/GroundTheory/GlobalFields/NormResidueSymbol/FunctorialLocal.lean",
+      "sha256": "48fce7736bf14c8e604a974f58bbe1f2556c3760d57a239f4227cf5d72036c81"
+    },
+    "GroundTheory.GlobalFields.NormResidueSymbol.Infinite": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.InfiniteNormIndex.LocalSymbol",
+        "GroundTheory.GlobalFields.IdeleGroups.LocalNormGroups",
+        "GroundTheory.GlobalFields.NormResidueSymbol.RangeFiniteLocalNormLeKerLocalSymbol"
+      ],
+      "path": "src/GroundTheory/GlobalFields/NormResidueSymbol/Infinite.lean",
+      "sha256": "11dfa471ea84454df4516f2dcce5d8bafb43095af3c7499611b18a96e8e8ca5d"
+    },
+    "GroundTheory.GlobalFields.NormResidueSymbol.RangeFiniteLocalNormLeKerLocalSymbol": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.CompletionAtPlace.Galois",
+        "GroundTheory.GlobalFields.SemilocalAlgebras.Galois",
+        "GroundTheory.GlobalFields.IdeleGroups.LocalNormGroups",
+        "GroundTheory.GlobalFields.IdeleGroups.LocalNormsEverywhere",
+        "GroundTheory.LocalFields.LocalReciprocityUniversal"
+      ],
+      "path": "src/GroundTheory/GlobalFields/NormResidueSymbol/RangeFiniteLocalNormLeKerLocalSymbol.lean",
+      "sha256": "421eeaf23e60303bcac4efc134df84b2a41d6aca08a5ead1234c409aba160fee"
+    },
+    "GroundTheory.GlobalFields.NormResidueSymbol.RangeIdeleNormLeKerIdeleSymbol": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.NormResidueSymbol.RangeFiniteLocalNormLeKerLocalSymbol",
+        "GroundTheory.GlobalFields.NormResidueSymbol.Infinite",
+        "GroundTheory.GlobalFields.NormResidueSymbol.AbstractUnique",
+        "GroundTheory.GlobalFields.IdeleGroups.LocalNormsEverywhere"
+      ],
+      "path": "src/GroundTheory/GlobalFields/NormResidueSymbol/RangeIdeleNormLeKerIdeleSymbol.lean",
+      "sha256": "6c80311346937c694489c21fe7919c3157a7f74ab4cdb10d7fec1c1f7d83d2ac"
+    },
+    "GroundTheory.GlobalFields.NormResidueSymbol.Rational": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.NormResidueSymbol.RationalDiagonal",
+        "GroundTheory.GlobalFields.NormResidueSymbol.RationalCyclotomic"
+      ],
+      "path": "src/GroundTheory/GlobalFields/NormResidueSymbol/Rational.lean",
+      "sha256": "920de2cd517597f2048db94b76b10f455cda3a9edbdfa93106829e6c0b46b15c"
+    },
+    "GroundTheory.GlobalFields.NormResidueSymbol.RationalContinuous": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.NormResidueSymbol.Rational"
+      ],
+      "path": "src/GroundTheory/GlobalFields/NormResidueSymbol/RationalContinuous.lean",
+      "sha256": "459d5f03c655741dbaaa95abd70a02b2c79e435a1de03c9edf87fbf8abce3fc0"
+    },
+    "GroundTheory.GlobalFields.NormResidueSymbol.RationalCyclotomic": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleGroups.Rational",
+        "GroundTheory.GlobalFields.CyclotomicCharacters.ProfinitePadic"
+      ],
+      "path": "src/GroundTheory/GlobalFields/NormResidueSymbol/RationalCyclotomic.lean",
+      "sha256": "762e3ab58081f2abbc8df19733860a4a5abc480737dfd1c5445286a411f1e9cd"
+    },
+    "GroundTheory.GlobalFields.NormResidueSymbol.RationalDiagonal": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.NormResidueSymbol.RationalLocal",
+        "GroundTheory.GlobalFields.NormResidueSymbol.RangeIdeleNormLeKerIdeleSymbol",
+        "GroundTheory.GlobalFields.IdeleGroups.Rational"
+      ],
+      "path": "src/GroundTheory/GlobalFields/NormResidueSymbol/RationalDiagonal.lean",
+      "sha256": "ed13559b2620ff8f5e6d3b9a30b11ee54be692324282fa93f3565f8f4fed22c6"
+    },
+    "GroundTheory.GlobalFields.NormResidueSymbol.RationalLocal": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.NormResidueSymbol.RangeFiniteLocalNormLeKerLocalSymbol",
+        "GroundTheory.LocalFields.ExplicitQp",
+        "GroundTheory.LocalFields.LocalArtinTransport"
+      ],
+      "path": "src/GroundTheory/GlobalFields/NormResidueSymbol/RationalLocal.lean",
+      "sha256": "7b6771e8ce9e1ff1313e311e038bfa78218f3b1551cc2866784b6ae82d6b1f2b"
+    },
+    "GroundTheory.GlobalFields.NormResidueSymbol.RestrictNormalInfiniteLocalSymbol": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.NormResidueSymbol.RangeIdeleNormLeKerIdeleSymbol",
+        "GroundTheory.GlobalFields.IdeleGroups.IdeleNorms.InfiniteAdeleRingMapInfiniteAdeleRingMap"
+      ],
+      "path": "src/GroundTheory/GlobalFields/NormResidueSymbol/RestrictNormalInfiniteLocalSymbol.lean",
+      "sha256": "cb4db83d12df6634606f4ca7bfeb51edda3bb738d626a697a64b604787393f77"
+    },
+    "GroundTheory.GlobalFields.NormResidueSymbol.Surjective": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.NormResidueSymbol.RestrictNormalInfiniteLocalSymbol",
+        "GroundTheory.GlobalFields.FirstInequality"
+      ],
+      "path": "src/GroundTheory/GlobalFields/NormResidueSymbol/Surjective.lean",
+      "sha256": "ec2ddd736a78d1bb353d9f4d27eabba6d8b98ccc0504cb0b4f23d8d00381e7bf"
+    },
+    "GroundTheory.GlobalFields.SUnits": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.SUnitsKernel"
+      ],
+      "path": "src/GroundTheory/GlobalFields/SUnits.lean",
+      "sha256": "9a827b75b8349e2742f158f394ad0b8367a7662f425a0407c77158edfcc608f2"
+    },
+    "GroundTheory.GlobalFields.SUnitsKernel": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/GroundTheory/GlobalFields/SUnitsKernel.lean",
+      "sha256": "4164471d62cd02e8424c05b34d031b4938e8f395418fdddcf06e6291858c7af0"
+    },
+    "GroundTheory.GlobalFields.SecondInequality.Cyclic": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.FirstInequality",
+        "GroundTheory.GlobalFields.SecondInequality.PowFinrankMemRangeInfiniteLocalNorm",
+        "GroundTheory.GlobalFields.SecondInequality.Reduction"
+      ],
+      "path": "src/GroundTheory/GlobalFields/SecondInequality/Cyclic.lean",
+      "sha256": "43b7a3665e9582034b198904c0e10c1d8d49af9e07c35ba06e094e0b4e65e3c2"
+    },
+    "GroundTheory.GlobalFields.SecondInequality.PowFinrankMemRangeInfiniteLocalNorm": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.SecondInequality.Statement",
+        "GroundTheory.GlobalFields.KummerTheory.KummerIndexLemma",
+        "GroundTheory.GlobalFields.IdeleGroups.LocalNormsEverywhere",
+        "GroundTheory.GlobalFields.ExistenceTheorem.LocalPowers"
+      ],
+      "path": "src/GroundTheory/GlobalFields/SecondInequality/PowFinrankMemRangeInfiniteLocalNorm.lean",
+      "sha256": "9ea003874391338784de5b1f473964e9ac6ae3b74d6ecb557964093eb771d390"
+    },
+    "GroundTheory.GlobalFields.SecondInequality.PrimeDegree": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleGroups.IdeleNorms.InfiniteAdeleRingMapInfiniteAdeleRingMap",
+        "GroundTheory.GlobalFields.SecondInequality.Statement"
+      ],
+      "path": "src/GroundTheory/GlobalFields/SecondInequality/PrimeDegree.lean",
+      "sha256": "29f0ef8aca127e648c11f4f2cf6499cbdccf75d96ccbb00e97aca672f3630c0a"
+    },
+    "GroundTheory.GlobalFields.SecondInequality.Reduction": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.SecondInequality.PrimeDegree"
+      ],
+      "path": "src/GroundTheory/GlobalFields/SecondInequality/Reduction.lean",
+      "sha256": "bf8f5dad33ed9e2d76e43a99b97fabe1de1f214b75fdcac27fb67e3b1c0e83cc"
+    },
+    "GroundTheory.GlobalFields.SecondInequality.Statement": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleGroups.IdeleNorms.InfiniteAdeleRingMapInfiniteAdeleRingMap"
+      ],
+      "path": "src/GroundTheory/GlobalFields/SecondInequality/Statement.lean",
+      "sha256": "5c3987d3c73d6f13711a0ea745f68814cb4509923fccbcbca28918cc9e610b85"
+    },
+    "GroundTheory.GlobalFields.SemilocalAlgebras.Approximation": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/GroundTheory/GlobalFields/SemilocalAlgebras/Approximation.lean",
+      "sha256": "4ce67a3610343e0aa5e0b0a10bbcd2c966d8d22f82a407168e45b56027eb2c8d"
+    },
+    "GroundTheory.GlobalFields.SemilocalAlgebras.ContinuousCompletionMap": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/GroundTheory/GlobalFields/SemilocalAlgebras/ContinuousCompletionMap.lean",
+      "sha256": "ae2e6af20571dacb78e68389f6339c9aaca02e9bbf040eca12af3b6f2dff80e2"
+    },
+    "GroundTheory.GlobalFields.SemilocalAlgebras.Finite": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.SemilocalAlgebras.ContinuousCompletionMap",
+        "GroundTheory.GlobalFields.SemilocalAlgebras.Approximation",
+        "GroundTheory.GlobalFields.SemilocalAlgebras.LocalDegree"
+      ],
+      "path": "src/GroundTheory/GlobalFields/SemilocalAlgebras/Finite.lean",
+      "sha256": "28d8504f54cd75af8cb8033615bddd50c634efacb27960e946fef10f9cfa479a"
+    },
+    "GroundTheory.GlobalFields.SemilocalAlgebras.Galois": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.SemilocalAlgebras.Finite"
+      ],
+      "path": "src/GroundTheory/GlobalFields/SemilocalAlgebras/Galois.lean",
+      "sha256": "f7fbfabf303ee508bd9aa60e2084f91a1134de34b1b20e16aa0d7f73b1249573"
+    },
+    "GroundTheory.GlobalFields.SemilocalAlgebras.Infinite": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/GroundTheory/GlobalFields/SemilocalAlgebras/Infinite.lean",
+      "sha256": "af307ca65a6cd95f63e1a9782fc53d9709b5528354edc96381251e1c62c91e52"
+    },
+    "GroundTheory.GlobalFields.SemilocalAlgebras.InfiniteAdele": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.SemilocalAlgebras.Infinite"
+      ],
+      "path": "src/GroundTheory/GlobalFields/SemilocalAlgebras/InfiniteAdele.lean",
+      "sha256": "f358af4a87e4612649bd554ea7d270ec10e780c7fd0070fbad35cadb93eac555"
+    },
+    "GroundTheory.GlobalFields.SemilocalAlgebras.InfiniteAdeleTopology": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.SemilocalAlgebras.InfiniteAdele"
+      ],
+      "path": "src/GroundTheory/GlobalFields/SemilocalAlgebras/InfiniteAdeleTopology.lean",
+      "sha256": "070beea02b4106b5f5bbbabbd84d6fa0901af82ae35b3b02886b92e4c099c94d"
+    },
+    "GroundTheory.GlobalFields.SemilocalAlgebras.LocalDegree": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.SemilocalAlgebras.ContinuousCompletionMap"
+      ],
+      "path": "src/GroundTheory/GlobalFields/SemilocalAlgebras/LocalDegree.lean",
+      "sha256": "611166276ee4843266088b1896a9578d63a3a5ee297595be1e51ff2154235d75"
+    },
+    "GroundTheory.GlobalFields.SemilocalAlgebras.NormTrace": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.SemilocalAlgebras.Finite"
+      ],
+      "path": "src/GroundTheory/GlobalFields/SemilocalAlgebras/NormTrace.lean",
+      "sha256": "064b55987a48cad9b72f5ca95e38330a2b8cb30a3c0343ee07ba52fc97c5b7ba"
+    },
+    "GroundTheory.GlobalFields.SplittingFromInequality": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.FirstInequalityStatement",
+        "GroundTheory.GlobalFields.IdeleGroups.LocalNormsEverywhere",
+        "GroundTheory.GlobalFields.Adele.WeakApproxUnits"
+      ],
+      "path": "src/GroundTheory/GlobalFields/SplittingFromInequality.lean",
+      "sha256": "4f6e51da7f1d0e1840615cf75af0a5d8b3d94aaf96979f5294a9fd4a4e2fd8d0"
+    },
+    "GroundTheory.GlobalFields.SplittingFromInequality.Decomposition": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.SplittingFromInequality.Galois",
+        "GroundTheory.GlobalFields.SemilocalAlgebras.Galois",
+        "GroundTheory.GlobalFields.CompletionAtPlace.Inertia",
+        "GroundTheory.LocalFields.UnramifiedGalois"
+      ],
+      "path": "src/GroundTheory/GlobalFields/SplittingFromInequality/Decomposition.lean",
+      "sha256": "c955041f89a7d8566b013f4dbc04d108486447e010fede6414583c5ac22a267b"
+    },
+    "GroundTheory.GlobalFields.SplittingFromInequality.Galois": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.SplittingFromInequality"
+      ],
+      "path": "src/GroundTheory/GlobalFields/SplittingFromInequality/Galois.lean",
+      "sha256": "4084c56e9abc7425eabb0ea913f3f0069b7cdfbaf3b02b143d87d3e7898cafc3"
+    },
+    "GroundTheory.GlobalFields.TateThesis.AdeleIdealMeasure": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.AdeleMeasure",
+        "GroundTheory.GlobalFields.TateThesis.FiniteAdeleScaling",
+        "GroundTheory.GlobalFields.TateThesis.AdeleScaling",
+        "GroundTheory.GlobalFields.LocalFieldAtPlace"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/AdeleIdealMeasure.lean",
+      "sha256": "db71c0d89ce7fed0cee838bed50a859558de2b3a033e892ff52d3b34d1004b43"
+    },
+    "GroundTheory.GlobalFields.TateThesis.AdeleMeasurable": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/AdeleMeasurable.lean",
+      "sha256": "215c9ecd0433968a7dfafa4ef494dcbca5db9812cc3c35bf98ba60e9eae67170"
+    },
+    "GroundTheory.GlobalFields.TateThesis.AdeleMeasure": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.Adele.Compact",
+        "GroundTheory.GlobalFields.Adele.Discrete",
+        "GroundTheory.GlobalFields.Adele.Topology",
+        "GroundTheory.GlobalFields.TateThesis.TraceFourier",
+        "GroundTheory.GlobalFields.TateThesis.AdeleMeasurable"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/AdeleMeasure.lean",
+      "sha256": "c67e439228e8e4e3033aad6d975f0d2e6ee1d9da725fa2c83a8d1d3f30612c74"
+    },
+    "GroundTheory.GlobalFields.TateThesis.AdelePoisson": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.SchwartzBruhat",
+        "GroundTheory.GlobalFields.TateThesis.TraceLatticePoisson",
+        "GroundTheory.GlobalFields.IdeleGroups.ClassGroup"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/AdelePoisson.lean",
+      "sha256": "867738ab4ad3509d97299785ae812036037dcb20b5b7724599b95bd8fc446b5f"
+    },
+    "GroundTheory.GlobalFields.TateThesis.AdelePoissonUniform": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.AdelePoisson"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/AdelePoissonUniform.lean",
+      "sha256": "a067912d515b30bd3d288be5c8146c6d84cf7e36ec9047ceee7adc29ffe0fd3e"
+    },
+    "GroundTheory.GlobalFields.TateThesis.AdeleScaling": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.AdeleMeasure",
+        "GroundTheory.GlobalFields.TateThesis.FiniteAdeleScaling",
+        "GroundTheory.GlobalFields.IdeleGroups.IdeleNorms"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/AdeleScaling.lean",
+      "sha256": "5bf7de443a83f107f02f221a0abfb166f14b72f10cb1bb97045187aa34dca570"
+    },
+    "GroundTheory.GlobalFields.TateThesis.AdelicChar": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.Adele.Approximation",
+        "Development.AutomorphicArithmetic.IntegralCasts.CapelliIdentities.InfiniteTraceAlgebraMap"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/AdelicChar.lean",
+      "sha256": "341d703d8df81a13e95fc2f346392ef873ac88047f18b0400b525268c21b7ad8"
+    },
+    "GroundTheory.GlobalFields.TateThesis.AdelicCharDual": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.AdelicCharLocal",
+        "GroundTheory.GlobalFields.TateThesis.TracePairing",
+        "GroundTheory.GlobalFields.TateThesis.ArchChars",
+        "GroundTheory.GlobalFields.TateThesis.NoSmallSubgroups",
+        "GroundTheory.GlobalFields.Adele.IdeleBasis",
+        "GroundTheory.GlobalFields.Adele.Compact"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/AdelicCharDual.lean",
+      "sha256": "a1ef9534b64329d4d48bfd5c6400239b8ebf9dfeda3075cc78bf9aae7394b923"
+    },
+    "GroundTheory.GlobalFields.TateThesis.AdelicCharLocal": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.AdelicChar"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/AdelicCharLocal.lean",
+      "sha256": "6dbc62bc50c9a5ddaad5ef8aff42839ea360d619b33f50a10d97ec376e260470"
+    },
+    "GroundTheory.GlobalFields.TateThesis.ArchChars": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/ArchChars.lean",
+      "sha256": "209de9fd12226f3907cc7f5cdc2ec972fa13db43acee5099f1ad719b5bcc219f"
+    },
+    "GroundTheory.GlobalFields.TateThesis.ArchCharsUnitary": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.ArchChars",
+        "GroundTheory.GlobalFields.TateThesis.ArchCharsUnits"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/ArchCharsUnitary.lean",
+      "sha256": "07eab07357ec3fca6c5927c52f9514ec6ee1a1898385f129da21f89d7a672df5"
+    },
+    "GroundTheory.GlobalFields.TateThesis.ArchCharsUnits": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.ArchChars"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/ArchCharsUnits.lean",
+      "sha256": "123cd23ebb01fd1cc62f844b5d9cf65f135c5bbfbc61ee0136cdb65542cee5ba"
+    },
+    "GroundTheory.GlobalFields.TateThesis.Chebotarev": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.ChebotarevCount",
+        "GroundTheory.GlobalFields.TateThesis.ChebotarevAbelian",
+        "GroundTheory.GlobalFields.TateThesis.DegreeOneDensity"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/Chebotarev.lean",
+      "sha256": "0b54e26d6afe223cc9b04cac696b1388b2dc3727264101d6d19a2ea937a645fb"
+    },
+    "GroundTheory.GlobalFields.TateThesis.ChebotarevAbelian": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.RayClassDensity",
+        "GroundTheory.GlobalFields.GlobalReciprocity.General",
+        "GroundTheory.GlobalFields.GlobalReciprocity.Frobenius",
+        "GroundTheory.GlobalFields.NormResidueSymbol.Surjective",
+        "GroundTheory.GlobalFields.KummerTheory.Splitting"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/ChebotarevAbelian.lean",
+      "sha256": "4d30691a132303ccf4c342677fc0048dd9fcc4b0be0a998ba6e0258986cfabd5"
+    },
+    "GroundTheory.GlobalFields.TateThesis.ChebotarevCount": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.ChebotarevFrobenius",
+        "GroundTheory.GlobalFields.KummerTheory.Splitting"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/ChebotarevCount.lean",
+      "sha256": "d868a6313ef553bbb89b52af3c7bfbe8500c9299401cc8ab783b0b8d573d0e58"
+    },
+    "GroundTheory.GlobalFields.TateThesis.ChebotarevFrobenius": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.SplittingFromInequality.Decomposition"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/ChebotarevFrobenius.lean",
+      "sha256": "723a03422abafefa032ccc477e7be32e6302d055f9fb660a8730f1e25bc3ef86"
+    },
+    "GroundTheory.GlobalFields.TateThesis.Conductor": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleGroups.InfiniteProjInfiniteEmbeddingOfNe",
+        "GroundTheory.GlobalFields.IdeleGroups.Restricted",
+        "GroundTheory.GlobalFields.TateThesis.LocalConductor"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/Conductor.lean",
+      "sha256": "a783615fecced0302e7832be8f25a36525a513e5418422c35b9e6a71f7c7be04"
+    },
+    "GroundTheory.GlobalFields.TateThesis.ConductorIdeal": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.Conductor"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/ConductorIdeal.lean",
+      "sha256": "e4e37c6b919e3624eb773a2e868896ef34c1edf4228a2c9f2fa3d2f463aff4ad"
+    },
+    "GroundTheory.GlobalFields.TateThesis.DedekindContinuation": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.HeckeTheorem"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/DedekindContinuation.lean",
+      "sha256": "392ec668720499d7cd1f672ef2d32890e981f90dd771aa0a080cab761b11ec51"
+    },
+    "GroundTheory.GlobalFields.TateThesis.DedekindZetaContinuation": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.DedekindContinuation"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/DedekindZetaContinuation.lean",
+      "sha256": "e90210e8e4e44d5c995ce74fcef806663b7996707f3d622d203ed6b6e16140db"
+    },
+    "GroundTheory.GlobalFields.TateThesis.DegreeOneDensity": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.DegreeOnePrimes",
+        "GroundTheory.GlobalFields.TateThesis.PrimeZetaPole",
+        "GroundTheory.GlobalFields.KummerTheory.Splitting"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/DegreeOneDensity.lean",
+      "sha256": "a9aaf32befb47d63a32ba086b9b7d88a8c033fe086e81c5ed4fdf03fd511abdb"
+    },
+    "GroundTheory.GlobalFields.TateThesis.DegreeOnePrimes": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/DegreeOnePrimes.lean",
+      "sha256": "6fe331a167f3dc89be916333e4b118c82a26e907f58920bf62ba9b28f4f412bf"
+    },
+    "GroundTheory.GlobalFields.TateThesis.EulerFactors": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.EulerFactorsInfinite",
+        "GroundTheory.GlobalFields.TateThesis.EulerFactorsFinite",
+        "GroundTheory.GlobalFields.TateThesis.GlobalZeta",
+        "GroundTheory.GlobalFields.TateThesis.IdeleMeasureCosets"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/EulerFactors.lean",
+      "sha256": "6221123d5f2b20524545d17b1647a4de847f0c655b4af7cc7d9bd5b47fc724ee"
+    },
+    "GroundTheory.GlobalFields.TateThesis.EulerFactorsArch": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.HeckeChar",
+        "GroundTheory.GlobalFields.TateThesis.IdeleMeasure",
+        "GroundTheory.GlobalFields.TateThesis.ArchCharsUnitary",
+        "GroundTheory.GlobalFields.TateThesis.Gaussian",
+        "GroundTheory.GlobalFields.TateThesis.GaussianComplex"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/EulerFactorsArch.lean",
+      "sha256": "74f42b8629bacf7e2e571fcff04d238afaa17dda3679ab9a21f3309f0f6db9f1"
+    },
+    "GroundTheory.GlobalFields.TateThesis.EulerFactorsFinite": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.GlobalZetaFinite",
+        "GroundTheory.GlobalFields.TateThesis.HeckeLFunction",
+        "GroundTheory.GlobalFields.TateThesis.SchwartzBruhatFinite"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/EulerFactorsFinite.lean",
+      "sha256": "7d0a33060c115a699675529b1ac8ea1930694ff85e122a8ef24c63712b5e13a9"
+    },
+    "GroundTheory.GlobalFields.TateThesis.EulerFactorsFourier": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.EulerFactors",
+        "GroundTheory.GlobalFields.TateThesis.EulerFactorsFourierInfinite",
+        "GroundTheory.GlobalFields.TateThesis.EulerFactorsFourierFinite"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/EulerFactorsFourier.lean",
+      "sha256": "c4535e5cc8f2e495c2498ea88aaf409305ede95af74fe60161f5d590ed2bbd2a"
+    },
+    "GroundTheory.GlobalFields.TateThesis.EulerFactorsFourierFinite": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.EulerFactorsInverse",
+        "GroundTheory.GlobalFields.TateThesis.SchwartzBruhatFinite"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/EulerFactorsFourierFinite.lean",
+      "sha256": "2d69cbb73efb00d25576fc550d61ed0e25e6ed678e5b86d821d91a30c2646042"
+    },
+    "GroundTheory.GlobalFields.TateThesis.EulerFactorsFourierInfinite": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.EulerFactorsInfinite",
+        "GroundTheory.GlobalFields.TateThesis.EulerFactorsInverse",
+        "GroundTheory.GlobalFields.TateThesis.GaussianComplexFourier",
+        "GroundTheory.GlobalFields.TateThesis.AdelicCharLocal"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/EulerFactorsFourierInfinite.lean",
+      "sha256": "0f1b634d67760eb31ad4b4fa0b565f67c5b9d5e1e4409b3c89dede373ecbc10f"
+    },
+    "GroundTheory.GlobalFields.TateThesis.EulerFactorsInfinite": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.EulerFactorsArch",
+        "GroundTheory.GlobalFields.TateThesis.GaussianSchwartz",
+        "GroundTheory.GlobalFields.TateThesis.TraceFourier",
+        "GroundTheory.GlobalFields.TateThesis.HeckeCharRayClass",
+        "GroundTheory.GlobalFields.Adele.IntegersLattice"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/EulerFactorsInfinite.lean",
+      "sha256": "7b76eaa86e387dc72e7d995ae371edc52859e648359f5ce2fce71dd43f99f6f6"
+    },
+    "GroundTheory.GlobalFields.TateThesis.EulerFactorsInverse": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.EulerFactorsArch",
+        "GroundTheory.GlobalFields.TateThesis.EulerFactorsFinite"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/EulerFactorsInverse.lean",
+      "sha256": "3c39a97a34767d9e5a47d976081fa4a4e3e8b5659db95c54d4b632296fcdd93c"
+    },
+    "GroundTheory.GlobalFields.TateThesis.FiniteAdeleScaling": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.AdeleMeasure",
+        "GroundTheory.GlobalFields.LocalFieldAtPlace",
+        "GroundTheory.GlobalFields.IdeleGroups.IdeleNorms"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/FiniteAdeleScaling.lean",
+      "sha256": "a52dfc3aaa9b30bb93f0f4de1f6517dbbeb63f7a4fcdd0800ac99686826712f2"
+    },
+    "GroundTheory.GlobalFields.TateThesis.Gaussian": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/Gaussian.lean",
+      "sha256": "7dcc685d847bb445ea07010d26c3a3cf2674da8f021c05000b4dbf2f4d789db1"
+    },
+    "GroundTheory.GlobalFields.TateThesis.GaussianComplex": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.Gaussian"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/GaussianComplex.lean",
+      "sha256": "0f245577f1a6b32eb698f1783e5644b43459fd097e2cde57ca50ddcdcd557919"
+    },
+    "GroundTheory.GlobalFields.TateThesis.GaussianComplexFourier": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.GaussianComplex"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/GaussianComplexFourier.lean",
+      "sha256": "90e1c0c465813fde99b8d05d68e10b6f88bbc956a105b2ebbc39e8536faffffa"
+    },
+    "GroundTheory.GlobalFields.TateThesis.GaussianSchwartz": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/GaussianSchwartz.lean",
+      "sha256": "638d42b95ac828ec1f1dd4d42f87e8dc1162a57b685b6a7ce7b0b82b4f94b0de"
+    },
+    "GroundTheory.GlobalFields.TateThesis.GlobalZeta": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.GlobalZetaFinite",
+        "GroundTheory.GlobalFields.TateThesis.GlobalZetaInfinite",
+        "GroundTheory.GlobalFields.TateThesis.HeckeChar"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/GlobalZeta.lean",
+      "sha256": "a2c21ea0f36d35705df95cba0bd0659e37556690fe94192eb05f40b8ef7c3528"
+    },
+    "GroundTheory.GlobalFields.TateThesis.GlobalZetaFinite": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.IdeleMeasureCosets",
+        "GroundTheory.GlobalFields.TateThesis.HeckeLFunction",
+        "GroundTheory.GlobalFields.TateThesis.SchwartzBruhatFinite"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/GlobalZetaFinite.lean",
+      "sha256": "ac57aafd37859fd268fee346dde99fb3ad676979dec02c34c33e4f3eb7a1118c"
+    },
+    "GroundTheory.GlobalFields.TateThesis.GlobalZetaInfinite": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.IdeleMeasure",
+        "GroundTheory.GlobalFields.TateThesis.SchwartzBruhat"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/GlobalZetaInfinite.lean",
+      "sha256": "022feafde50d843691475cd17ab8494ad2b0e39d005966ccd02e514b591bc114"
+    },
+    "GroundTheory.GlobalFields.TateThesis.GlobalZetaSplit": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.GlobalZeta",
+        "GroundTheory.GlobalFields.TateThesis.IdeleMeasureQuotient"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/GlobalZetaSplit.lean",
+      "sha256": "f6d3fb44a0ad9e4534cd6931c6ba5cb15ccf4595cba03e864597e4f91fcf6ea4"
+    },
+    "GroundTheory.GlobalFields.TateThesis.HeckeChar": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleGroups.ClassGroup",
+        "GroundTheory.GlobalFields.TateThesis.ConductorIdeal"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/HeckeChar.lean",
+      "sha256": "a8f3d3def7fd99dbb3c37ac605e0694837087cffb156e21889744fb01528f19b"
+    },
+    "GroundTheory.GlobalFields.TateThesis.HeckeCharRayClass": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.HeckeChar",
+        "GroundTheory.GlobalFields.TateThesis.ArchCharsUnitary",
+        "GroundTheory.GlobalFields.IdeleGroups.UnitBound"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/HeckeCharRayClass.lean",
+      "sha256": "26e128284ce7860bbd69a4e3dc8bab211220c012760e70fade937841900ddca9"
+    },
+    "GroundTheory.GlobalFields.TateThesis.HeckeLFunction": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.HeckeChar",
+        "Development.AutomorphicArithmetic.IntegralCasts.CapelliIdentities.SummableAbsNormRpowInv"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/HeckeLFunction.lean",
+      "sha256": "e551c3d57e1e8ca1541d17838261b1b14452b86d13a55b3e62b4cf458cca9c8e"
+    },
+    "GroundTheory.GlobalFields.TateThesis.HeckeTheorem": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.HeckeTheoremFE"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/HeckeTheorem.lean",
+      "sha256": "72b1a93c64cc307d070454699dc5ad9821fd762c0cd3220e8c8fa5b85ed6066a"
+    },
+    "GroundTheory.GlobalFields.TateThesis.HeckeTheoremConj": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.HeckeTheoremScaling",
+        "GroundTheory.GlobalFields.TateThesis.EulerFactorsInverse"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/HeckeTheoremConj.lean",
+      "sha256": "6fcf98c6e60a6d49f23ddddde6abfb2b8c93bbf9d086283e57ca73dead974262"
+    },
+    "GroundTheory.GlobalFields.TateThesis.HeckeTheoremFE": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.HeckeTheoremTrivial"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/HeckeTheoremFE.lean",
+      "sha256": "2aa01187e9524961a88ca6edf68919521efeec96b44ba3e2b4d0e0679208a269"
+    },
+    "GroundTheory.GlobalFields.TateThesis.HeckeTheoremScaling": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.TateMainUnique",
+        "GroundTheory.GlobalFields.TateThesis.EulerFactorsFourier"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/HeckeTheoremScaling.lean",
+      "sha256": "323e561e14c1df2a6ee4f4c5b93f41e8dace8c020ba5d24bc6a7cc40f894c237"
+    },
+    "GroundTheory.GlobalFields.TateThesis.HeckeTheoremTrivial": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.HeckeTheoremConj"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/HeckeTheoremTrivial.lean",
+      "sha256": "19bf564b401e43c938e7fb50677bd1b9c2f259ada6b4878e1e4a5873cd71b939"
+    },
+    "GroundTheory.GlobalFields.TateThesis.IdeleMeasure": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.IdeleGroups.NormOneCompact",
+        "GroundTheory.GlobalFields.IdeleGroups.StandardOpenEquiv",
+        "GroundTheory.GlobalFields.Adele.Topology",
+        "GroundTheory.GlobalFields.TateThesis.AdeleMeasurable"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/IdeleMeasure.lean",
+      "sha256": "fd4cd07ef8b0e26e1b3df263bd91632aa88b62cd04100def5c6cdaad3c05d366"
+    },
+    "GroundTheory.GlobalFields.TateThesis.IdeleMeasureCosets": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.IdeleMeasure"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/IdeleMeasureCosets.lean",
+      "sha256": "f7dc5fce0b61906de40e6aad45193e40d8d5a3aef9c224c00fae636e04674672"
+    },
+    "GroundTheory.GlobalFields.TateThesis.IdeleMeasureNormOne": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.IdeleMeasure"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/IdeleMeasureNormOne.lean",
+      "sha256": "0272d9a8eebb7dba271e5a9566a7b6fd907e71651e5ea303f6fbde6d2077098f"
+    },
+    "GroundTheory.GlobalFields.TateThesis.IdeleMeasureQuotient": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.IdeleMeasureNormOne",
+        "GroundTheory.GlobalFields.TateThesis.IdeleMeasureCosets",
+        "GroundTheory.GlobalFields.IdeleGroups.NormOneCompact",
+        "GroundTheory.GlobalFields.Adele.Discrete"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/IdeleMeasureQuotient.lean",
+      "sha256": "7016a9794a34faa0035b7b11d732101bd53b2c69dacb866412555d9ee8011f31"
+    },
+    "GroundTheory.GlobalFields.TateThesis.LatticePoisson": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.LatticePoissonBasic"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/LatticePoisson.lean",
+      "sha256": "cd3da49139f49ac541864e23373b7683097b69d6bbce07375ee0e93ee7b41c6b"
+    },
+    "GroundTheory.GlobalFields.TateThesis.LatticePoissonBasic": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/LatticePoissonBasic.lean",
+      "sha256": "fa66ada1a836cc317b79f74beb03f8228383acf55b90c4d4ca109b66aa5b15e9"
+    },
+    "GroundTheory.GlobalFields.TateThesis.LocalConductor": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.NoSmallSubgroups"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/LocalConductor.lean",
+      "sha256": "1ae3de288a2ff585f3d5b8d57c566ce6fe3cbfd0a8cef88579e40acfe2ef5c37"
+    },
+    "GroundTheory.GlobalFields.TateThesis.NoSmallSubgroups": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/NoSmallSubgroups.lean",
+      "sha256": "6ba05d2c9de5c67749fcfbbfe32163bb5fae4cae622adb4fd893481f947a8da5"
+    },
+    "GroundTheory.GlobalFields.TateThesis.Nonvanishing": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.NonvanishingLandau"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/Nonvanishing.lean",
+      "sha256": "16fae96c121c1d1ccb86d14f38cad0e699b311257ce7bb3af6db532f2a4203b0"
+    },
+    "GroundTheory.GlobalFields.TateThesis.NonvanishingDivisorSum": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.HeckeLFunction"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/NonvanishingDivisorSum.lean",
+      "sha256": "3efc7317e3fc179ce2c259a0b16d5722904911e7c5eb7157847f1768818c973d"
+    },
+    "GroundTheory.GlobalFields.TateThesis.NonvanishingLandau": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.NonvanishingPrimes",
+        "GroundTheory.GlobalFields.TateThesis.NonvanishingDivisorSum"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/NonvanishingLandau.lean",
+      "sha256": "09cecdc73b3b1e776559e50ecd14719a332ebf1acf87ba5e3f8a8dcf41ac635e"
+    },
+    "GroundTheory.GlobalFields.TateThesis.NonvanishingPrimes": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.DedekindZetaContinuation",
+        "GroundTheory.GlobalFields.LocalFieldAtPlace"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/NonvanishingPrimes.lean",
+      "sha256": "515ebbc00159f735d799499397cdf1146c957586465e01fb4ef2c64396d68231"
+    },
+    "GroundTheory.GlobalFields.TateThesis.PrimeSumBounded": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.Nonvanishing",
+        "GroundTheory.GlobalFields.TateThesis.NonvanishingPrimes"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/PrimeSumBounded.lean",
+      "sha256": "a3a76f8c026dcc868da8e490a8fae8343a1bbef3b37dc77aa0bcc9d5393457c3"
+    },
+    "GroundTheory.GlobalFields.TateThesis.PrimeZetaPole": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.DegreeOnePrimes"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/PrimeZetaPole.lean",
+      "sha256": "f3afab2c164772e1c506268db9dab01e770bc4177486f8d6374853988ebd11ac"
+    },
+    "GroundTheory.GlobalFields.TateThesis.RayClassDensity": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.PrimeSumBounded",
+        "GroundTheory.GlobalFields.TateThesis.HeckeCharRayClass",
+        "GroundTheory.GlobalFields.TateThesis.DegreeOneDensity"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/RayClassDensity.lean",
+      "sha256": "33c7996b90174a3b21f09baa2a4aa1f7363267b833ea5d867e8fc1b64b905fb7"
+    },
+    "GroundTheory.GlobalFields.TateThesis.SchwartzBruhat": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.SchwartzBruhatFinite",
+        "GroundTheory.GlobalFields.TateThesis.AdeleScaling"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/SchwartzBruhat.lean",
+      "sha256": "194c225753ea977e808731bd90bcaf57efbb7095649fe63e47c47bda9cf27166"
+    },
+    "GroundTheory.GlobalFields.TateThesis.SchwartzBruhatDual": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.AdeleIdealMeasure",
+        "GroundTheory.GlobalFields.TateThesis.AdelicCharDual",
+        "GroundTheory.GlobalFields.TateThesis.TraceDualLattice"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/SchwartzBruhatDual.lean",
+      "sha256": "b26853f134c46f2cffcfc584d79a49500cc21347a96001c03c93db9098267def"
+    },
+    "GroundTheory.GlobalFields.TateThesis.SchwartzBruhatFinite": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.SchwartzBruhatDual"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/SchwartzBruhatFinite.lean",
+      "sha256": "7ca4beea26f6c16704920c95735ad4ae42f3d148915b2ac4dac1525bbefc8b5a"
+    },
+    "GroundTheory.GlobalFields.TateThesis.TateMain": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.TateThetaDecay",
+        "GroundTheory.GlobalFields.TateThesis.ArchCharsUnitary"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/TateMain.lean",
+      "sha256": "2393fa3f7cb2cec951ab5d70f2e3d66373d6d77b6e349f27ac2f9e06f6bcbd9f"
+    },
+    "GroundTheory.GlobalFields.TateThesis.TateMainUnique": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.TateMain"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/TateMainUnique.lean",
+      "sha256": "6a5c319c6a1642a4a5a35b17da00eea187f457c55560486faa1ffd606ebdb362"
+    },
+    "GroundTheory.GlobalFields.TateThesis.TateTheta": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.GlobalZetaSplit",
+        "GroundTheory.GlobalFields.TateThesis.AdelePoissonUniform"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/TateTheta.lean",
+      "sha256": "67d2055b0f1fbe151957aea61fe7273e12bc4ef3bddcf93170e465d25e891049"
+    },
+    "GroundTheory.GlobalFields.TateThesis.TateThetaDecay": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.TateTheta"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/TateThetaDecay.lean",
+      "sha256": "cf0e6a357c9fc00efd36049c3ef1e979b464abbcc48d971f4df500589e117450"
+    },
+    "GroundTheory.GlobalFields.TateThesis.TraceDualLattice": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.TraceFourier"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/TraceDualLattice.lean",
+      "sha256": "f41c4d68e3bf6128c68607ccd2eec84ed019af33255c10c05e106ba02be175a9"
+    },
+    "GroundTheory.GlobalFields.TateThesis.TraceFourier": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.TracePairing"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/TraceFourier.lean",
+      "sha256": "462bc65e1fd64c9854721c7f0c67e7bfa9503b928a12e70935309755b00b4fb4"
+    },
+    "GroundTheory.GlobalFields.TateThesis.TraceLatticeEuclidean": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.TraceDualLattice",
+        "GroundTheory.GlobalFields.TateThesis.LatticePoissonBasic"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/TraceLatticeEuclidean.lean",
+      "sha256": "85f2cc8f1b3a80cef0e8052e3867b2c5ec161e6193113f8989cd9b3c79210ed0"
+    },
+    "GroundTheory.GlobalFields.TateThesis.TraceLatticePoisson": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.TraceLatticeEuclidean",
+        "GroundTheory.GlobalFields.TateThesis.LatticePoisson"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/TraceLatticePoisson.lean",
+      "sha256": "aeaa1ccfb65b2be6ba81922431d51f4fa8501cd7754be9c70967d446088a0245"
+    },
+    "GroundTheory.GlobalFields.TateThesis.TracePairing": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.Adele.IntegersLattice"
+      ],
+      "path": "src/GroundTheory/GlobalFields/TateThesis/TracePairing.lean",
+      "sha256": "3943f5db0e3f3b90e1fb42b7941b3e8e7c64b1cffda43528a5cac665a5665490"
+    },
+    "GroundTheory.LocalFields.AbstractLocalReciprocity.CoeNormEqProdSmulNorm": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.NormFormula",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.Reciprocity"
+      ],
+      "path": "src/GroundTheory/LocalFields/AbstractLocalReciprocity/CoeNormEqProdSmulNorm.lean",
+      "sha256": "8ed9a6fd848d03ace59e80e9e54b198a625432d94030d602c69ea9638a52f871"
+    },
+    "GroundTheory.LocalFields.AbstractLocalReciprocity.ExistsEqNsmulOfProjEqZero": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.ProfiniteInteger"
+      ],
+      "path": "src/GroundTheory/LocalFields/AbstractLocalReciprocity/ExistsEqNsmulOfProjEqZero.lean",
+      "sha256": "c553cc0adc5a28372f19aa9050e0e65cf7193d7bffc1b5d2f0bf9e5c69112983"
+    },
+    "GroundTheory.LocalFields.AbstractLocalReciprocity.ExistsOpenSubgroupMemFixedModule": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.ProfiniteInteger"
+      ],
+      "path": "src/GroundTheory/LocalFields/AbstractLocalReciprocity/ExistsOpenSubgroupMemFixedModule.lean",
+      "sha256": "f298517d30c9d13897b513d98662577e7d27c35ef5a3f1b0afecc0679ebb221a"
+    },
+    "GroundTheory.LocalFields.AbstractLocalReciprocity.Frobenius": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.ExistsEqNsmulOfProjEqZero",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.Valuation"
+      ],
+      "path": "src/GroundTheory/LocalFields/AbstractLocalReciprocity/Frobenius.lean",
+      "sha256": "f4fcd9e7fb79746f20c6ffa52a2e4b234aad6d4fc9b89b175c35f92410324630"
+    },
+    "GroundTheory.LocalFields.AbstractLocalReciprocity.Functoriality": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.ReciprocityMap",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.NormFormula"
+      ],
+      "path": "src/GroundTheory/LocalFields/AbstractLocalReciprocity/Functoriality.lean",
+      "sha256": "ed13a61da3b4a809eb0fe051e348d3431f96757b5dbbd39e0fdb5b9c08126793"
+    },
+    "GroundTheory.LocalFields.AbstractLocalReciprocity.FunctorialityNorm": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.Functoriality"
+      ],
+      "path": "src/GroundTheory/LocalFields/AbstractLocalReciprocity/FunctorialityNorm.lean",
+      "sha256": "9edea2e6f1a0627114e924f24296de6b77b9d7888880f7b7634506dd2397cbe4"
+    },
+    "GroundTheory.LocalFields.AbstractLocalReciprocity.FunctorialityTransfer": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.FunctorialityNorm"
+      ],
+      "path": "src/GroundTheory/LocalFields/AbstractLocalReciprocity/FunctorialityTransfer.lean",
+      "sha256": "aa7d43b8bf0db2793772b09bb8606348a7e45cd00c8df27fdb2f522767e78e4d"
+    },
+    "GroundTheory.LocalFields.AbstractLocalReciprocity.IsoCyclic": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.ReciprocityMap",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.CoeNormEqProdSmulNorm",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.NormFormula"
+      ],
+      "path": "src/GroundTheory/LocalFields/AbstractLocalReciprocity/IsoCyclic.lean",
+      "sha256": "fc4af0b92291c01d446cfb23418a90b87b8a5018fc6918e0b9986bc56023fceb"
+    },
+    "GroundTheory.LocalFields.AbstractLocalReciprocity.IsoPGroup": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.IsoCyclic",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.FunctorialityTransfer"
+      ],
+      "path": "src/GroundTheory/LocalFields/AbstractLocalReciprocity/IsoPGroup.lean",
+      "sha256": "22e910ed5e1a8f68aace4e108a5d08954a99decfbaaf5e1e5fa46a4c37b04f50"
+    },
+    "GroundTheory.LocalFields.AbstractLocalReciprocity.Isomorphism": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.IsoPGroup",
+        "Development.AutomorphicArithmetic.IntegralCasts.CapelliIdentities.TransferOfCompSubtype"
+      ],
+      "path": "src/GroundTheory/LocalFields/AbstractLocalReciprocity/Isomorphism.lean",
+      "sha256": "5fa5ec871715db180e274268cbffed9109ad43a476e82318b2c13f7fd05b6e43"
+    },
+    "GroundTheory.LocalFields.AbstractLocalReciprocity.KeyLemma": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.CoeNormEqProdSmulNorm"
+      ],
+      "path": "src/GroundTheory/LocalFields/AbstractLocalReciprocity/KeyLemma.lean",
+      "sha256": "8a031723d4bf82c46c508cb6215cf77ff051aed9d74949243d591a4978e3818f"
+    },
+    "GroundTheory.LocalFields.AbstractLocalReciprocity.Multiplicative": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.KeyLemma"
+      ],
+      "path": "src/GroundTheory/LocalFields/AbstractLocalReciprocity/Multiplicative.lean",
+      "sha256": "d08f7f17d76b4e9ee06377a78b4327e7a97d4940a9e106569f7337a5732c185d"
+    },
+    "GroundTheory.LocalFields.AbstractLocalReciprocity.NormFormula": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.UniqueQuotientSubgroupOfSelf"
+      ],
+      "path": "src/GroundTheory/LocalFields/AbstractLocalReciprocity/NormFormula.lean",
+      "sha256": "34651b51464a8a763e1d2a5037aa80e2d1350a143a41c056814cb6b908c3c139"
+    },
+    "GroundTheory.LocalFields.AbstractLocalReciprocity.NormGroups": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.Isomorphism"
+      ],
+      "path": "src/GroundTheory/LocalFields/AbstractLocalReciprocity/NormGroups.lean",
+      "sha256": "e43af823fa4203e3c6ec3e25073c9ae641280fbcceb9b33204834a5b5e03c171"
+    },
+    "GroundTheory.LocalFields.AbstractLocalReciprocity.ProfiniteInteger": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/GroundTheory/LocalFields/AbstractLocalReciprocity/ProfiniteInteger.lean",
+      "sha256": "33f180a3b9ec75261fb57a91ea58d1a0d6e7a9f83d4e6ba3ba46731a851d406b"
+    },
+    "GroundTheory.LocalFields.AbstractLocalReciprocity.Reciprocity": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.UniqueQuotientSubgroupOfSelf",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.Frobenius",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.Unramified"
+      ],
+      "path": "src/GroundTheory/LocalFields/AbstractLocalReciprocity/Reciprocity.lean",
+      "sha256": "5fa4cd541b99ab949147ee7f842d6fe16d5e01ae153dd5f4a49318ce51358613"
+    },
+    "GroundTheory.LocalFields.AbstractLocalReciprocity.ReciprocityAbelianizationRestrictReciprocityLimi": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.NormGroups"
+      ],
+      "path": "src/GroundTheory/LocalFields/AbstractLocalReciprocity/ReciprocityAbelianizationRestrictReciprocityLimi.lean",
+      "sha256": "fe3a4c002f0d81679094847ecb9f488a9fba32a4ebd1d6b0ad64b67401b861cd"
+    },
+    "GroundTheory.LocalFields.AbstractLocalReciprocity.ReciprocityMap": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.Multiplicative"
+      ],
+      "path": "src/GroundTheory/LocalFields/AbstractLocalReciprocity/ReciprocityMap.lean",
+      "sha256": "76492927a7d5071621a56d83d1ff3ebe2ca7a92821e1c5963992c109b3b4ce8a"
+    },
+    "GroundTheory.LocalFields.AbstractLocalReciprocity.UniqueQuotientSubgroupOfSelf": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.ExistsOpenSubgroupMemFixedModule"
+      ],
+      "path": "src/GroundTheory/LocalFields/AbstractLocalReciprocity/UniqueQuotientSubgroupOfSelf.lean",
+      "sha256": "a574491e88bf03ddbe500cb532a4ce5c1412d540550f9e2f35c52b04e9b4fa15"
+    },
+    "GroundTheory.LocalFields.AbstractLocalReciprocity.Unramified": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.Valuation"
+      ],
+      "path": "src/GroundTheory/LocalFields/AbstractLocalReciprocity/Unramified.lean",
+      "sha256": "0074560b2033e6f208416d0fbefd85743631ab46971cbbfd8e315e1f88fb7144"
+    },
+    "GroundTheory.LocalFields.AbstractLocalReciprocity.Valuation": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.ExistsOpenSubgroupMemFixedModule",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.ExistsEqNsmulOfProjEqZero",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.UniqueQuotientSubgroupOfSelf",
+        "GroundTheory.PowerSubgroups.CountableNeighbourhoods.RelIndexSup"
+      ],
+      "path": "src/GroundTheory/LocalFields/AbstractLocalReciprocity/Valuation.lean",
+      "sha256": "d9006819baa67059d034327d4ed743d724f9b3e4db6bf042ff04d026819d5a3f"
+    },
+    "GroundTheory.LocalFields.CompleteTrivial": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.FilteredSurj"
+      ],
+      "path": "src/GroundTheory/LocalFields/CompleteTrivial.lean",
+      "sha256": "488a3ae8176ae8c34b9ddb604da12fd4ffbedf97dae212f505980e8e9a67ca3e"
+    },
+    "GroundTheory.LocalFields.CompleteTrivialLocal": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.CompleteTrivial",
+        "GroundTheory.LocalFields.NormalLattice"
+      ],
+      "path": "src/GroundTheory/LocalFields/CompleteTrivialLocal.lean",
+      "sha256": "368c12914553c54a2732397b2ff6e1988b6c495a3e8956d2fbf66e65293cb8bb"
+    },
+    "GroundTheory.LocalFields.CompletedUnramified": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.MaximalUnramifiedIntegers",
+        "GroundTheory.PowerSubgroups.CountableNeighbourhoods.UnitMulPowAdic"
+      ],
+      "path": "src/GroundTheory/LocalFields/CompletedUnramified.lean",
+      "sha256": "d1ef67628ed70444c977907d0ed464eecc9937aca3f249165f0043acff8c8f6e"
+    },
+    "GroundTheory.LocalFields.Eisenstein": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.Interface",
+        "GroundTheory.LocalFields.Integers",
+        "GroundTheory.LocalFields.IntermediateField"
+      ],
+      "path": "src/GroundTheory/LocalFields/Eisenstein.lean",
+      "sha256": "bcf362b5937c79a71b211a8925d7fe4c9cb930f3ed69fd6ad9dc81d349376e7c"
+    },
+    "GroundTheory.LocalFields.Examples": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/GroundTheory/LocalFields/Examples.lean",
+      "sha256": "1958bba6c58a5144d67f9b04a2236780ff721cbe50daae64f0457bb7de3bade7"
+    },
+    "GroundTheory.LocalFields.ExamplesCharZero": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.Examples"
+      ],
+      "path": "src/GroundTheory/LocalFields/ExamplesCharZero.lean",
+      "sha256": "afaf9fdbb2d1897f8dd6febd3352b8c90756609911f2fa05ea6a858855bfebd0"
+    },
+    "GroundTheory.LocalFields.ExamplesLaurent": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.Examples",
+        "GroundTheory.LocalFields.ExamplesTeichmuller"
+      ],
+      "path": "src/GroundTheory/LocalFields/ExamplesLaurent.lean",
+      "sha256": "41ad4fe69b13362aa91b960e0e53141fd836825c495951560a4d34add8939c5f"
+    },
+    "GroundTheory.LocalFields.ExamplesTeichmuller": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/GroundTheory/LocalFields/ExamplesTeichmuller.lean",
+      "sha256": "6a2bd7839d29dd7f202b0a7d472a1ce273d05a91509b74d9cee96aabdca107be"
+    },
+    "GroundTheory.LocalFields.Existence": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.ExistenceDictionary",
+        "GroundTheory.LocalFields.LubinTateReciprocity",
+        "GroundTheory.LocalFields.LubinTateLimit"
+      ],
+      "path": "src/GroundTheory/LocalFields/Existence.lean",
+      "sha256": "d83f50e8bba38d7f5536f9983f891627a9aa90d8f2c4addcaa140905afc477c1"
+    },
+    "GroundTheory.LocalFields.ExistenceDictionary": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.LocalReciprocityFinite",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.NormGroups"
+      ],
+      "path": "src/GroundTheory/LocalFields/ExistenceDictionary.lean",
+      "sha256": "ab4d575eeb8188dd667551bfef3e92d504a3cb07a4b72aaea8a749bff1dad9f3"
+    },
+    "GroundTheory.LocalFields.ExistsUnitFiltrationUnitsLeAndRangePowLe": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.UnitsBasic",
+        "GroundTheory.LocalFields.UnitsPowers"
+      ],
+      "path": "src/GroundTheory/LocalFields/ExistsUnitFiltrationUnitsLeAndRangePowLe.lean",
+      "sha256": "fd2d777d94bbdc5173e7dacbf913038633ecfa3cd641be0c87a3d09bc457dfe3"
+    },
+    "GroundTheory.LocalFields.ExistsUnitFiltrationUnitsLeRangeNormUnits": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.Interface",
+        "GroundTheory.LocalFields.Uniqueness",
+        "GroundTheory.LocalFields.Integers",
+        "GroundTheory.LocalFields.UnitsBasic",
+        "GroundTheory.LocalFields.UnitsPowers",
+        "GroundTheory.LocalFields.ExistsUnitFiltrationUnitsLeAndRangePowLe"
+      ],
+      "path": "src/GroundTheory/LocalFields/ExistsUnitFiltrationUnitsLeRangeNormUnits.lean",
+      "sha256": "3f1732650886bfcaf9c7b4172b5fcfcdbde58231dc8a07841da052509a2fae11"
+    },
+    "GroundTheory.LocalFields.ExplicitQp": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.KroneckerWeber",
+        "GroundTheory.LocalFields.LocalReciprocityUniversal"
+      ],
+      "path": "src/GroundTheory/LocalFields/ExplicitQp.lean",
+      "sha256": "09bdf29f4cb76ce0ba193999a6ba148edb40b5855b3ed499f9b18aa385bb1ab4"
+    },
+    "GroundTheory.LocalFields.ExtensionsOfDegree": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.FiniteExtension",
+        "GroundTheory.LocalFields.Eisenstein",
+        "GroundTheory.LocalFields.SeparableClosure",
+        "GroundTheory.LocalFields.UnramifiedExistence",
+        "GroundTheory.LocalFields.MaximalUnramified"
+      ],
+      "path": "src/GroundTheory/LocalFields/ExtensionsOfDegree.lean",
+      "sha256": "f141e63e094e9b2836870bf7169fb7bdb8675a911742e5f040bd880030cca2a5"
+    },
+    "GroundTheory.LocalFields.FilteredSurj": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/GroundTheory/LocalFields/FilteredSurj.lean",
+      "sha256": "3964f2c9bc871aced8372c3ac41ddad5e750907c325200a45a3aa2ade342247c"
+    },
+    "GroundTheory.LocalFields.FiniteExtension": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.Interface"
+      ],
+      "path": "src/GroundTheory/LocalFields/FiniteExtension.lean",
+      "sha256": "d06117634537042eb4d4bd322af435deed5574437309e15f7c2a76f009c6377b"
+    },
+    "GroundTheory.LocalFields.FormalGroups.Basics": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.FormalGroups.Inverse"
+      ],
+      "path": "src/GroundTheory/LocalFields/FormalGroups/Basics.lean",
+      "sha256": "bc1cf66bc338037812ed18b07200d8e679e5bfecdd85e4726303a1e40974357f"
+    },
+    "GroundTheory.LocalFields.FormalGroups.FrobeniusTwist": {
+      "imports": [
+        "Mathlib",
+        "Development.AutomorphicArithmetic.IntegralCasts.CapelliIdentities.ExistsLimitOfApprox"
+      ],
+      "path": "src/GroundTheory/LocalFields/FormalGroups/FrobeniusTwist.lean",
+      "sha256": "3be1424ea55d215777ca8fae9caee38401674bb9303dd2aa48d86001abf6e550"
+    },
+    "GroundTheory.LocalFields.FormalGroups.Inverse": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.FormalGroups.Truncation"
+      ],
+      "path": "src/GroundTheory/LocalFields/FormalGroups/Inverse.lean",
+      "sha256": "74ce6d2b67608ce3810b3f0524e02ca2a40cf9222c3719fd69665dd3a366e591"
+    },
+    "GroundTheory.LocalFields.FormalGroups.LubinTate": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.FormalGroups.Basics"
+      ],
+      "path": "src/GroundTheory/LocalFields/FormalGroups/LubinTate.lean",
+      "sha256": "1a47d2df413554f3056494d3846d121477dc12643d2681eb375faa59e60040a9"
+    },
+    "GroundTheory.LocalFields.FormalGroups.LubinTateGroup": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.FormalGroups.LubinTate"
+      ],
+      "path": "src/GroundTheory/LocalFields/FormalGroups/LubinTateGroup.lean",
+      "sha256": "f0d6541320a1c41b863885258b4398027134c31153dec729235078839356a0e2"
+    },
+    "GroundTheory.LocalFields.FormalGroups.OverUnramified": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.FormalGroups.FrobeniusTwist",
+        "GroundTheory.LocalFields.FormalGroups.TwistedLift"
+      ],
+      "path": "src/GroundTheory/LocalFields/FormalGroups/OverUnramified.lean",
+      "sha256": "df24acdba76a24938703f5f89129ffcf38f5f43dab528f37ba2818c50abec02a"
+    },
+    "GroundTheory.LocalFields.FormalGroups.Truncation": {
+      "imports": [
+        "Mathlib",
+        "Development.AutomorphicArithmetic.IntegralCasts.CapelliIdentities.ExistsUniqueFixedPoint"
+      ],
+      "path": "src/GroundTheory/LocalFields/FormalGroups/Truncation.lean",
+      "sha256": "be11e2b7ae345f6e0463ed24b98f0cfd9869ba2b227817603fe0633ed1435e48"
+    },
+    "GroundTheory.LocalFields.FormalGroups.TwistedLift": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.FormalGroups.LubinTateGroup"
+      ],
+      "path": "src/GroundTheory/LocalFields/FormalGroups/TwistedLift.lean",
+      "sha256": "f2c17a44e82ba4ae4597c80430d7a6f343e1e9d326d3e64fa715f03af9e36dc0"
+    },
+    "GroundTheory.LocalFields.HerbrandCyclic": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.TateCohomology.HerbrandAbstract",
+        "GroundTheory.GlobalFields.HerbrandQuotients.CycTate",
+        "GroundTheory.LocalFields.CompleteTrivial"
+      ],
+      "path": "src/GroundTheory/LocalFields/HerbrandCyclic.lean",
+      "sha256": "880375d1d851ee6e80ef1ea5325e2d76de3fc464bbac7a93787e52b344077a6d"
+    },
+    "GroundTheory.LocalFields.HerbrandLocal": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.HerbrandLocalBase",
+        "GroundTheory.LocalFields.CompleteTrivialLocal"
+      ],
+      "path": "src/GroundTheory/LocalFields/HerbrandLocal.lean",
+      "sha256": "914600eca3938d36fb8436867ecb5bd01bf7640ad1f9e9404d6f1fc7b9edf421"
+    },
+    "GroundTheory.LocalFields.HerbrandLocalBase": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.HerbrandCyclic",
+        "GroundTheory.LocalFields.HilbertCyclic",
+        "GroundTheory.LocalFields.UnitsGalois",
+        "GroundTheory.LocalFields.ExistsUnitFiltrationUnitsLeAndRangePowLe",
+        "GroundTheory.LocalFields.ExistsUnitFiltrationUnitsLeRangeNormUnits",
+        "GroundTheory.GlobalFields.HerbrandQuotients.Cyclic"
+      ],
+      "path": "src/GroundTheory/LocalFields/HerbrandLocalBase.lean",
+      "sha256": "9bb07a26d382ee9d6b82ae3e66c26f87fe335900f26fcca1ab24ca2576034c41"
+    },
+    "GroundTheory.LocalFields.HilbertCyclic": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.CompleteTrivial"
+      ],
+      "path": "src/GroundTheory/LocalFields/HilbertCyclic.lean",
+      "sha256": "67a71f6f436e1652bd27c45db35414e104775f452b8f8e4c6285ce1628c97a57"
+    },
+    "GroundTheory.LocalFields.Integers": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.Interface",
+        "GroundTheory.LocalFields.FiniteExtension"
+      ],
+      "path": "src/GroundTheory/LocalFields/Integers.lean",
+      "sha256": "9e2f5b9b65c67e93b2f780bc08f9a94941fdd7aa201bc48a6166f23c7bfebc54"
+    },
+    "GroundTheory.LocalFields.Interface": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/GroundTheory/LocalFields/Interface.lean",
+      "sha256": "9ff02517006d78826e609318b430cba0e5cc88c1b14724eeb8d90fcc309c6c06"
+    },
+    "GroundTheory.LocalFields.IntermediateField": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.Interface",
+        "GroundTheory.LocalFields.Uniqueness"
+      ],
+      "path": "src/GroundTheory/LocalFields/IntermediateField.lean",
+      "sha256": "631ab8fb5ad265405acb988ae75202c8137993e274f0694d50cf9d6ffbdc35f7"
+    },
+    "GroundTheory.LocalFields.KroneckerWeber": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.Existence",
+        "GroundTheory.LocalFields.LubinTateLimit",
+        "GroundTheory.LocalFields.PrincipalUnitsRank",
+        "GroundTheory.LocalFields.MaximalAbelianExtension"
+      ],
+      "path": "src/GroundTheory/LocalFields/KroneckerWeber.lean",
+      "sha256": "aef34f7c7cefa6c31cfc99bcf1dcbc17d17a32042cf078ca4742fe67ca74e105"
+    },
+    "GroundTheory.LocalFields.LocalArtinAbstractField": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.LocalArtinTransport"
+      ],
+      "path": "src/GroundTheory/LocalFields/LocalArtinAbstractField.lean",
+      "sha256": "c481acaa04c6d8d0c61d8fda250a2458c57be77062dff7673af683c87a787dab"
+    },
+    "GroundTheory.LocalFields.LocalArtinBaseChange": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.LocalArtinUniqueness",
+        "GroundTheory.LocalFields.LocalReciprocityLimitAbstract"
+      ],
+      "path": "src/GroundTheory/LocalFields/LocalArtinBaseChange.lean",
+      "sha256": "29a60fdc39c91aa15308b18f40bdd8fabd13a6907242916cdac98254bb638568"
+    },
+    "GroundTheory.LocalFields.LocalArtinCompletion": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.NormCorrespondence",
+        "GroundTheory.LocalFields.OpenCompletion"
+      ],
+      "path": "src/GroundTheory/LocalFields/LocalArtinCompletion.lean",
+      "sha256": "bf8ea925a23397947ebfdc4e8f5a339e561656eada27f337b7f490837c593a0b"
+    },
+    "GroundTheory.LocalFields.LocalArtinFunctoriality": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.LocalArtinBaseChange",
+        "GroundTheory.LocalFields.LocalArtinTransport"
+      ],
+      "path": "src/GroundTheory/LocalFields/LocalArtinFunctoriality.lean",
+      "sha256": "7eb81695c646d57aafc39a1e91194f4a90673a13fd9d0f76a6a017ea8535c4b8"
+    },
+    "GroundTheory.LocalFields.LocalArtinMap": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.MaximalAbelianExtension",
+        "GroundTheory.LocalFields.LocalReciprocityUniversal",
+        "GroundTheory.LocalFields.Existence"
+      ],
+      "path": "src/GroundTheory/LocalFields/LocalArtinMap.lean",
+      "sha256": "aa4ce85820510a1d33383abd68050ff72d89ff76c207e9d460df9f6ac238c099"
+    },
+    "GroundTheory.LocalFields.LocalArtinTransport": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.LocalArtinUniqueness"
+      ],
+      "path": "src/GroundTheory/LocalFields/LocalArtinTransport.lean",
+      "sha256": "8c1e6fa759981b5e1cf15fd9bc29d1cfd4bc32f1425d677b087d61fb8d75b184"
+    },
+    "GroundTheory.LocalFields.LocalArtinUniqueness": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.LocalArtinMap",
+        "GroundTheory.LocalFields.KroneckerWeber"
+      ],
+      "path": "src/GroundTheory/LocalFields/LocalArtinUniqueness.lean",
+      "sha256": "8a026978855c3a5296431d0710456e9f94a652281cd40a39554af1f800292851"
+    },
+    "GroundTheory.LocalFields.LocalAxiom": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.LocalAxiomDictionary",
+        "GroundTheory.LocalFields.HerbrandLocal",
+        "GroundTheory.LocalFields.MaximalUnramified",
+        "GroundTheory.LocalFields.SeparableClosure",
+        "GroundTheory.LocalFields.SeparableClosureValuation"
+      ],
+      "path": "src/GroundTheory/LocalFields/LocalAxiom.lean",
+      "sha256": "2847b63f7d51801a743c4434aa5005f6cbe0713004fb0b3a08a7eed6e1027587"
+    },
+    "GroundTheory.LocalFields.LocalAxiomDictionary": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.ExistsOpenSubgroupMemFixedModule",
+        "GroundTheory.LocalFields.ExistsUnitFiltrationUnitsLeRangeNormUnits",
+        "GroundTheory.LocalFields.LocalAxiomTransport"
+      ],
+      "path": "src/GroundTheory/LocalFields/LocalAxiomDictionary.lean",
+      "sha256": "22b8dcd9d58ff75a76dd2b4c547e1cea365508ce564e44d77cec9c401c4c17e4"
+    },
+    "GroundTheory.LocalFields.LocalAxiomTransport": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.ExistsOpenSubgroupMemFixedModule",
+        "GroundTheory.LocalFields.CompleteTrivial"
+      ],
+      "path": "src/GroundTheory/LocalFields/LocalAxiomTransport.lean",
+      "sha256": "ae1ae794385d2dd8dcd17ae629440645d809fe9e4f1070fea69f7c2808b8fa50"
+    },
+    "GroundTheory.LocalFields.LocalReciprocityFinite": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.LocalAxiom",
+        "GroundTheory.LocalFields.LocalReciprocityLimitAbstract"
+      ],
+      "path": "src/GroundTheory/LocalFields/LocalReciprocityFinite.lean",
+      "sha256": "c21224db471386ec64a3e07b9b02922485678addc2272fa2ca9ec1093ae18da7"
+    },
+    "GroundTheory.LocalFields.LocalReciprocityLimitAbstract": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.ReciprocityAbelianizationRestrictReciprocityLimi",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.Functoriality"
+      ],
+      "path": "src/GroundTheory/LocalFields/LocalReciprocityLimitAbstract.lean",
+      "sha256": "15c73a461377ca493c318e1adfe45271b64c382d0b21b704644cc5627fefdf6a"
+    },
+    "GroundTheory.LocalFields.LocalReciprocityUniversal": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.LocalReciprocityFinite"
+      ],
+      "path": "src/GroundTheory/LocalFields/LocalReciprocityUniversal.lean",
+      "sha256": "c703776e458c60a81af15c1610f06dd8d94d2be298797862190a84957b9ef28d"
+    },
+    "GroundTheory.LocalFields.LubinTateLimit": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.LubinTatePrimitive",
+        "GroundTheory.LocalFields.LubinTateTowerMaps",
+        "GroundTheory.LocalFields.LubinTateLimitGalois",
+        "GroundTheory.LocalFields.LubinTateUnramified"
+      ],
+      "path": "src/GroundTheory/LocalFields/LubinTateLimit.lean",
+      "sha256": "74d1e7d690f3272b0cbab2c336498e4e4f2beb38fbb55b562f98fdaf2134f34d"
+    },
+    "GroundTheory.LocalFields.LubinTateLimitGalois": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.LubinTateTowerMaps",
+        "GroundTheory.LocalFields.ExamplesLaurent"
+      ],
+      "path": "src/GroundTheory/LocalFields/LubinTateLimitGalois.lean",
+      "sha256": "b857ed7632fd369dbdcc12a074b28337d43fc5dd79f5bb90e3b79160979bc310"
+    },
+    "GroundTheory.LocalFields.LubinTatePoints": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.Interface",
+        "GroundTheory.LocalFields.ExamplesLaurent",
+        "GroundTheory.LocalFields.SeparableClosure",
+        "GroundTheory.LocalFields.FormalGroups.LubinTateGroup"
+      ],
+      "path": "src/GroundTheory/LocalFields/LubinTatePoints.lean",
+      "sha256": "016a756738d70db171df7641a29ce04df0803258ad5f174966ab2392ab23e6bd"
+    },
+    "GroundTheory.LocalFields.LubinTatePrimitive": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.LubinTateTower"
+      ],
+      "path": "src/GroundTheory/LocalFields/LubinTatePrimitive.lean",
+      "sha256": "cd14c03fbff372fec58c0feb73bb22ded42a341506dd99b7b5716546e876b4bf"
+    },
+    "GroundTheory.LocalFields.LubinTateReciprocity": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.LubinTateReciprocity.Descent",
+        "GroundTheory.LocalFields.LocalAxiom",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.ReciprocityMap",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.NormFormula"
+      ],
+      "path": "src/GroundTheory/LocalFields/LubinTateReciprocity.lean",
+      "sha256": "bbf228518f6fa98457079c35216e5b6f335eacd661dc92908c64ce75a6d17c3e"
+    },
+    "GroundTheory.LocalFields.LubinTateReciprocity.Descent": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.LubinTateReciprocity.TwistedPoint",
+        "GroundTheory.LocalFields.CompletedUnramified",
+        "GroundTheory.LocalFields.LubinTateTower",
+        "GroundTheory.LocalFields.UnramifiedExistence",
+        "GroundTheory.PowerSubgroups.CountableNeighbourhoods.DescentPowerSubgroups"
+      ],
+      "path": "src/GroundTheory/LocalFields/LubinTateReciprocity/Descent.lean",
+      "sha256": "9420d2534f6744a242f87cd71e877a4d808c9e43c0dbd9afc55722201b3975c8"
+    },
+    "GroundTheory.LocalFields.LubinTateReciprocity.RootEval": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/GroundTheory/LocalFields/LubinTateReciprocity/RootEval.lean",
+      "sha256": "b0edd8514720fcb494fd1b24ab369fc80a519a4d4ad86a13199e23ad0d2a1b3f"
+    },
+    "GroundTheory.LocalFields.LubinTateReciprocity.TwistedPoint": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.LubinTateReciprocity.RootEval",
+        "GroundTheory.LocalFields.FormalGroups.OverUnramified",
+        "GroundTheory.LocalFields.LubinTateTorsion"
+      ],
+      "path": "src/GroundTheory/LocalFields/LubinTateReciprocity/TwistedPoint.lean",
+      "sha256": "e2ba9e7a469e8cf78aaa619d908ad0cd9b76e4f3ff94be864263c2f4805be124"
+    },
+    "GroundTheory.LocalFields.LubinTateTorsion": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.LubinTatePoints",
+        "GroundTheory.LocalFields.Eisenstein"
+      ],
+      "path": "src/GroundTheory/LocalFields/LubinTateTorsion.lean",
+      "sha256": "5b8a9c2b96cfe0bfe3e76dc706c4ced52b0b8a06f6e9c1ce7ca553af80edb58b"
+    },
+    "GroundTheory.LocalFields.LubinTateTower": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.LubinTatePoints",
+        "GroundTheory.LocalFields.LubinTateTorsion",
+        "GroundTheory.LocalFields.Eisenstein",
+        "GroundTheory.LocalFields.UnitsBasic"
+      ],
+      "path": "src/GroundTheory/LocalFields/LubinTateTower.lean",
+      "sha256": "e415b84a55e092f98890aa995fb28faedc0dea724ed582ae5e80786e88081345"
+    },
+    "GroundTheory.LocalFields.LubinTateTowerMaps": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.LubinTatePrimitive"
+      ],
+      "path": "src/GroundTheory/LocalFields/LubinTateTowerMaps.lean",
+      "sha256": "608b4797c9adef3e3734ee05b688f05a4074e3826cd121dd8cfc67ad41bbb305"
+    },
+    "GroundTheory.LocalFields.LubinTateUnramified": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.LubinTateLimitGalois",
+        "GroundTheory.LocalFields.MaximalUnramified"
+      ],
+      "path": "src/GroundTheory/LocalFields/LubinTateUnramified.lean",
+      "sha256": "e7c1bcd8995ebbc83f1f5ae3dfae0cfc351345075ce9659799fb9efd762b1a14"
+    },
+    "GroundTheory.LocalFields.MainTheorem": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.LocalArtinUniqueness",
+        "GroundTheory.LocalFields.LocalArtinCompletion",
+        "GroundTheory.LocalFields.LocalArtinFunctoriality",
+        "GroundTheory.LocalFields.LocalArtinTransport"
+      ],
+      "path": "src/GroundTheory/LocalFields/MainTheorem.lean",
+      "sha256": "131d4e0d0611e77dd164db6c1948c5accaed643501b3d8e28790232798384d8a"
+    },
+    "GroundTheory.LocalFields.MaximalAbelianExtension": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/GroundTheory/LocalFields/MaximalAbelianExtension.lean",
+      "sha256": "5dc31d4e966e59dea04ee3f9a6abbfa5bcde97f7e5ff27bbeb392ec75bbac9a0"
+    },
+    "GroundTheory.LocalFields.MaximalUnramified": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.Interface",
+        "GroundTheory.LocalFields.FiniteExtension",
+        "GroundTheory.LocalFields.Uniqueness",
+        "GroundTheory.LocalFields.Integers",
+        "GroundTheory.LocalFields.UnitsPowers",
+        "GroundTheory.LocalFields.UnramifiedRootsOfUnity",
+        "GroundTheory.LocalFields.UnramifiedGalois",
+        "GroundTheory.LocalFields.UnramifiedExistence",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.ProfiniteInteger",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.ExistsEqNsmulOfProjEqZero",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.Frobenius",
+        "GroundTheory.LocalFields.AbstractLocalReciprocity.Valuation"
+      ],
+      "path": "src/GroundTheory/LocalFields/MaximalUnramified.lean",
+      "sha256": "f1855f34db03eb16a2225f0a3103fcb9623209bd64c2aa34be6044ec113ba049"
+    },
+    "GroundTheory.LocalFields.MaximalUnramifiedIntegers": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.MaximalUnramified",
+        "GroundTheory.LocalFields.SeparableClosureValuation"
+      ],
+      "path": "src/GroundTheory/LocalFields/MaximalUnramifiedIntegers.lean",
+      "sha256": "d83561b4a750a32c2d20ef156a4639b7a7db17fc4e617d654e756d453a8a8fc8"
+    },
+    "GroundTheory.LocalFields.NormCorrespondence": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.LocalArtinMap"
+      ],
+      "path": "src/GroundTheory/LocalFields/NormCorrespondence.lean",
+      "sha256": "b04280f048a271967625efea7246aecb60d8cdf3d9daaacc0d9dc0096626d306"
+    },
+    "GroundTheory.LocalFields.NormalLattice": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.Interface",
+        "GroundTheory.LocalFields.UnitsBasic"
+      ],
+      "path": "src/GroundTheory/LocalFields/NormalLattice.lean",
+      "sha256": "03e8a58dbcacddf836703e20751b28ed097bdc38c9addd5224813446be708f44"
+    },
+    "GroundTheory.LocalFields.OpenCompletion": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/GroundTheory/LocalFields/OpenCompletion.lean",
+      "sha256": "cfa55f9296a31d7733286c4ceb534b7f44ce45565e2914cf264bba208eb7421e"
+    },
+    "GroundTheory.LocalFields.PadicExp": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.PadicLogHom"
+      ],
+      "path": "src/GroundTheory/LocalFields/PadicExp.lean",
+      "sha256": "602463d2e1c8a47a0af62d3fec1c195a6aa0ffc1f6a302286d14263d11cffb34"
+    },
+    "GroundTheory.LocalFields.PadicLogHom": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.PadicLogSeries"
+      ],
+      "path": "src/GroundTheory/LocalFields/PadicLogHom.lean",
+      "sha256": "7251da7d842726ceea1a8f03e787705edd7d57d81e93c260854385bcd66f8f88"
+    },
+    "GroundTheory.LocalFields.PadicLogLinear": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.PrincipalUnitsModule"
+      ],
+      "path": "src/GroundTheory/LocalFields/PadicLogLinear.lean",
+      "sha256": "032c9e502470360a85d70d90576771d94bc6ceb33399f91b1ad5cc7ae229efe3"
+    },
+    "GroundTheory.LocalFields.PadicLogSeries": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.ExistsUnitFiltrationUnitsLeAndRangePowLe",
+        "GroundTheory.LocalFields.ExamplesCharZero"
+      ],
+      "path": "src/GroundTheory/LocalFields/PadicLogSeries.lean",
+      "sha256": "c35523c4c37e5565c294b36e182508790f9669a66d067c3be2f66382a7bf8e77"
+    },
+    "GroundTheory.LocalFields.PrincipalUnitsModule": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.PadicExp"
+      ],
+      "path": "src/GroundTheory/LocalFields/PrincipalUnitsModule.lean",
+      "sha256": "c82b0b336c815044fdf128e8eb8ee60bad5a1e38337e839eede3f8c043fd2e89"
+    },
+    "GroundTheory.LocalFields.PrincipalUnitsRank": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.PadicLogLinear",
+        "GroundTheory.LocalFields.Integers"
+      ],
+      "path": "src/GroundTheory/LocalFields/PrincipalUnitsRank.lean",
+      "sha256": "3673b5bbf4088411e3a6a0bdf35f77333313189bf64dfb3fb1271de3e1af7cd3"
+    },
+    "GroundTheory.LocalFields.Ramification": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.Interface",
+        "GroundTheory.LocalFields.Uniqueness",
+        "GroundTheory.LocalFields.Integers",
+        "GroundTheory.LocalFields.UnitsBasic",
+        "GroundTheory.LocalFields.UnitsPowers"
+      ],
+      "path": "src/GroundTheory/LocalFields/Ramification.lean",
+      "sha256": "cec8764c18c815e0b99592a70f21a48cab83ba8f351ad3f59cf0601bd711b84d"
+    },
+    "GroundTheory.LocalFields.RamificationStructure": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.RamificationUnits"
+      ],
+      "path": "src/GroundTheory/LocalFields/RamificationStructure.lean",
+      "sha256": "9b6f98cfe07c788e38cf23918056d6b34ea4fcca622141a490bcac48bd334c47"
+    },
+    "GroundTheory.LocalFields.RamificationTame": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.Eisenstein",
+        "GroundTheory.LocalFields.UnitsPowers",
+        "GroundTheory.LocalFields.RamificationStructure",
+        "GroundTheory.LocalFields.UnramifiedDefs",
+        "GroundTheory.LocalFields.IntermediateField"
+      ],
+      "path": "src/GroundTheory/LocalFields/RamificationTame.lean",
+      "sha256": "d655714b4480325a6347675053341a68b3f1530618616e8bd531afd5fae5c015"
+    },
+    "GroundTheory.LocalFields.RamificationTameStructure": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.RamificationTame",
+        "GroundTheory.LocalFields.UnramifiedHensel"
+      ],
+      "path": "src/GroundTheory/LocalFields/RamificationTameStructure.lean",
+      "sha256": "546564fc8742eaee01f6530501152b7de4131c39479d84a5be2b85883ecbd2ad"
+    },
+    "GroundTheory.LocalFields.RamificationUnits": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.Ramification"
+      ],
+      "path": "src/GroundTheory/LocalFields/RamificationUnits.lean",
+      "sha256": "a3f1913a8b3ac28be751bd2f5e7b2d87b7d72ddd1e5ff5971bfc5208af20b47e"
+    },
+    "GroundTheory.LocalFields.SeparableClosure": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.Interface",
+        "GroundTheory.LocalFields.FiniteExtension",
+        "GroundTheory.LocalFields.Uniqueness",
+        "GroundTheory.LocalFields.IntermediateField"
+      ],
+      "path": "src/GroundTheory/LocalFields/SeparableClosure.lean",
+      "sha256": "32fa2620e7e73aeff22b301440e938db8e5ad49cda9c529c277f0b762f0efea7"
+    },
+    "GroundTheory.LocalFields.SeparableClosureValuation": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.Interface",
+        "GroundTheory.LocalFields.FiniteExtension",
+        "GroundTheory.LocalFields.Uniqueness",
+        "GroundTheory.LocalFields.Integers",
+        "GroundTheory.LocalFields.UnitsBasic",
+        "GroundTheory.LocalFields.IntermediateField",
+        "GroundTheory.LocalFields.SeparableClosure"
+      ],
+      "path": "src/GroundTheory/LocalFields/SeparableClosureValuation.lean",
+      "sha256": "21bccb6888afe13860911908a20854a07a439962f15efaf3e960ba6b289c922b"
+    },
+    "GroundTheory.LocalFields.TameExtension": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.ExtensionsOfDegree",
+        "GroundTheory.LocalFields.RamificationTameStructure",
+        "GroundTheory.LocalFields.MaximalUnramified",
+        "GroundTheory.LocalFields.SeparableClosure",
+        "GroundTheory.LocalFields.UnramifiedExistence",
+        "GroundTheory.LocalFields.Unramified"
+      ],
+      "path": "src/GroundTheory/LocalFields/TameExtension.lean",
+      "sha256": "da73a2ad2966016a74cc50862f417ec755452a43d04eb3254e5ae3659f5ca518"
+    },
+    "GroundTheory.LocalFields.Uniqueness": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.Interface"
+      ],
+      "path": "src/GroundTheory/LocalFields/Uniqueness.lean",
+      "sha256": "f5cdc9aa33e2d370050cb6cd6ee1c490c1994613c4625a9a921ee12bcd34dd20"
+    },
+    "GroundTheory.LocalFields.UnitsBasic": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/GroundTheory/LocalFields/UnitsBasic.lean",
+      "sha256": "6ddcd3d58a503f6597394a0dc7a1d1bd80d2bcfcc39258d807cac98e810487c2"
+    },
+    "GroundTheory.LocalFields.UnitsGalois": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.Uniqueness",
+        "GroundTheory.LocalFields.UnitsBasic"
+      ],
+      "path": "src/GroundTheory/LocalFields/UnitsGalois.lean",
+      "sha256": "8f5697124c6fac6239849ab791e64300d09de3b8584b3d76a1ac3b159452e4d2"
+    },
+    "GroundTheory.LocalFields.UnitsPowers": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.UnitsBasic",
+        "Development.AutomorphicArithmetic.IntegralCasts.CapelliIdentities.ExistsRootOfAdicComplete"
+      ],
+      "path": "src/GroundTheory/LocalFields/UnitsPowers.lean",
+      "sha256": "9907e4b71d90742275b8cf40cbc1152f47cdbd760b5c7ed2800c2e7420d3a57c"
+    },
+    "GroundTheory.LocalFields.Unramified": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.Interface",
+        "GroundTheory.LocalFields.Integers",
+        "GroundTheory.LocalFields.Uniqueness",
+        "GroundTheory.LocalFields.IntermediateField",
+        "GroundTheory.LocalFields.UnramifiedDefs",
+        "GroundTheory.LocalFields.UnramifiedHensel"
+      ],
+      "path": "src/GroundTheory/LocalFields/Unramified.lean",
+      "sha256": "6e9b6ca290ba688082ebbef2bcf596ad5f47375c97ab6366698a575b86a33266"
+    },
+    "GroundTheory.LocalFields.UnramifiedDefs": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.Interface",
+        "GroundTheory.LocalFields.Integers"
+      ],
+      "path": "src/GroundTheory/LocalFields/UnramifiedDefs.lean",
+      "sha256": "abe750b5e6a050d579579b7701ee7ac96486189d44972785264aac68b9b8ec82"
+    },
+    "GroundTheory.LocalFields.UnramifiedExistence": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.Interface",
+        "GroundTheory.LocalFields.FiniteExtension",
+        "GroundTheory.LocalFields.Uniqueness",
+        "GroundTheory.LocalFields.Integers",
+        "GroundTheory.LocalFields.UnitsPowers",
+        "GroundTheory.LocalFields.UnramifiedRootsOfUnity",
+        "GroundTheory.LocalFields.UnramifiedGalois"
+      ],
+      "path": "src/GroundTheory/LocalFields/UnramifiedExistence.lean",
+      "sha256": "dedea5a55ba04dfd542e8216e48cdcb1db26c41003d76648dd7d31d4bdab113c"
+    },
+    "GroundTheory.LocalFields.UnramifiedGalois": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.Interface",
+        "GroundTheory.LocalFields.Uniqueness",
+        "GroundTheory.LocalFields.Integers",
+        "GroundTheory.LocalFields.UnitsPowers",
+        "GroundTheory.LocalFields.UnramifiedRootsOfUnity"
+      ],
+      "path": "src/GroundTheory/LocalFields/UnramifiedGalois.lean",
+      "sha256": "1a60fc404ee7a785a64d991f83f0ce4e935c22825e4bd0554760864c5a90d5a3"
+    },
+    "GroundTheory.LocalFields.UnramifiedHensel": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.Interface",
+        "GroundTheory.LocalFields.Integers",
+        "GroundTheory.LocalFields.IntermediateField",
+        "GroundTheory.LocalFields.UnramifiedDefs",
+        "GroundTheory.LocalFields.UnitsPowers"
+      ],
+      "path": "src/GroundTheory/LocalFields/UnramifiedHensel.lean",
+      "sha256": "f744700a4435279721484e93d7910ba1a3b17e580fe7e8d2831896208f289a06"
+    },
+    "GroundTheory.LocalFields.UnramifiedNormSurj": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.UnramifiedDefs",
+        "GroundTheory.LocalFields.ExistsUnitFiltrationUnitsLeRangeNormUnits",
+        "GroundTheory.LocalFields.FilteredSurj",
+        "GroundTheory.GlobalFields.KummerTheory.LocalIndex"
+      ],
+      "path": "src/GroundTheory/LocalFields/UnramifiedNormSurj.lean",
+      "sha256": "a8989c423275508217d3af93d415165ded23e40bc63616e80a86ec09c57dda9b"
+    },
+    "GroundTheory.LocalFields.UnramifiedNorms": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.UnramifiedNormSurj",
+        "GroundTheory.LocalFields.UnitsGalois",
+        "GroundTheory.LocalFields.CompleteTrivial",
+        "GroundTheory.LocalFields.HilbertCyclic"
+      ],
+      "path": "src/GroundTheory/LocalFields/UnramifiedNorms.lean",
+      "sha256": "6aae798b73f97bdf720edd2fe3c66f299f85e3613dc60441d8894dd2bdc57daa"
+    },
+    "GroundTheory.LocalFields.UnramifiedRootsOfUnity": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.Interface",
+        "GroundTheory.LocalFields.Uniqueness",
+        "GroundTheory.LocalFields.Integers",
+        "GroundTheory.LocalFields.UnitsPowers"
+      ],
+      "path": "src/GroundTheory/LocalFields/UnramifiedRootsOfUnity.lean",
+      "sha256": "4cc84344ccca411e204ba0995d1b35154a1842e12e4e7964064fe3b229747f46"
+    },
+    "GroundTheory.PowerSubgroups.CountableNeighbourhoods.DescentPowerSubgroups": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/GroundTheory/PowerSubgroups/CountableNeighbourhoods/DescentPowerSubgroups.lean",
+      "sha256": "cbde72083a04795542cc204a4bbbba22d9e3c35ee1fb9a1d504b97d72a550c44"
+    },
+    "GroundTheory.PowerSubgroups.CountableNeighbourhoods.PowInvariant": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/GroundTheory/PowerSubgroups/CountableNeighbourhoods/PowInvariant.lean",
+      "sha256": "d6de39f235cfce0afbbb034c2f86f7d5f2e1d73601aa4b56f9d6964f3ddb365b"
+    },
+    "GroundTheory.PowerSubgroups.CountableNeighbourhoods.RelIndexSup": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/GroundTheory/PowerSubgroups/CountableNeighbourhoods/RelIndexSup.lean",
+      "sha256": "15e667d9eee31bc19af74255aea802f404b1fc85455f5b04f50e00d8f762a811"
+    },
+    "GroundTheory.PowerSubgroups.CountableNeighbourhoods.UnitMulPowAdic": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/GroundTheory/PowerSubgroups/CountableNeighbourhoods/UnitMulPowAdic.lean",
+      "sha256": "5898060fb9a797456c0839d5396371a0767635ceafa37eabfcd18113baf3431c"
+    },
+    "GroundTheory.ProfiniteCohomology.GaloisModules.CoeGalRootsOfUnityHomApply": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/GroundTheory/ProfiniteCohomology/GaloisModules/CoeGalRootsOfUnityHomApply.lean",
+      "sha256": "0b3f1c64dedae249c13175d0fe4168343d9a208781856ab83feaeb673f8b694c"
+    },
+    "GroundTheory.ProfiniteCohomology.KummerBasic": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/GroundTheory/ProfiniteCohomology/KummerBasic.lean",
+      "sha256": "103ed7576c356dbdde82147ddf6fd3aed5a792f713b24ac2cb96a930eb20de03"
+    },
+    "GroundTheory.ProfiniteCohomology.KummerCorrespondence": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.ProfiniteCohomology.KummerBasic",
+        "GroundTheory.ProfiniteCohomology.KummerFinite"
+      ],
+      "path": "src/GroundTheory/ProfiniteCohomology/KummerCorrespondence.lean",
+      "sha256": "a6bffd52b328bf818eb22a84e66277c69151b07a3c09afb41062f645fe218ae3"
+    },
+    "GroundTheory.ProfiniteCohomology.KummerFinite": {
+      "imports": [
+        "Mathlib",
+        "GroundTheory.ProfiniteCohomology.KummerBasic"
+      ],
+      "path": "src/GroundTheory/ProfiniteCohomology/KummerFinite.lean",
+      "sha256": "4f4098591279e0d8dc31641893b9635770e4ea90c2dfc6163379edf43b28a4e8"
+    },
+    "GroundTheory.TateCohomology.HerbrandAbstract": {
+      "imports": [
+        "Mathlib"
+      ],
+      "path": "src/GroundTheory/TateCohomology/HerbrandAbstract.lean",
+      "sha256": "403b72ff457e0e99cab9797aacd71cbba4a4955476aaac0ea836b71d6ff5c46d"
+    }
+  },
+  "revision": "a172c464fd4bcfc4f53e394dcba45d742b1409a6"
+}

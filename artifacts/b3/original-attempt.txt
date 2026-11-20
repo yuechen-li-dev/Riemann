@@ -1,0 +1,14 @@
+Bounded original attempt: timeout 360 lake build GroundTheory.GlobalFields.TateThesis.Chebotarev
+error: GroundTheory/LocalFields/Interface.lean:35:36: failed to synthesize
+  LinearOrder (Submodule ↥𝒪[K] ↥𝒪[K])
+(deterministic) timeout at `typeclass`, maximum number of heartbeats (20000) has been reached
+
+Note: Use `set_option synthInstance.maxHeartbeats <num>` to set the limit.
+
+
+✔ [8934/9056] Built GroundTheory.GlobalFields.TateThesis.DegreeOneDensity (18s)
+exit 124
+
+Focused, unmodified-source Interface probe with synthInstance.maxHeartbeats=400000:
+timeout 75 lake env lean -DautoImplicit=false -DrelaxedAutoImplicit=false -DmaxSynthPendingDepth=3 -DmaxHeartbeats=4000000 -DsynthInstance.maxHeartbeats=400000 GroundTheory/LocalFields/Interface.lean
+exit 0

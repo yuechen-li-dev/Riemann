@@ -1,0 +1,122 @@
+package Main
+
+fn Cyclic() -> Int[][] {
+    var table: Int[][] = []
+    for x in 0 .. 5 {
+        var row: Int[] = []
+        for y in 0 .. 5 { row = Append(row,(x+y)%5) }
+        table = Append(table,row)
+    }
+    return table
+}
+
+// (r,b) acts on a square by k -> r+(-1)^b*k.
+fn Dihedral() -> Int[][] {
+    var table: Int[][] = []
+    for x in 0 .. 8 {
+        var row: Int[] = []
+        for y in 0 .. 8 {
+            var offset = y/2
+            if x%2 == 1 { offset = 4-offset }
+            row = Append(row,2*((x/2+offset)%4)+(x+y)%2)
+        }
+        table = Append(table,row)
+    }
+    return table
+}
+
+fn SymmetricFour() -> Int[][] {
+    var perms: Int[][] = []
+    for a in 0 .. 4 {
+        for b in 0 .. 4 {
+            for c in 0 .. 4 {
+                if a != b and a != c and b != c {
+                    perms = Append(perms,[a,b,c,6-a-b-c])
+                }
+            }
+        }
+    }
+    var table: Int[][] = []
+    for x in 0 .. Len(perms) {
+        var row: Int[] = []
+        for y in 0 .. Len(perms) {
+            var k = -1
+            for i in 0 .. Len(perms) {
+                var equal = true
+                for j in 0 .. 4 {
+                    if perms[i][j] != perms[x][perms[y][j]] { equal = false }
+                }
+                if equal { k = i }
+            }
+            row = Append(row,k)
+        }
+        table = Append(table,row)
+    }
+    return table
+}
+
+fn Line(row: Int[]) -> String {
+    var parts: String[] = []
+    for i in 0 .. Len(row) { parts = Append(parts, ToString(row[i])) }
+    return StringJoin(parts," ")
+}
+
+fn Export(name: String, table: Int[][]) -> String[] {
+    let n = Len(table)
+    var inv: Int[] = []
+    for x in 0 .. n {
+        var inverse = -1
+        for y in 0 .. n { if table[x][y] == 0 { inverse = y } }
+        inv = Append(inv,inverse)
+    }
+    var partition: Int[][] = []
+    for a in 0 .. n {
+        var least = a
+        var image: Int[] = []
+        for x in 0 .. n {
+            let b = table[table[x][a]][inv[x]]
+            image = Append(image,b)
+            if b < least { least = b }
+        }
+        if least == a {
+            var members: Int[] = []
+            for b in 0 .. n {
+                var found = false
+                for j in 0 .. n { if image[j] == b { found = true } }
+                if found { members = Append(members,b) }
+            }
+            partition = Append(partition,members)
+        }
+    }
+    let classes = Len(partition)
+    var choices = 1
+    for i in 0 .. classes { choices = 2*choices }
+    var lines = [name,Line([n,classes,choices]),Line(inv)]
+    for i in 0 .. n { lines = Append(lines,Line(table[i])) }
+    for i in 0 .. classes { lines = Append(lines,Line(partition[i])) }
+    for mask in 0 .. choices {
+        var bits = mask
+        var count = 0
+        for i in 0 .. classes {
+            if bits%2 == 1 { count = count+Len(partition[i]) }
+            bits = bits/2
+        }
+        lines = Append(lines,Line([mask,count,n]))
+    }
+    return lines
+}
+
+[Fact]
+fn ExportConjugacyStableSets() -> Void ! Error {
+    var lines: String[] = []
+    let c = Export("C5",Cyclic())
+    let d = Export("D8",Dihedral())
+    let s = Export("S4",SymmetricFour())
+    Assert.Equal("5 5 32",c[1],"C5 classes and subsets")
+    Assert.Equal("8 5 32",d[1],"D8 classes and subsets")
+    Assert.Equal("24 5 32",s[1],"S4 classes and subsets")
+    for i in 0 .. Len(c) { lines = Append(lines,c[i]) }
+    for i in 0 .. Len(d) { lines = Append(lines,d[i]) }
+    for i in 0 .. Len(s) { lines = Append(lines,s[i]) }
+    let _ = FileWriteLines("chebotarev.txt",lines)?
+}

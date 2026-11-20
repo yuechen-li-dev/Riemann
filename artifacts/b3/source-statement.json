@@ -1,0 +1,91 @@
+{
+  "id": "lean:a172c464fd4bcfc4f53e394dcba45d742b1409a6:GroundTheory.Global.hasDirichletDensity_chebotarevSet:1eaea3b95ec979c0f0413ef265bc6db0b5d5e950135ff2dfa32aee79a4958766",
+  "repository": "https://github.com/Deicyde/riemann-hypothesis",
+  "revision": "a172c464fd4bcfc4f53e394dcba45d742b1409a6",
+  "lean_statement": "theorem hasDirichletDensity_chebotarevSet (C : Set Gal(L/K))\n    (hC : ∀ σ ∈ C, ∀ τ : Gal(L/K), τ * σ * τ⁻¹ ∈ C) :\n    (chebotarevSet C).HasDirichletDensity (Nat.card C / Nat.card Gal(L/K))",
+  "source_span_fidelity": "matches",
+  "slug": "chebotarev",
+  "title": "Chebotarev for conjugacy-stable sets",
+  "domain": "Analytic number theory",
+  "declaration": {
+    "name": "GroundTheory.Global.hasDirichletDensity_chebotarevSet",
+    "path": "src/GroundTheory/GlobalFields/TateThesis/Chebotarev.lean",
+    "first_line": 198,
+    "last_line": 200,
+    "sha256": "0281b79a62a42a90d06875d90c2caca38491d97ff4b54dc0af50967320cd1b3e"
+  },
+  "definitions": [
+    {
+      "name": "chebotarevSet",
+      "path": "src/GroundTheory/GlobalFields/TateThesis/ChebotarevCount.lean",
+      "first_line": 17,
+      "last_line": 19,
+      "sha256": "434d0c763836edfa05127a6ed59cda0bddb6bbc3058777387d4f21cfc9fbb7b8"
+    }
+  ],
+  "context": [
+    {
+      "name": "Galois number field context",
+      "path": "src/GroundTheory/GlobalFields/TateThesis/Chebotarev.lean",
+      "first_line": 161,
+      "last_line": 162,
+      "sha256": "8ccea1ad2113cadee30977cc8786fdbd333d1466e2d937b98d75aa3f4215aa0d"
+    }
+  ],
+  "proof_uses": [
+    "hasDirichletDensity_chebotarevSet_isConj",
+    "HasDirichletDensity.union"
+  ],
+  "assumptions": [
+    "K and L number fields, with an algebra structure making L/K Galois.",
+    "C is invariant under conjugation by every element of Gal(L/K)."
+  ],
+  "quantifiers": [
+    "For every Galois extension of number fields and every subset C of its Galois group satisfying conjugation invariance.",
+    "The set of primes has Dirichlet density |C|/|Gal(L/K)|."
+  ],
+  "interpretation": "Among the unramified primes, the primes whose Frobenius lies in a chosen union of conjugacy classes have Dirichlet density equal to the fraction of group elements in that union.",
+  "human_review": "Pilot statement reading and focused comparison",
+  "hypothesis_status": "conditional",
+  "rh_independence": "no_rh_in_reviewed_statement",
+  "extra_proof_premise": false,
+  "mathematical_novelty": "known_math",
+  "formalization_novelty": "unresolved",
+  "verification": "structurally_reviewed",
+  "comparisons": [
+    {
+      "kind": "literature",
+      "title": "Chebotarev density, class field theory course",
+      "url": "https://kokunoyumeto.github.io/open-math-courses-public/courses/NT-CFT/the-chebotarev-density.html",
+      "fidelity": "matches",
+      "finding": "The standard Dirichlet-density theorem for a conjugacy class extends by finite disjoint union. The corpus states the union form."
+    },
+    {
+      "kind": "formalization",
+      "title": "CBirkbeck/chebotarev-density at c64095e",
+      "url": "https://github.com/CBirkbeck/chebotarev-density/blob/c64095e6cc6483b401849c7fd9182d983d3bf261/CebotarevDensity/Main.lean",
+      "fidelity": "stronger",
+      "finding": "The corpus quantifies over all conjugacy-stable sets, including a single class. The external header states the single-class version and its proof at this revision is sorry. A finite additivity bridge would recover the union form."
+    }
+  ],
+  "open_questions": [
+    "Verify the imported single-class, abelian and degree-one density proof closure and its axioms.",
+    "Compare the ideal and height-one spectrum APIs and the Dirichlet-density normalization in a Lean bridge."
+  ],
+  "proof_module_imports": [
+    "Mathlib",
+    "GroundTheory.GlobalFields.TateThesis.ChebotarevCount",
+    "GroundTheory.GlobalFields.TateThesis.ChebotarevAbelian",
+    "GroundTheory.GlobalFields.TateThesis.DegreeOneDensity"
+  ],
+  "definition_module_imports": {
+    "src/GroundTheory/GlobalFields/TateThesis/ChebotarevCount.lean": [
+      "Mathlib",
+      "GroundTheory.GlobalFields.TateThesis.ChebotarevFrobenius",
+      "GroundTheory.GlobalFields.KummerTheory.Splitting"
+    ]
+  },
+  "independent_computation": "not_run",
+  "ranking_features": null,
+  "oct_score": 0
+}

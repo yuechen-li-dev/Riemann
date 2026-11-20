@@ -1,0 +1,54 @@
+Lean (version 4.33.1, x86_64-unknown-linux-gnu, commit 819816b2e0a3bf405af45ae5c7af2491d8f5bee6, Release)
+Lean (version 4.33.1, x86_64-unknown-linux-gnu, commit 819816b2e0a3bf405af45ae5c7af2491d8f5bee6, Release)
+0df444a360eaa60ab8c11dca51a86af692955474
++ lake build B3
+Build completed successfully (8707 jobs).
++ lake env lean B3.lean
++ lake env leanchecker -v B3
+replaying B3
+exit 0
+
+B3.densityUnion.{u_1} {K : Type u_1} [Field K] [NumberField K] {A B : Set (HeightOneSpectrum (𝓞 K))} {a b : ℝ}
+  (disj : Disjoint A B) (ha : HasDirichletDensity A a) (hb : HasDirichletDensity B b) :
+  HasDirichletDensity (A ∪ B) (a + b)
+B3.classCount.{u_1} {G : Type u_1} [Group G] (q : ConjClasses G) : Nat.card ↑(B3.elements {q}) = Nat.card ↑q.carrier
+B3.densityFiniteClasses.{u_1, u_2} {G : Type u_1} [Group G] [Finite G] {K : Type u_2} [Field K] [NumberField K]
+  (tag : HeightOneSpectrum (𝓞 K) → ConjClasses G) (good : Set (HeightOneSpectrum (𝓞 K)))
+  (hclass :
+    ∀ (q : ConjClasses G), HasDirichletDensity (B3.primeFiber tag good {q}) (↑(Nat.card ↑q.carrier) / ↑(Nat.card G)))
+  (S : Finset (ConjClasses G)) :
+  HasDirichletDensity (B3.primeFiber tag good ↑S) (↑(Nat.card ↑(B3.elements ↑S)) / ↑(Nat.card G))
+B3.densityStable.{u_1, u_2} {G : Type u_1} [Group G] [Finite G] {K : Type u_2} [Field K] [NumberField K]
+  (tag : HeightOneSpectrum (𝓞 K) → ConjClasses G) (good : Set (HeightOneSpectrum (𝓞 K)))
+  (hclass :
+    ∀ (q : ConjClasses G), HasDirichletDensity (B3.primeFiber tag good {q}) (↑(Nat.card ↑q.carrier) / ↑(Nat.card G)))
+  (C : Set G) (stable : ∀ ⦃a b : G⦄, IsConj a b → a ∈ C → b ∈ C) :
+  HasDirichletDensity (B3.primeFiber tag good (ConjClasses.mk '' C)) (↑(Nat.card ↑C) / ↑(Nat.card G))
+B3.densityAllAbove.{u_1, u_2, u_3} {G : Type u_1} [Group G] [Finite G] {K : Type u_2} [Field K] [NumberField K]
+  {W : Type u_3} (above : HeightOneSpectrum (𝓞 K) → W → Prop) (unramified : W → Prop) (frob : W → G)
+  (existsAbove : ∀ (p : HeightOneSpectrum (𝓞 K)), ∃ w, above p w)
+  (agrees : ∀ (p : HeightOneSpectrum (𝓞 K)) (w z : W), above p w → above p z → IsConj (frob w) (frob z))
+  (hclass :
+    ∀ (q : ConjClasses G),
+      HasDirichletDensity (B3.overPrimeSet above unramified frob q.carrier) (↑(Nat.card ↑q.carrier) / ↑(Nat.card G)))
+  (C : Set G) (stable : ∀ ⦃a b : G⦄, IsConj a b → a ∈ C → b ∈ C) :
+  HasDirichletDensity (B3.overPrimeSet above unramified frob C) (↑(Nat.card ↑C) / ↑(Nat.card G))
+B3.classWeight.{u_1} {G : Type u_1} [Group G] [Finite G] (a : G) :
+  ↑(Nat.card ↑(ConjClasses.mk a).carrier) / ↑(Nat.card G) = 1 / ↑(Nat.card ↥(Subgroup.centralizer {a}))
+B3.densityFromCentralizers.{u_1, u_2, u_3} {G : Type u_1} [Group G] [Finite G] {K : Type u_2} [Field K] [NumberField K]
+  {W : Type u_3} (above : HeightOneSpectrum (𝓞 K) → W → Prop) (unramified : W → Prop) (frob : W → G)
+  (existsAbove : ∀ (p : HeightOneSpectrum (𝓞 K)), ∃ w, above p w)
+  (agrees : ∀ (p : HeightOneSpectrum (𝓞 K)) (w z : W), above p w → above p z → IsConj (frob w) (frob z))
+  (single :
+    ∀ (a : G),
+      HasDirichletDensity (B3.overPrimeSet above unramified frob {b | IsConj a b})
+        (1 / ↑(Nat.card ↥(Subgroup.centralizer {a}))))
+  (C : Set G) (stable : ∀ ⦃a b : G⦄, IsConj a b → a ∈ C → b ∈ C) :
+  HasDirichletDensity (B3.overPrimeSet above unramified frob C) (↑(Nat.card ↑C) / ↑(Nat.card G))
+'B3.densityUnion' depends on axioms: [propext, Classical.choice, Quot.sound]
+'B3.classCount' depends on axioms: [propext, Classical.choice, Quot.sound]
+'B3.densityFiniteClasses' depends on axioms: [propext, Classical.choice, Quot.sound]
+'B3.densityStable' depends on axioms: [propext, Classical.choice, Quot.sound]
+'B3.densityAllAbove' depends on axioms: [propext, Classical.choice, Quot.sound]
+'B3.classWeight' depends on axioms: [propext, Classical.choice, Quot.sound]
+'B3.densityFromCentralizers' depends on axioms: [propext, Classical.choice, Quot.sound]

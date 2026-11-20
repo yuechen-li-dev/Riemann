@@ -1,0 +1,22 @@
+Lean (version 4.33.1, x86_64-unknown-linux-gnu, commit 819816b2e0a3bf405af45ae5c7af2491d8f5bee6, Release)
+Lean (version 4.33.1, x86_64-unknown-linux-gnu, commit 819816b2e0a3bf405af45ae5c7af2491d8f5bee6, Release)
+0df444a360eaa60ab8c11dca51a86af692955474
++ lake build GroundTheory.GlobalFields.TateThesis.DegreeOneDensity
+Build completed successfully (8714 jobs).
++ lake env lean Check.lean
++ lake env leanchecker -v GroundTheory.GlobalFields.TateThesis.DegreeOneDensity
+replaying GroundTheory.GlobalFields.TateThesis.DegreeOneDensity
+exit 0
+
+GroundTheory.Global.hasDirichletDensity_inter_degreeOnePrimes_iff.{u_1, u_2} (K : Type u_1) {L : Type u_2} [Field K]
+  [NumberField K] [Field L] [NumberField L] [Algebra K L]
+  (S : Set (IsDedekindDomain.HeightOneSpectrum (NumberField.RingOfIntegers L))) (δ : ℝ) :
+  NumberField.Set.HasDirichletDensity (S ∩ degreeOnePrimes K L) δ ↔ NumberField.Set.HasDirichletDensity S δ
+GroundTheory.Global.tendsto_primeIdealZetaSum_univ_div_univ.{u_1, u_2} (K : Type u_1) [Field K] [NumberField K]
+  (L : Type u_2) [Field L] [NumberField L] :
+  Filter.Tendsto (fun s => NumberField.Set.primeIdealZetaSum Set.univ s / NumberField.Set.primeIdealZetaSum Set.univ s)
+    (nhdsWithin 1 (Set.Ioi 1)) (nhds 1)
+'GroundTheory.Global.hasDirichletDensity_inter_degreeOnePrimes_iff' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'GroundTheory.Global.tendsto_primeIdealZetaSum_univ_div_univ' depends on axioms: [propext, Classical.choice, Quot.sound]
