@@ -1423,3 +1423,23 @@ func M25HumanReport(r M25Result) string {
 	fmt.Fprintf(&b, "\nARCHITECTURAL AWKWARDNESS\n  %s\n\nCOMPILER THEORY\n  %s\n\nRH\n  %s\n\nONE PROPOSED NEXT MILESTONE\n  %s\n", r.ArchitecturalAwkwardness, r.CompilerTheory, r.RHStatus, r.NextMilestone)
 	return b.String()
 }
+
+func M26HumanReport(r M26Result) string {
+	var b strings.Builder
+	b.WriteString("RIEMANN-M26 — RELEASE THE FORCED PI/2 CONTACT\n\n")
+	fmt.Fprintf(&b, "outcome: %s\n\nCENTRAL ANSWER\n  %s\n", r.Outcome, r.CentralAnswer)
+	fmt.Fprintf(&b, "\nMINIMAL RELEASE / EMBEDDING\n  family: %s\n  support: %s\n  substitutions: %s; %s; %s\n  collected: %s\n", r.Family, r.Support, r.Embedding.CSubstitution, r.Embedding.Weight1Substitution, r.Embedding.Weight2Substitution, r.Embedding.CollectedResponse)
+	fmt.Fprintf(&b, "\nFIRST VARIATION\n  %s\n\nCERTIFIED STRICT WITNESS\n  r=%d/%d, base m=%d/%d, epsilon=%d/%d\n  c=[%s,%s]\n  w1=[%s,%s], w2=[%s,%s]\n  F(pi/2)=[%s,%s]\n  F(old t1)=[%s,%s]\n  compact lower=[%s,%s], tail lower=[%s,%s]\n  coverage: %s\n  comparison: %s\n  bounds: %s; %s\n", r.FirstVariation, r.Witness.Radius.Numerator, r.Witness.Radius.Denominator, r.Witness.BaseMass.Numerator, r.Witness.BaseMass.Denominator, r.Witness.Release.Numerator, r.Witness.Release.Denominator, r.Witness.C.Lower, r.Witness.C.Upper, r.Witness.Weight1.Lower, r.Witness.Weight1.Upper, r.Witness.Weight2.Lower, r.Witness.Weight2.Upper, r.Witness.FixedContactValue.Lower, r.Witness.FixedContactValue.Upper, r.Witness.OldMovableValue.Lower, r.Witness.OldMovableValue.Upper, r.Witness.CompactLower.Lower, r.Witness.CompactLower.Upper, r.Witness.TailLower.Lower, r.Witness.TailLower.Upper, r.Witness.Coverage, r.ObjectiveComparison, r.BestCertifiedC, r.BestCertifiedJ)
+	fmt.Fprintf(&b, "\nACTIVE-SET DISCOVERY\n  %s\n  ray boundary: %s\n", r.ActiveSet, r.RayBoundaryCandidate)
+	fmt.Fprintf(&b, "\nOCT-FIRST WORKFLOW\n  %s\n  interpreted: %s; compiled: %s; fallback: %d\n  compiler/execution: %s / %s\n  timing: %s\n  limits: %s\n  artifact: %s (%s)\n  Go replay: %s\n  evidence: %s\n", r.OctFirstWorkflow, r.Experiment.Interpreted, r.Experiment.Compiled, r.Experiment.FallbackCount, r.Experiment.CompilerIdentity, r.Experiment.ExecutionIdentity, r.Experiment.Timing, r.Experiment.Limits, r.Experiment.Artifact, r.Experiment.ArtifactSHA256, r.Experiment.ExactReplay, r.Experiment.EvidenceBoundary)
+	fmt.Fprintf(&b, "\nTHEOREM BOUNDARY\n  %s\n\nIMPORTED MATHEMATICS\n", r.TheoremBoundary)
+	for _, item := range r.ImportedMathematics {
+		fmt.Fprintf(&b, "  %s\n", item)
+	}
+	b.WriteString("\nNEWLY DERIVED MATHEMATICS\n")
+	for _, item := range r.DerivedMathematics {
+		fmt.Fprintf(&b, "  %s\n", item)
+	}
+	fmt.Fprintf(&b, "\nRH\n  %s\n\nONE PROPOSED NEXT MILESTONE\n  %s\n", r.RHStatus, r.NextMilestone)
+	return b.String()
+}

@@ -1,0 +1,142 @@
+package M26ReleaseForcedContact
+
+record Candidate {
+    Epsilon: Float
+    Contact: Float
+    Objective: Float
+    Minimum: Float
+}
+
+fn PiValue() -> Float { return 3.141592653589793 }
+fn BaseR() -> Float { return 3.50785 }
+fn BaseM() -> Float { return 0.00699 }
+fn C0() -> Float { return 1.0 + PiValue() / 4.0 - 2.0 / PiValue() }
+fn W0() -> Float {
+    let pi = PiValue()
+    return 1.0 / pi - 4.0 / (pi * pi) + 8.0 / (pi * pi * pi)
+}
+fn Sinc(t: Float) -> Float {
+    if Abs(t) < 0.00000001 { return 1.0 }
+    return Sin(t) / t
+}
+fn GeneralF(c: Float, w1: Float, w2: Float, r: Float, t: Float) -> Float {
+    if Abs(t) < 0.00000001 { return 2.0 * (1.0 + w1 + w2 - c) }
+    return 1.0 + 2.0 * (Cos(t) - 1.0) / (t * t) +
+        2.0 * (1.0 - c) * Sin(t) / t +
+        2.0 * w1 * Cos(t) + 2.0 * w2 * Cos(r * t)
+}
+fn CPC(cMass: Float, r: Float) -> Float {
+    return C0() + PiValue() * cMass * Cos(PiValue() * r / 2.0) / 2.0
+}
+fn CPW1(cMass: Float, r: Float) -> Float {
+    let a = Cos(PiValue() * r / 2.0)
+    let s = Sin(PiValue() * r / 2.0)
+    return W0() + cMass * (2.0 * a / PiValue() - r * s)
+}
+fn F0(t: Float) -> Float { return GeneralF(C0(), W0(), 0.0, 3.5, t) }
+fn H(r: Float, t: Float) -> Float {
+    let a = Cos(PiValue() * r / 2.0)
+    let s = Sin(PiValue() * r / 2.0)
+    return -PiValue() * a * Sinc(t) +
+        2.0 * (2.0 * a / PiValue() - r * s) * Cos(t) + 2.0 * Cos(r * t)
+}
+fn ReleaseD(r: Float, t: Float) -> Float {
+    // dc/depsilon=1, dw1/depsilon=0, dw2/depsilon=1.
+    return -2.0 * Sinc(t) + 2.0 * Cos(r * t)
+}
+fn BaseF(t: Float) -> Float {
+    let r = BaseR()
+    let m = BaseM()
+    return GeneralF(CPC(m, r), CPW1(m, r), m, r, t)
+}
+fn ReleasedF(epsilon: Float, t: Float) -> Float {
+    let r = BaseR()
+    let m = BaseM()
+    return GeneralF(CPC(m, r) + epsilon, CPW1(m, r), m + epsilon, r, t)
+}
+fn Envelope(t: Float) -> Float { return BaseF(t) / (-ReleaseD(BaseR(), t)) }
+fn Refine(left0: Float, right0: Float) -> Candidate {
+    var left = left0
+    var right = right0
+    for _i in 0 .. 80 {
+        let x = left + (right - left) / 3.0
+        let y = right - (right - left) / 3.0
+        if Envelope(x) < Envelope(y) { right = y } else { left = x }
+    }
+    let t = (left + right) / 2.0
+    let epsilon = Envelope(t)
+    return Candidate { Epsilon: epsilon Contact: t Objective: CPC(BaseM(), BaseR()) + epsilon Minimum: ReleasedF(epsilon, t) }
+}
+fn BestRelease() -> Candidate {
+    let step = 0.002
+    var best = 1000000.0
+    var bestT = 0.0
+    var prior = 1000000.0
+    var current = 1000000.0
+    for k in 1 .. 20001 {
+        let t = step * Float(k)
+        var next = 1000000.0
+        if ReleaseD(BaseR(), t) < 0.0 { next = Envelope(t) }
+        if k > 1 and current < prior and current < next and current < best {
+            best = current
+            bestT = t - step
+        }
+        prior = current
+        current = next
+    }
+    return Refine(bestT - step, bestT + step)
+}
+
+[Fact]
+fn ContactPreservingEmbeddingIsExact() -> Void {
+    let rs = [1.25, 2.0, 3.5, 4.0, 7.25]
+    let ts = [0.0, 0.4, PiValue() / 2.0, 1.8, 4.0, 9.0]
+    for i in 0 .. 4 {
+        for j in 0 .. 5 {
+            let r = rs[i]
+            let t = ts[j]
+            let m = 0.0069
+            let unrestricted = GeneralF(CPC(m, r), CPW1(m, r), m, r, t)
+            let adapted = F0(t) + m * H(r, t)
+            Assert.Near(adapted, unrestricted, 0.000000000001, "M22-M25 embedding")
+        }
+    }
+}
+
+[Fact]
+fn FirstVariationReleasesPiOverTwo() -> Void {
+    let fixed = ReleaseD(BaseR(), PiValue() / 2.0)
+    let movable = ReleaseD(BaseR(), 1.7953134)
+    Print("M26 first variation at pi/2=" + ToString(fixed) + " movable=" + ToString(movable))
+    Assert.True(fixed > 0.1 and movable > 0.8, "positive uplift at both M25 contacts")
+}
+
+[Fact]
+fn ReleasedRayFindsImprovement() -> Void {
+    let p = BestRelease()
+    Print("M26 release cap epsilon=" + ToString(p.Epsilon) + " t=" + ToString(p.Contact) + " c=" + ToString(p.Objective) + " F=" + ToString(p.Minimum))
+    Assert.True(p.Epsilon > 0.00001, "released family improves c")
+    Assert.True(Abs(p.Minimum) < 0.00000001, "new active contact found")
+}
+
+[Fact]
+fn BroadReleasedSpectrumScan() -> Void {
+    let p = BestRelease()
+    var minimum = 1000000.0
+    var minimumAt = 0.0
+    for k in 0 .. 100001 {
+        let t = 40.0 * Float(k) / 100000.0
+        let v = ReleasedF(p.Epsilon, t)
+        if v < minimum { minimum = v; minimumAt = t }
+    }
+    Print("M26 released scan minimum=" + ToString(minimum) + " at t=" + ToString(minimumAt))
+    Assert.True(minimum > -0.0000001, "sampled released witness is nonnegative")
+}
+
+[Artifact]
+fn GenerateReleaseSeed() -> Void {
+    let p = BestRelease()
+    let text = "epsilon=" + ToString(p.Epsilon) + "\ncontact=" + ToString(p.Contact) +
+        "\nc=" + ToString(p.Objective) + "\nminimum=" + ToString(p.Minimum) + "\n"
+    Artifact.WriteText("artifacts/m26/m26_release_seed.txt", text)
+}

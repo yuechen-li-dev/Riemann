@@ -106,7 +106,7 @@ whole line. Hence the updated whole-class bounds carried by this witness are
 
 ```text
 c_* >= 1.1566431645986454,
-J_* <= -0.1566431645986454.
+J_* <= 0.8433568354013546.
 ```
 
 The best simple explicit witness remains `r=7/2, m=69/10000`, with lower

@@ -1,14 +1,15 @@
 # Riemann
 
 Riemann is an experimental compiler for making transformations of mathematical
-claims mechanically inspectable. M25 proves that B1 is the unique controlling
-contact branch on the last M24 window `r in [3.503,3.512]`, certifies its
-whole-line feasibility, and composes with M23/M24 to establish the unique
-`ContactPreservingTwoAtomComponentGlobalOptimum` (Success A). The optimizer is
-contained in `r in [3.507850,3.507857]` and gives
-`c_*>=1.1566431645986454`, `J_*<=-0.1566431645986454`. This is not a theorem
-about all two-atom families. The best simple explicit witness remains
-`r=7/2, m=69/10000`. M18 closes the unsaturated one-radius
+claims mechanically inspectable. M26 releases exactly M25's forced `pi/2`
+double contact while retaining the two symmetric atomic pairs at `+-1` and
+`+-r`. An Oct-discovered release direction lifts both M25 contacts, and Go
+certifies the rational interior witness `r=3.50785`, base `m=0.00699`,
+`epsilon=0.00009` on the whole line. It gives
+`c_*>=1.1567274714890000`, hence `J_*<=0.8432725285110000` from `J=2-c`,
+strictly improving M25's full contact-preserving optimum upper endpoint
+`1.1566433083347464`. M26 does not claim the unrestricted fixed-first-radius
+two-atom global optimum and does not free the first radius. M18 closes the unsaturated one-radius
 completion for the broader support-one Fourier extremal class. It derives the
 exact tangency weight `1/pi-4/pi^2+8/pi^3`, certifies the resulting transform
 on the whole real line, and composes that witness with M17's upper envelope:
@@ -56,6 +57,9 @@ go test ./semantic -run M25 -count=1
 
 # Explicitly reconstruct the expensive M25 rational interval proof.
 go run ./cmd/m25replay
+
+# Explicitly reconstruct M26's released-witness whole-line proof.
+go run ./cmd/m26replay
 ```
 
 The normal unit and race suites validate the M18 proof object's exact
@@ -109,6 +113,9 @@ radius/contact window without claiming globality.
 certifies the continuation graph, whole-line competitor exclusion, unique
 window maximum, globally feasible optimizer, and fast manifest/explicit replay
 split.
+[M26's forced-contact release report](docs/m26-release-forced-contact.md)
+defines the unrestricted fixed-first-radius family, verifies the exact M22-M25
+embedding, records the release active set, and certifies a strict improvement.
 [M20's representation-selection report](docs/next-representation-selection.md)
 derives the contact sensitivity, compares four minimal extensions, and selects
 one exact one-parameter family for M21 without changing the certified bound.

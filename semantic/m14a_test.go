@@ -1,6 +1,9 @@
 package semantic
 
-import "testing"
+import (
+	"math"
+	"testing"
+)
 
 func testSupportOneClass() SupportOneExtremalClass {
 	return SupportOneExtremalClass{ID: "ep3.1-zeta", DataRadius: ExactRational{Numerator: 1, Denominator: 1}, TailSemantics: NonpositiveTail, TransformConvention: "hat g(alpha)=integral g(x)e^{-2pi i x alpha}dx", Even: true, Continuous: true, FunctionL1: true, TransformL1: true, FunctionNonnegative: true, Normalization: "g(0)=1", ObjectiveID: "zeta-multiplicity", Provenance: []Reference{{Kind: StandardReference, Citation: "CGdL; Ramos EP3.1"}}}
@@ -51,5 +54,12 @@ func TestM14ABaselineCompletionUsesWeakDuality(t *testing.T) {
 	}
 	if b.SimpleUpper != (ExactRational{Numerator: 1, Denominator: 1}) {
 		t.Fatalf("wrong weak-dual conversion: %+v", b)
+	}
+}
+
+func TestSimpleObjectiveProjectionIsTwoMinusC(t *testing.T) {
+	const c = 1.1566431645986454
+	if got, want := SimpleObjectiveFromDual(c), 0.8433568354013546; math.Abs(got-want) > 1e-15 {
+		t.Fatalf("J projection changed: got %.16f, want %.16f from J=2-c", got, want)
 	}
 }

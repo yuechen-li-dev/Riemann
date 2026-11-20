@@ -81,7 +81,7 @@ func compileM23FromM22(m22 M22Result, replay bool) (M23Result, error) {
 		OptimizerWitnessGap:      fmt.Sprintf("local optimizer c≈1.156643235727947 minus explicit witness c≈%.15f is about %.9g", cnum, 1.156643235727947-cnum),
 		M22Gap:                   fmt.Sprintf("local optimizer minus M22 r=7/2,m=17/2500 witness is about %.9g; explicit M23 witness improves M22 by about %.9g", 1.156643235727947-m22c, cnum-m22c),
 		PrimalComparison:         "the CGdL-compatible guard c<1651/1250 is enforced; the local family optimum does not alter the primal side or prove full-class optimality",
-		AnthropicComparison:      "the external 0.68185 quantity remains contextual and is not identified with this EP3.1 dual c or J=1-c",
+		AnthropicComparison:      "the external 0.68185 quantity remains contextual and is not identified with this EP3.1 dual c or J=2-c",
 		WholeLinePartition:       "Region A: equality-aware fixed contact [1.54,1.61]; Region B: adaptive strict cells through the movable danger [1.7,1.9]; Region C: remaining exact compact cells to 4; Region D: analytic tail",
 		TailProof:                "box-wide and witness-specific F(t)>=3/4-(c-1)/2-2w1-2m>0 for |t|>=4; the optimizer is not tail-limited",
 		ReplayPerformance:        "M22 reported about 146 s; the stronger M23 witness replay took 310.9 s because [1.7,1.9] was refined to step 1/200000; exact coverage and degree-100 semantics are unchanged",

@@ -81,7 +81,7 @@ func compileM25FromM24(m24 M24Result) (M25Result, error) {
 		OptimizerFeasibility:     "yes; M25 proves F_{m*,r*}(t)>=0 for all real t for the interval-defined optimizer branch, with fixed and movable quadratic contacts and a uniform t>=4 tail",
 		BestExplicitWitness:      "r=7/2, m=69/10000 remains the best simple explicit rational witness",
 		BestCertifiedC:           "c_* >= 1.1566431645986454 from the globally feasible interval-defined optimizer; explicit rational lower endpoint remains 1.1564423523252728",
-		BestCertifiedJ:           "J_* <= -0.1566431645986454 from J=1-c for the interval-defined optimizer",
+		BestCertifiedJ:           "J_* <= 0.8433568354013546 from J=2-c for the interval-defined optimizer",
 		OptimizerWitnessGap:      "the interval optimizer lower endpoint exceeds the M23 explicit witness lower endpoint by 0.0002008122733726",
 		NextRestriction:          "yes: after closing this component, preservation of the original pi/2 contact is the evident remaining representation restriction; M25 does not release it",
 		ActiveSet:                "fixed double contacts ±pi/2; movable double contacts ±t1(r); unique global radius optimum C1'(r*)=0",

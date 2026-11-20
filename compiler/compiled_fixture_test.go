@@ -121,6 +121,9 @@ var m24CachedErr error
 var m25Once sync.Once
 var m25Cached M25Result
 var m25CachedErr error
+var m26Once sync.Once
+var m26Cached M26Result
+var m26CachedErr error
 
 func testM18() (M18Result, error) {
 	m18Once.Do(func() {
@@ -201,4 +204,16 @@ func testM25() (M25Result, error) {
 		m25Cached, m25CachedErr = compileM25FromM24(M24Result{Outcome: "Success C — pre-initialized M24 boundary manifest"})
 	})
 	return m25Cached, m25CachedErr
+}
+
+func testM26() (M26Result, error) {
+	m26Once.Do(func() {
+		m25, err := testM25()
+		if err != nil {
+			m26CachedErr = err
+			return
+		}
+		m26Cached, m26CachedErr = compileM26FromM25(m25)
+	})
+	return m26Cached, m26CachedErr
 }

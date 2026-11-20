@@ -100,6 +100,10 @@ type ExtremalObjective struct {
 	Provenance        []Reference `json:"provenance"`
 }
 
+// SimpleObjectiveFromDual is the authoritative EP3.1 projection from the
+// multiplicity dual objective to the simple-critical proportion.
+func SimpleObjectiveFromDual(c float64) float64 { return 2 - c }
+
 func (o ExtremalObjective) Validate() error {
 	if o.ID == "" || o.MultiplicityRatio == "" || o.SimpleProportion == "" || !o.Homogeneous || o.DataMeasure == "" || o.PipelineContract == "" || len(o.Provenance) == 0 {
 		return fmt.Errorf("incomplete M14A extremal objective")
