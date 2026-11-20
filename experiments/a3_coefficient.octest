@@ -1,0 +1,24 @@
+package A3Coefficient
+
+// Enumerate every nontrivial split of one exponent. The largest
+// binomial in this range is C(25,12); all operations fit in Int.
+[Fact]
+fn ExceptionalSplits() -> Void {
+    var exceptional = 0
+    for n in 2 .. 26 {
+        var c = 1
+        var units = 0
+        var singleLoss = 0
+        for j in 1 .. n {
+            c = c * (n - j + 1) / j
+            if c % 5 != 0 { units = units + 1 }
+            if c % 5 == 0 and c % 25 != 0 { singleLoss = singleLoss + 1 }
+        }
+        if units == 0 {
+            Assert.True(n == 5 or n == 25, "unexpected exceptional exponent")
+            Assert.True(singleLoss > 0, "a split must cost only one power")
+            exceptional = exceptional + 1
+        }
+    }
+    Assert.Equal(2, exceptional, "exceptional exponents")
+}

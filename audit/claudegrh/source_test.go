@@ -41,11 +41,22 @@ func TestPinnedSourceUses(t *testing.T) {
 	defer gz.Close()
 	const characterBoxes = "Development/AutomorphicArithmetic/CharacterBoxes/"
 	const satake = "Development/AbelianVarietyTheory/Proofs/SatakeParameters/"
+	const gauss = "Formalism/GaussJetBounds/"
+	const jet = "Formalism/SharpRestriction/Divisibility/JetPolynomialLogs/"
 	sites := map[string]map[int]string{
+		gauss + "Statement.lean":                                         {98: "def LemmaS", 104: "¬ IsBiPower"},
+		gauss + "OneLetterRadius.lean":                                   {17: "lemmaS : LemmaS", 19: "binomial_coefficient_extraction"},
+		gauss + "GaussJetProofs/TheoremAOneMonomialLogLoss.lean":         {239: "lemmaS.{u} lemma_R_log_loss"},
+		gauss + "GaussJetProofs/LemmaRA.lean":                            {154: "factValA", 171: "lemmaRA_of lemmaS"},
+		gauss + "ThmAGauss.lean":                                         {9: "frame_jet_evaluation"},
+		jet + "DworkPowerSeriesWeights.lean":                             {195: "thmAGauss"},
+		jet + "LocalBoundElevenComparison.lean":                          {39: "normCor7", 59: "thmA_of", 64: "split_bound_eleven_one"},
+		satake + "OrbitBoundOverSecondEmbeddingAnyBasePoint.lean":        {19: "hA.1 _ hAdm", 22: "kvalGe_mono hCor"},
+		satake + "LocalModelBoundPlaceOverSecondEmbedding.lean":          {35: "orbitBound_overSecondEmbedding_anyBasePoint", 66: "theorem lowAt_F"},
 		satake + "UnitaryWeightModels.lean":                              {27: "h0, LC, hLC", 29: "LC h0", 30: "E LC", 31: "hLC μ hU u w hg hQ).2"},
 		satake + "LocalSystemsLowerBoundsSecondRealPlace.lean":           {53: "fun v j => if", 54: "FOrb D j", 60: "local_model_bound_place_over_second_embedding", 64: "low_term_le_second_real_place_bounds", 66: "hr2"},
 		satake + "LocalModelBoundPlaceOverSecondEmbeddingStatement.lean": {12: "GlobalTheory.TwU.LowF.lowAt_F"},
-		satake + "RowTwUHolds.lean":                                      {24: "rowTwU_of_models"},
+		satake + "RowTwUHolds.lean":                                      {21: "split_bound_eleven_one", 24: "rowTwU_of_models"},
 		thirdPlace + "LinkROfIsLinked.lean":                              {76: "hServ_of_linkR"},
 		thirdPlace + "GServT.lean":                                       {15: "∃ LC", 16: "LC)", 29: "twU := h.twU"},
 		thirdPlace + "ClosedFamilyAdmissibleTwistLink.lean":              {29: "closed_servF_of_servT_of_dGamSize", 31: "admissible_family_of_inclusion"},
