@@ -1,0 +1,691 @@
+{
+  "revision": "a172c464fd4bcfc4f53e394dcba45d742b1409a6",
+  "archive_sha256": "2757f699bc40beff25a67722696f55be68009e00ce6b27ad6fdc95a79df38d75",
+  "lean_toolchain": "leanprover/lean4:v4.33.1",
+  "mathlib_revision": "0df444a360eaa60ab8c11dca51a86af692955474",
+  "ranking_engine": "Oct b1_discovery",
+  "ranker_sha256": "2a471b5f9e7bef77eb27c8d1c43cd4886c6b421e8c9ebb4029931fdc2b78c8ea",
+  "statements": [
+    {
+      "id": "lean:a172c464fd4bcfc4f53e394dcba45d742b1409a6:Formalism.IncomingBounds.lemmaFa:678731705a4075a118476036faafad7fa5eead38b4f7adbcb05759715bfe5aaf",
+      "repository": "https://github.com/Deicyde/riemann-hypothesis",
+      "revision": "a172c464fd4bcfc4f53e394dcba45d742b1409a6",
+      "lean_statement": "theorem lemmaFa : LemmaFa",
+      "source_span_fidelity": "matches",
+      "slug": "cyclic-duality",
+      "title": "Cyclic resource allocation with a sharp dual",
+      "domain": "Finite optimization",
+      "declaration": {
+        "name": "Formalism.IncomingBounds.lemmaFa",
+        "path": "src/Formalism/IncomingBounds/WeightIdentities.lean",
+        "first_line": 17,
+        "last_line": 17,
+        "sha256": "be6dff80aa0811e1fafd546a07cc9686ef916c89683dd77fdfcc9e261dbe66f4"
+      },
+      "definitions": [
+        {
+          "name": "gam",
+          "path": "src/Formalism/IncomingBounds/IncomingBound.lean",
+          "first_line": 10,
+          "last_line": 10,
+          "sha256": "ffc6bf41864753c32c4a6fcea23986315cea016c30afb098ecbe0d9f0f28857c"
+        },
+        {
+          "name": "oddLevels",
+          "path": "src/Formalism/IncomingBounds/IncomingBound.lean",
+          "first_line": 12,
+          "last_line": 12,
+          "sha256": "ce9f605d89fd6c417507f3f06133ea92a0640a4b3565bafd157c313f064da5d0"
+        },
+        {
+          "name": "IsFlow",
+          "path": "src/Formalism/IncomingBounds/IncomingBound.lean",
+          "first_line": 18,
+          "last_line": 21,
+          "sha256": "8599b96b1ac80b32c9dc10a42d3fff6e2a24669724fda889dd94a2df91f6bbd2"
+        },
+        {
+          "name": "flowVal",
+          "path": "src/Formalism/IncomingBounds/IncomingBound.lean",
+          "first_line": 23,
+          "last_line": 23,
+          "sha256": "f8ec0fba00deebeccadce290a1e63d628817c5d531da957be3cb0bc815aa53d5"
+        },
+        {
+          "name": "maxFlow",
+          "path": "src/Formalism/IncomingBounds/IncomingBound.lean",
+          "first_line": 25,
+          "last_line": 26,
+          "sha256": "09dd8fdb7d3bd6acfbe195b4798c22465de7dd82ab1405b337406e3a43563ffc"
+        },
+        {
+          "name": "Fnum",
+          "path": "src/Formalism/IncomingBounds/IncomingBound.lean",
+          "first_line": 28,
+          "last_line": 28,
+          "sha256": "9c520cfc410cca3c1ce1824ff728c6d87548b9486049a3dc599f565db083ce7d"
+        },
+        {
+          "name": "IsDual",
+          "path": "src/Formalism/IncomingBounds/IncomingBound.lean",
+          "first_line": 30,
+          "last_line": 32,
+          "sha256": "da63337b2b957d6c10844dda18bdac8cb32df35a5c0bd9c86c257a560eec019b"
+        },
+        {
+          "name": "IsDualAll",
+          "path": "src/Formalism/IncomingBounds/IncomingBound.lean",
+          "first_line": 34,
+          "last_line": 35,
+          "sha256": "cc3ad8375c5f67d2a17d140b1375132fc98e48779af71c7ff2c809262b38ace9"
+        },
+        {
+          "name": "LemmaFa",
+          "path": "src/Formalism/IncomingBounds/IncomingBound.lean",
+          "first_line": 56,
+          "last_line": 61,
+          "sha256": "de9fadd0b7315d1b32533774f81a21ce193c693739b09e3c2fbc110531704389"
+        }
+      ],
+      "context": [],
+      "proof_uses": [
+        "strongDuality"
+      ],
+      "assumptions": [
+        "Integer base l≥3, even cycle length d≥2 with NeZero instance, nonnegative real budget at each cyclic vertex."
+      ],
+      "quantifiers": [
+        "For every l,d and nonnegative budget function D.",
+        "There exists an optimal dual σ bounded between zero and one, satisfying inequalities at every positive odd offset. The objective value is greatest among values of finite dual-feasible σ."
+      ],
+      "interpretation": "For directed odd-offset flows on an even cycle, maximum throughput and minimum dual cost agree. The deficit relative to a fixed multiple of total budget has a greatest dual value. An optimizer can satisfy the inequalities even for odd offsets beyond the chosen period.",
+      "human_review": "Pilot statement reading and focused comparison",
+      "hypothesis_status": "conditional",
+      "rh_independence": "no_rh_in_reviewed_statement",
+      "extra_proof_premise": false,
+      "mathematical_novelty": "known_math",
+      "formalization_novelty": "unresolved",
+      "verification": "structurally_reviewed",
+      "comparisons": [
+        {
+          "kind": "literature",
+          "title": "Schrijver, Combinatorial Optimization, Chapter 47",
+          "url": "https://www.cis.upenn.edu/~jean/math-deep.pdf",
+          "fidelity": "special_case",
+          "finding": "The finite primal/dual optimization is a special structured LP. Bounds on dual coordinates and extension to odd offsets are specific to these coefficients."
+        },
+        {
+          "kind": "formalization",
+          "title": "Isabelle AFP, Duality of Linear Programming",
+          "url": "https://www.isa-afp.org/entries/LP_Duality.html",
+          "fidelity": "special_case",
+          "finding": "General LP duality is formalized there. A separate instantiation is needed for the clipped and extended dual."
+        }
+      ],
+      "open_questions": [
+        "Replay the custom finite LP proof and the extension to all odd offsets.",
+        "Extend certificate experiments beyond d=2 before considering a reusable family."
+      ],
+      "proof_module_imports": [
+        "Formalism.IncomingBounds.FlowDegreeBounds.MaxFlowValueAttained",
+        "Formalism.IncomingBounds.FlowDegreeBounds.LemmaF",
+        "Formalism.IncomingBounds.FlowDegreeBounds.LemmaFd",
+        "Formalism.IncomingBounds.FlowDegreeBounds.BaseTermLeTopTerm",
+        "Formalism.IncomingBounds.FlowDegreeBounds.PadicValFactorialRatioProd",
+        "Formalism.IncomingBounds.FlowDegreeBounds.AltChooseSumEqZero",
+        "Formalism.IncomingBounds.FlowDegreeBounds.IndexLastReductionHolds",
+        "Formalism.IncomingBounds.FlowDegreeBounds.Cayley",
+        "Formalism.IncomingBounds.FlowDegreeBounds.Series",
+        "Formalism.IncomingBounds.FlowDegreeBounds.ProdRangeEqFactorialMulProdIco"
+      ],
+      "definition_module_imports": {
+        "src/Formalism/IncomingBounds/IncomingBound.lean": [
+          "Mathlib"
+        ]
+      },
+      "independent_computation": "exact_finite_replay",
+      "computation_detail": "405 exact two-letter primal/dual certificates, bases 3–7 and integer budgets 0–8.",
+      "ranking_features": [
+        "literature",
+        "named",
+        "mathlib-only",
+        "extractable",
+        "comparison-open"
+      ],
+      "oct_score": 12
+    },
+    {
+      "id": "lean:a172c464fd4bcfc4f53e394dcba45d742b1409a6:FunctorialResolution.functorialResolutionCharZero:b9b6b01d5ea9a9475dbf72101fd6c2c9778ad7086f90a4b4784f153aeb655b46",
+      "repository": "https://github.com/Deicyde/riemann-hypothesis",
+      "revision": "a172c464fd4bcfc4f53e394dcba45d742b1409a6",
+      "lean_statement": "theorem functorialResolutionCharZero : FunctorialResolutionCharZero.{u}",
+      "source_span_fidelity": "matches",
+      "slug": "hironaka",
+      "title": "Functorial resolution in characteristic zero",
+      "domain": "Algebraic geometry",
+      "declaration": {
+        "name": "FunctorialResolution.functorialResolutionCharZero",
+        "path": "src/Development/ResolutionOfSingularities/HasSimpleNormalCrossingsOfInStrictNormalCrossing.lean",
+        "first_line": 15,
+        "last_line": 15,
+        "sha256": "e1db7600e42af4aaada87d3297c0ba063e07a0766fb315ce0b8e1c58cb0edb0b"
+      },
+      "definitions": [
+        {
+          "name": "IsEffectiveCartier",
+          "path": "src/Development/ResolutionOfSingularities/Statements.lean",
+          "first_line": 9,
+          "last_line": 11,
+          "sha256": "0377ba18ae68fccfe60787c19f74cdc0babd71dec248b678165f3327503254f1"
+        },
+        {
+          "name": "IsRegularSystemOfParameters",
+          "path": "src/Development/ResolutionOfSingularities/Statements.lean",
+          "first_line": 17,
+          "last_line": 18,
+          "sha256": "de09f77da343e3eae9e8e65efa9f46c501f48df16c8be5a5ad698b850ff17d7b"
+        },
+        {
+          "name": "BlowupSequence",
+          "path": "src/Development/ResolutionOfSingularities/Statements.lean",
+          "first_line": 35,
+          "last_line": 45,
+          "sha256": "45e10b849d8e31c1f252d1bb0d218a7da0c3f32b3c41ebb2c57c19efaa8c3bf9"
+        },
+        {
+          "name": "CentersOver",
+          "path": "src/Development/ResolutionOfSingularities/Statements.lean",
+          "first_line": 79,
+          "last_line": 80,
+          "sha256": "c0727a226e7e5a6940e8553483689a4ba6cbdfe79e2115a9ac5ef11cf54c079c"
+        },
+        {
+          "name": "IsPullbackSequence",
+          "path": "src/Development/ResolutionOfSingularities/Statements.lean",
+          "first_line": 91,
+          "last_line": 104,
+          "sha256": "2363c18c7e8d62895711dfa46c5f40c7df7fa33710547bee443d22a6f22e661b"
+        },
+        {
+          "name": "ResolutionRuleCharZero",
+          "path": "src/Development/ResolutionOfSingularities/Statements.lean",
+          "first_line": 122,
+          "last_line": 124,
+          "sha256": "d4ad7502c2382524dccca27df45342862a42bed275fc5456684fd0d6fb1e94c2"
+        },
+        {
+          "name": "IsResolutionRuleCharZero",
+          "path": "src/Development/ResolutionOfSingularities/Statements.lean",
+          "first_line": 126,
+          "last_line": 133,
+          "sha256": "71376acb80776aad596859715a03153361e4b7fb856a665a68935a28425d9da2"
+        },
+        {
+          "name": "IsSmoothFunctorialRule",
+          "path": "src/Development/ResolutionOfSingularities/Statements.lean",
+          "first_line": 135,
+          "last_line": 141,
+          "sha256": "a98b5620fb5ecedf84f3c313b7cc5c25b1446703bc9d4ed77d0aab7f6caa230f"
+        },
+        {
+          "name": "IsFieldExtensionFunctorialRule",
+          "path": "src/Development/ResolutionOfSingularities/Statements.lean",
+          "first_line": 143,
+          "last_line": 148,
+          "sha256": "143c00ee317c31d0b281cb959fb61ce6812b243ed4dc30cb621313f6268f42e4"
+        },
+        {
+          "name": "FunctorialResolutionCharZero",
+          "path": "src/Development/ResolutionOfSingularities/Statements.lean",
+          "first_line": 150,
+          "last_line": 152,
+          "sha256": "6ceedacfb350e6085d18ce2324d5aded380e0e57b5d7c9cb89e62c7af2b221e3"
+        },
+        {
+          "name": "IsBlowup",
+          "path": "src/Development/ResolutionOfSingularities/Statements.lean",
+          "first_line": 13,
+          "last_line": 15,
+          "sha256": "c8174588b06eb9ca34794c47409ffffd253de5b6260d3a3f1285715f5c46a953"
+        },
+        {
+          "name": "IsStrictNormalCrossingsAt",
+          "path": "src/Development/ResolutionOfSingularities/Statements.lean",
+          "first_line": 20,
+          "last_line": 24,
+          "sha256": "59c295cfdbf35e73ad4a4e279a02b0c28ce3af844603419b3d498d5d32708c54"
+        },
+        {
+          "name": "IsStrictNormalCrossings",
+          "path": "src/Development/ResolutionOfSingularities/Statements.lean",
+          "first_line": 26,
+          "last_line": 27,
+          "sha256": "c827394f5b2fea31b86d34994087d1fd5359e7782b0dab3fa03d4d07dddbb512"
+        },
+        {
+          "name": "reducedPreimage",
+          "path": "src/Development/ResolutionOfSingularities/Statements.lean",
+          "first_line": 88,
+          "last_line": 89,
+          "sha256": "edbe66bd70b502af4a4bed3d7f87c619fb8e429c355f17ef80fe0502ef4ba528"
+        },
+        {
+          "name": "nonSmoothLocus",
+          "path": "src/Development/ResolutionOfSingularities/Statements.lean",
+          "first_line": 84,
+          "last_line": 86,
+          "sha256": "13728b6bbe21c21be96326caff28c84a4ffbd9d0ff5dd31bf730b8e16009c500"
+        },
+        {
+          "name": "fieldBaseChange",
+          "path": "src/Development/ResolutionOfSingularities/Statements.lean",
+          "first_line": 110,
+          "last_line": 112,
+          "sha256": "a92f3eae3e04af4fefb073e233444ec3084aa660daa3fa1cd7e03590faf1b3e7"
+        },
+        {
+          "name": "fieldBaseChangeProj",
+          "path": "src/Development/ResolutionOfSingularities/Statements.lean",
+          "first_line": 114,
+          "last_line": 116,
+          "sha256": "731ef858c791ce203e59901eee8d9abe851ecbe9ffe6cea93e7998c8380e5177"
+        },
+        {
+          "name": "fieldBaseChangeStructMap",
+          "path": "src/Development/ResolutionOfSingularities/Statements.lean",
+          "first_line": 118,
+          "last_line": 120,
+          "sha256": "55161f96bd46372ced9e09f77089fda9251749e123d6aaebe6547b9200260277"
+        },
+        {
+          "name": "specFieldExtension",
+          "path": "src/Development/ResolutionOfSingularities/Statements.lean",
+          "first_line": 106,
+          "last_line": 108,
+          "sha256": "c949d60fb7ebb8e8905baa5b4669d9af3719918e4a4d358245c65e9655c00b79"
+        }
+      ],
+      "context": [],
+      "proof_uses": [
+        "EmbeddedResolution.strongResolutionOfSingularitiesCharZero"
+      ],
+      "assumptions": [
+        "Characteristic-zero field, reduced scheme, structural morphism locally of finite type and quasi-compact.",
+        "Smooth comparison has a specified relative dimension and commutes over the base. Field comparison assumes a reduced base change."
+      ],
+      "quantifiers": [
+        "There exists one resolution rule R for all legal field/scheme pairs.",
+        "For every legal input R satisfies six geometric conclusions. For every eligible smooth map and for every field extension as specified, its towers satisfy the pullback relation."
+      ],
+      "interpretation": "One rule resolves reduced finite-type schemes over characteristic-zero fields, preserving their smooth loci and producing a strict normal-crossings reduced inverse image of the nonsmooth locus. The tower is compatible with the specified smooth maps and field extensions.",
+      "human_review": "Pilot statement reading and focused comparison",
+      "hypothesis_status": "conditional",
+      "rh_independence": "no_rh_in_reviewed_statement",
+      "extra_proof_premise": false,
+      "mathematical_novelty": "known_math",
+      "formalization_novelty": "already_in_mathlib_or_other_project",
+      "verification": "structurally_reviewed",
+      "comparisons": [
+        {
+          "kind": "literature",
+          "title": "Kollár, Lectures on Resolution of Singularities, Theorem 36",
+          "url": "https://doi.org/10.1515/9781400837086",
+          "fidelity": "unresolved",
+          "finding": "Known functorial resolution, with exact scope and tower semantics compared separately below."
+        },
+        {
+          "kind": "formalization",
+          "title": "resolutionorg/hironaka, Theorem 36",
+          "url": "https://github.com/resolutionorg/hironaka/blob/044d89c9455859446fc5e986667319f910e15f4b/Hironaka/Resolution/Algebraic/Kol07/Thm36/Theorem36.lean",
+          "fidelity": "unresolved",
+          "finding": "The external endpoint uses reduced equidimensional schemes and a BlowUpSequenceFunctor. The corpus accepts mixed dimensions and states explicit pairwise pullback matches. Mutual implication is unresolved."
+        }
+      ],
+      "open_questions": [
+        "Compare coherent functoriality, empty steps, center hypotheses and treatment of mixed-dimensional schemes.",
+        "Check the transitive Lean proof against the intended statement."
+      ],
+      "proof_module_imports": [
+        "Development.ResolutionOfSingularities.Statements",
+        "Development.ResolutionOfSingularities.EmbeddedResolution.HironakaTheorem",
+        "Development.ResolutionOfSingularities.EmbeddedResolution.StrictTransformCharts.StrictNormalCrossingsBlowup",
+        "Development.ResolutionOfSingularities.EmbeddedResolution.IdealPrincipalization.FunctorialPrincipalization",
+        "Development.ResolutionOfSingularities.EmbeddedResolution.IdealPrincipalization.MarkedBlowupSequence.IdealBlowupSequenceBoundary",
+        "Development.ResolutionOfSingularities.Foundations.Schemes.IdealSheafData",
+        "Development.ResolutionOfSingularities.EmbeddedResolution.StrongResolution.PrincipalizationWithRadicalCenters"
+      ],
+      "definition_module_imports": {
+        "src/Development/ResolutionOfSingularities/Statements.lean": [
+          "Mathlib"
+        ]
+      },
+      "independent_computation": "not_run",
+      "ranking_features": [
+        "literature",
+        "named",
+        "mathlib-only"
+      ],
+      "oct_score": 5
+    },
+    {
+      "id": "lean:a172c464fd4bcfc4f53e394dcba45d742b1409a6:GroundTheory.Global.hasDirichletDensity_chebotarevSet:1eaea3b95ec979c0f0413ef265bc6db0b5d5e950135ff2dfa32aee79a4958766",
+      "repository": "https://github.com/Deicyde/riemann-hypothesis",
+      "revision": "a172c464fd4bcfc4f53e394dcba45d742b1409a6",
+      "lean_statement": "theorem hasDirichletDensity_chebotarevSet (C : Set Gal(L/K))\n    (hC : ∀ σ ∈ C, ∀ τ : Gal(L/K), τ * σ * τ⁻¹ ∈ C) :\n    (chebotarevSet C).HasDirichletDensity (Nat.card C / Nat.card Gal(L/K))",
+      "source_span_fidelity": "matches",
+      "slug": "chebotarev",
+      "title": "Chebotarev for conjugacy-stable sets",
+      "domain": "Analytic number theory",
+      "declaration": {
+        "name": "GroundTheory.Global.hasDirichletDensity_chebotarevSet",
+        "path": "src/GroundTheory/GlobalFields/TateThesis/Chebotarev.lean",
+        "first_line": 198,
+        "last_line": 200,
+        "sha256": "0281b79a62a42a90d06875d90c2caca38491d97ff4b54dc0af50967320cd1b3e"
+      },
+      "definitions": [
+        {
+          "name": "chebotarevSet",
+          "path": "src/GroundTheory/GlobalFields/TateThesis/ChebotarevCount.lean",
+          "first_line": 17,
+          "last_line": 19,
+          "sha256": "434d0c763836edfa05127a6ed59cda0bddb6bbc3058777387d4f21cfc9fbb7b8"
+        }
+      ],
+      "context": [
+        {
+          "name": "Galois number field context",
+          "path": "src/GroundTheory/GlobalFields/TateThesis/Chebotarev.lean",
+          "first_line": 161,
+          "last_line": 162,
+          "sha256": "8ccea1ad2113cadee30977cc8786fdbd333d1466e2d937b98d75aa3f4215aa0d"
+        }
+      ],
+      "proof_uses": [
+        "hasDirichletDensity_chebotarevSet_isConj",
+        "HasDirichletDensity.union"
+      ],
+      "assumptions": [
+        "K and L number fields, with an algebra structure making L/K Galois.",
+        "C is invariant under conjugation by every element of Gal(L/K)."
+      ],
+      "quantifiers": [
+        "For every Galois extension of number fields and every subset C of its Galois group satisfying conjugation invariance.",
+        "The set of primes has Dirichlet density |C|/|Gal(L/K)|."
+      ],
+      "interpretation": "Among the unramified primes, the primes whose Frobenius lies in a chosen union of conjugacy classes have Dirichlet density equal to the fraction of group elements in that union.",
+      "human_review": "Pilot statement reading and focused comparison",
+      "hypothesis_status": "conditional",
+      "rh_independence": "no_rh_in_reviewed_statement",
+      "extra_proof_premise": false,
+      "mathematical_novelty": "known_math",
+      "formalization_novelty": "unresolved",
+      "verification": "structurally_reviewed",
+      "comparisons": [
+        {
+          "kind": "literature",
+          "title": "Chebotarev density, class field theory course",
+          "url": "https://kokunoyumeto.github.io/open-math-courses-public/courses/NT-CFT/the-chebotarev-density.html",
+          "fidelity": "matches",
+          "finding": "The standard Dirichlet-density theorem for a conjugacy class extends by finite disjoint union. The corpus states the union form."
+        },
+        {
+          "kind": "formalization",
+          "title": "CBirkbeck/chebotarev-density at c64095e",
+          "url": "https://github.com/CBirkbeck/chebotarev-density/blob/c64095e6cc6483b401849c7fd9182d983d3bf261/CebotarevDensity/Main.lean",
+          "fidelity": "stronger",
+          "finding": "The corpus quantifies over all conjugacy-stable sets, including a single class. The external header states the single-class version and its proof at this revision is sorry. A finite additivity bridge would recover the union form."
+        }
+      ],
+      "open_questions": [
+        "Verify the imported single-class, abelian and degree-one density proof closure and its axioms.",
+        "Compare the ideal and height-one spectrum APIs and the Dirichlet-density normalization in a Lean bridge."
+      ],
+      "proof_module_imports": [
+        "Mathlib",
+        "GroundTheory.GlobalFields.TateThesis.ChebotarevCount",
+        "GroundTheory.GlobalFields.TateThesis.ChebotarevAbelian",
+        "GroundTheory.GlobalFields.TateThesis.DegreeOneDensity"
+      ],
+      "definition_module_imports": {
+        "src/GroundTheory/GlobalFields/TateThesis/ChebotarevCount.lean": [
+          "Mathlib",
+          "GroundTheory.GlobalFields.TateThesis.ChebotarevFrobenius",
+          "GroundTheory.GlobalFields.KummerTheory.Splitting"
+        ]
+      },
+      "independent_computation": "not_run",
+      "ranking_features": [
+        "literature",
+        "comparison-open"
+      ],
+      "oct_score": 3
+    },
+    {
+      "id": "lean:a172c464fd4bcfc4f53e394dcba45d742b1409a6:GroundTheory.LocalField.IsCharacter.mem_spanZ_isElementary:c21702967333d600f1de299d350c09eea71eb7f43ec19858b003207932fc0a5f",
+      "repository": "https://github.com/Deicyde/riemann-hypothesis",
+      "revision": "a172c464fd4bcfc4f53e394dcba45d742b1409a6",
+      "lean_statement": "theorem IsCharacter.mem_spanZ_isElementary {χ : (L ≃ₐ[K] L) → ℂ} (hχ : IsCharacter χ) :\n    χ ∈ spanZ (IsElementary (G",
+      "source_span_fidelity": "matches",
+      "slug": "brauer",
+      "title": "Brauer induction for field automorphism groups",
+      "domain": "Finite group representation theory",
+      "declaration": {
+        "name": "GroundTheory.LocalField.IsCharacter.mem_spanZ_isElementary",
+        "path": "src/GroundTheory/LocalFields/ArtinConductorBrauer.lean",
+        "first_line": 181,
+        "last_line": 182,
+        "sha256": "03163d70b8d2e33430f3bdd72991930ce83dc06eaf9a5c9324a49e7401726dce"
+      },
+      "definitions": [
+        {
+          "name": "IsElementaryAt",
+          "path": "src/GroundTheory/LocalFields/BrauerInductionElementary.lean",
+          "first_line": 9,
+          "last_line": 11,
+          "sha256": "1561eceeb3a3afbff7677f2a7f2b447134b3e1106439ce079718379a41ee0bdf"
+        },
+        {
+          "name": "IsElementary",
+          "path": "src/GroundTheory/LocalFields/BrauerInductionElementary.lean",
+          "first_line": 13,
+          "last_line": 13,
+          "sha256": "2aabb537b7a73cf55acdced6f3fc88e55f0fa950c5000edb2dbafd3ab4374a24"
+        },
+        {
+          "name": "IsCharacter",
+          "path": "src/GroundTheory/LocalFields/BrauerInductionCharacters.lean",
+          "first_line": 104,
+          "last_line": 106,
+          "sha256": "bacdbbf6546100d84564be0e8cb93dd7e5a6b9ad60c76d56b60838ecd520dd9c"
+        },
+        {
+          "name": "indLin",
+          "path": "src/GroundTheory/LocalFields/BrauerInductionSpan.lean",
+          "first_line": 32,
+          "last_line": 32,
+          "sha256": "475aa09c2ec248a0668c15885f540d24785e54e11bc8044a7327448966401fda"
+        },
+        {
+          "name": "monomialSet",
+          "path": "src/GroundTheory/LocalFields/BrauerInductionSpan.lean",
+          "first_line": 69,
+          "last_line": 69,
+          "sha256": "f3190c6d159d2cedb67bea5b5761b6d43d147135ae5d6bb9c860baf2f60e711c"
+        },
+        {
+          "name": "spanZ",
+          "path": "src/GroundTheory/LocalFields/BrauerInductionSpan.lean",
+          "first_line": 71,
+          "last_line": 71,
+          "sha256": "41e784a889645a4d20c6416581d06eb22a0c8003e667eb35c6c067052d2c159d"
+        }
+      ],
+      "context": [
+        {
+          "name": "Field and extension context",
+          "path": "src/GroundTheory/LocalFields/ArtinConductorBrauer.lean",
+          "first_line": 27,
+          "last_line": 29,
+          "sha256": "4130648ee5c6a0b0ae70e8c774fcd4389fb5470b5c39a5cab6a8c71e18d428b4"
+        },
+        {
+          "name": "Explicitly omitted field-local and Galois classes",
+          "path": "src/GroundTheory/LocalFields/ArtinConductorBrauer.lean",
+          "first_line": 178,
+          "last_line": 179,
+          "sha256": "0bab1a9680027f9b2533fcc47460e92b9a9f239af4ac929aa9a83476f615ef7d"
+        }
+      ],
+      "proof_uses": [
+        "mem_spanZ_of_mono",
+        "exists_eq_indLin"
+      ],
+      "assumptions": [
+        "K and L are fields with L a finite-dimensional K-algebra. The local-field, valuation-extension and Galois classes are explicitly omitted for this declaration.",
+        "The function is the character of a finite-dimensional complex representation of Aut_K(L)."
+      ],
+      "quantifiers": [
+        "For every eligible field extension and every complex character of its automorphism group.",
+        "Membership of the character in the integer span asserts a finite integer combination of elementary-subgroup inductions."
+      ],
+      "interpretation": "Each complex character of the automorphism group of a finite-dimensional field extension is an integer combination of characters induced from one-dimensional characters of elementary subgroups.",
+      "human_review": "Pilot statement reading and focused comparison",
+      "hypothesis_status": "conditional",
+      "rh_independence": "no_rh_in_reviewed_statement",
+      "extra_proof_premise": false,
+      "mathematical_novelty": "known_math",
+      "formalization_novelty": "unresolved",
+      "verification": "structurally_reviewed",
+      "comparisons": [
+        {
+          "kind": "literature",
+          "title": "Brauer, On Artin’s L-Series with General Group Characters (1947)",
+          "url": "https://www.jstor.org/stable/i307231",
+          "fidelity": "special_case",
+          "finding": "Classical Brauer induction ranges over arbitrary finite groups; this endpoint uses field automorphism groups and ordinary characters. The generic proof route assembles with monomiality."
+        },
+        {
+          "kind": "formalization",
+          "title": "Lean evaluation, character values in a cyclotomic field",
+          "url": "https://lean-lang.org/eval/problems/brauer_character_in_cyclotomic/",
+          "fidelity": "unresolved",
+          "finding": "The checked claim described there is a consequence about values, with a distinct statement and dependency route. It does not establish availability of the same induction API."
+        }
+      ],
+      "open_questions": [
+        "Check standalone replay of the generic finite-group assembly with monomiality supplied.",
+        "Compare the generic conclusion to the virtual character formulation under scalar extension."
+      ],
+      "proof_module_imports": [
+        "Mathlib",
+        "GroundTheory.LocalFields.ArtinConductorIrreducible",
+        "GroundTheory.LocalFields.ArtinConductorDiscriminant",
+        "GroundTheory.LocalFields.BrauerInduction"
+      ],
+      "definition_module_imports": {
+        "src/GroundTheory/LocalFields/BrauerInductionCharacters.lean": [
+          "Mathlib"
+        ],
+        "src/GroundTheory/LocalFields/BrauerInductionElementary.lean": [
+          "Mathlib"
+        ],
+        "src/GroundTheory/LocalFields/BrauerInductionSpan.lean": [
+          "Mathlib",
+          "GroundTheory.LocalFields.BrauerInductionIntegral",
+          "GroundTheory.LocalFields.BrauerInductionElementary"
+        ]
+      },
+      "independent_computation": "not_run",
+      "ranking_features": [
+        "literature",
+        "comparison-open"
+      ],
+      "oct_score": 3
+    },
+    {
+      "id": "lean:a172c464fd4bcfc4f53e394dcba45d742b1409a6:GlobalTheory.krasner_stabiliser:5e50a1a4a11d163f93c88552bf937108b6eaeda37c51cb42a49918adfe1a8d31",
+      "repository": "https://github.com/Deicyde/riemann-hypothesis",
+      "revision": "a172c464fd4bcfc4f53e394dcba45d742b1409a6",
+      "lean_statement": "theorem krasner_stabiliser (E Ω : Type) [Field E] [NumberField E] [Field Ω] [Algebra E Ω]\n    (A : ValuationSubring Ω) (β β' : Ω)\n    (h : ∀ d ∈ Dec (F",
+      "source_span_fidelity": "matches",
+      "slug": "krasner",
+      "title": "Krasner stabilizers inside a decomposition group",
+      "domain": "Valuation theory",
+      "declaration": {
+        "name": "GlobalTheory.krasner_stabiliser",
+        "path": "src/Development/AbelianVarietyTheory/Proofs/InertiaEigenvalues/KrasnerLemmaDecompositionGroupStabilizerVersion.lean",
+        "first_line": 18,
+        "last_line": 20,
+        "sha256": "08056b6342f878390482d24e6a1f1c4d3736d96f400cb0727ab9463eae2c237a"
+      },
+      "definitions": [
+        {
+          "name": "Dec",
+          "path": "src/ReciprocityTheory/GaloisValuations/Global.lean",
+          "first_line": 15,
+          "last_line": 15,
+          "sha256": "86fa2c9b0a11ec65799808bd621f731660a801b1d673cfe9d689250f48fbeef4"
+        }
+      ],
+      "context": [],
+      "proof_uses": [
+        "krasner_val_lt_apply_iff",
+        "Valuation.map_add_lt"
+      ],
+      "assumptions": [
+        "Number field E, field Ω with E-algebra structure, valuation subring A.",
+        "The multiplicative valuation of β′−β is strictly smaller than that of every nonzero displacement dβ−β for d in the decomposition subgroup."
+      ],
+      "quantifiers": [
+        "For all E, Ω, A, β and β′ satisfying the type and proximity conditions.",
+        "For all σ in the valuation-ring stabilizer, fixing β′ implies fixing β."
+      ],
+      "interpretation": "An automorphism preserving the valuation and fixing a sufficiently close approximation must fix the original element as well. The conclusion is containment of stabilizers in the decomposition group.",
+      "human_review": "Pilot statement reading and focused comparison",
+      "hypothesis_status": "conditional",
+      "rh_independence": "no_rh_in_reviewed_statement",
+      "extra_proof_premise": false,
+      "mathematical_novelty": "known_math",
+      "formalization_novelty": "unresolved",
+      "verification": "structurally_reviewed",
+      "comparisons": [
+        {
+          "kind": "literature",
+          "title": "Schütz, Algebraic Number Theory, Chapter 8",
+          "url": "https://janschuetz.perso.math.cnrs.fr/lehre/ANT.pdf",
+          "fidelity": "unresolved",
+          "finding": "The usual complete-field Krasner lemma concludes containment of generated fields. The corpus isolates an ultrametric automorphism argument with a different scope."
+        },
+        {
+          "kind": "formalization",
+          "title": "Mathlib.Analysis.Normed.Field.Krasner",
+          "url": "https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Normed/Field/Krasner.html",
+          "fidelity": "unresolved",
+          "finding": "Mathlib concludes field membership in an ultrametric normed-field setting. Here the valuation may have a general ordered value group and the output is a subgroup stabilizer inclusion."
+        }
+      ],
+      "open_questions": [
+        "Compare via a fixed-field correspondence on common hypotheses.",
+        "Run Lean replay on the pinned valuation imports or devise a statement bridge to a standalone valuation-preserving action."
+      ],
+      "proof_module_imports": [
+        "Mathlib",
+        "Development.AbelianVarietyTheory.Definitions.AutomorphicMembership.ExistsNotCongPow"
+      ],
+      "definition_module_imports": {
+        "src/ReciprocityTheory/GaloisValuations/Global.lean": [
+          "Formalism.ConjugateSelfDual.Statement",
+          "ReciprocityTheory.GaloisValuations.GlobalA",
+          "ReciprocityTheory.GaloisValuations.GlobalB"
+        ]
+      },
+      "independent_computation": "not_run",
+      "ranking_features": [
+        "literature",
+        "comparison-open"
+      ],
+      "oct_score": 3
+    }
+  ]
+}

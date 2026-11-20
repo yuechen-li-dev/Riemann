@@ -1,0 +1,42 @@
+package Main
+
+// Only reviewed metadata and source-shape hints enter this heuristic.
+fn Score(row: String) -> Int {
+    var score = 0
+    if StringContains(row, " named;") { score = score + 2 }
+    if StringContains(row, " mathlib-only;") { score = score + 2 }
+    if StringContains(row, " literature;") { score = score + 1 }
+    if StringContains(row, " extractable;") { score = score + 5 }
+    if StringContains(row, " comparison-open;") { score = score + 2 }
+    if StringContains(row, " proof-premise;") { score = score - 3 }
+    if StringContains(row, " rh-mention;") { score = score - 10 }
+    return score
+}
+
+fn Rank(rows: String[], i: Int) -> Int {
+    var rank = 1
+    let score = Score(rows[i])
+    for j in 0 .. Len(rows) {
+        let other = Score(rows[j])
+        if other > score or (other == score and j < i) { rank = rank + 1 }
+    }
+    return rank
+}
+
+fn RankedLines(rows: String[]) -> String[] {
+    var result: String[] = []
+    for rank in 1 .. (Len(rows) + 1) {
+        for i in 0 .. Len(rows) {
+            if Rank(rows, i) == rank {
+                result = Append(result, rows[i])
+                result = Append(result, ToString(Score(rows[i])))
+            }
+        }
+    }
+    return result
+}
+
+fn Main() -> Void ! Error {
+    let rows = FileReadLines("candidates.txt")?
+    let _ = FileWriteLines("ranking.txt", RankedLines(rows))?
+}

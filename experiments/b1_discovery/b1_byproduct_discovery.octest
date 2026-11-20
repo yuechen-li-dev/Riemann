@@ -1,0 +1,17 @@
+package Main
+
+[Fact]
+fn RanksEvidenceHintsDeterministically() -> Void {
+    let rows = ["a named; mathlib-only; extractable;", "b literature;", "c literature;", "d named; rh-mention;"]
+    Assert.Equal(9, Score(rows[0]), "certificate and bounded definitions")
+    Assert.Equal(1, Rank(rows, 0), "highest score")
+    Assert.Equal(2, Rank(rows, 1), "first tied candidate")
+    Assert.Equal(3, Rank(rows, 2), "second tied candidate")
+    Assert.Equal(4, Rank(rows, 3), "RH mention")
+    Assert.Equal(-3, Score("e proof-premise;"), "additional proof premise")
+    let ranked = RankedLines(rows)
+    Assert.Equal(8, Len(ranked), "one row and score per candidate")
+    Assert.Equal(rows[0], ranked[0], "manifest winner")
+    Assert.Equal("9", ranked[1], "serialized score")
+    Assert.Equal(rows[2], ranked[4], "stable tie ordering")
+}
